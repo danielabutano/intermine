@@ -34,6 +34,7 @@ public class TableCellFormatter
     private static final String CELL_KEY_CLASS = "class";
     private static final String CELL_KEY_COLUMN = "column";
     private static final String CELL_KEY_ID = "id";
+    static final String INTERNAL_REPORT_PAGE = "report.do";
 
     private final LinkRedirectManager redirector;
     private final InterMineAPI im;
@@ -65,7 +66,7 @@ public class TableCellFormatter
                 link = redirector.generateLink(im, (InterMineObject) cell.getObject());
             }
             if (link == null) {
-                link = PortalHelper.generateReportPath(cell);
+                link = generateReportPath(cell);
             }
             mapping.put(CELL_KEY_URL, link);
 
@@ -105,6 +106,22 @@ public class TableCellFormatter
             }
         }
         return mapping;
+    }
+
+    /**
+     * Get the path fragment (starting with "/") for the report page for an object in the mine.
+     * @param elem The element containing data related to this object.
+     * @return A path fragment suitable for appending to a base URL.
+     * The generated path is not suitable for permanent
+     * links, as it will include the internal id, which is liable to change between releases.
+     */
+    private static String generateReportPath(ResultCell elem) {
+        String url;
+        StringBuilder sb = new StringBuilder();
+        sb.append("/").append(INTERNAL_REPORT_PAGE).append("?id=");
+        sb.append(String.valueOf(elem.getId()));
+        url = sb.toString();
+        return url;
     }
 
     /**
