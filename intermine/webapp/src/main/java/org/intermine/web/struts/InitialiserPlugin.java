@@ -95,6 +95,7 @@ import org.intermine.web.logic.config.FieldConfigHelper;
 import org.intermine.web.logic.config.WebConfig;
 import org.intermine.web.logic.profile.LoginHandler;
 import org.intermine.web.logic.profile.UpgradeBagList;
+import org.intermine.web.logic.profile.UpgradeBagRunner;
 import org.intermine.web.logic.session.SessionMethods;
 import org.intermine.webservice.server.query.result.XMLValidator;
 
@@ -239,7 +240,7 @@ public class InitialiserPlugin implements PlugIn
         for (Profile user: users) {
             if (!im.getBagManager().isAnyBagInState(user, BagState.UPGRADING)) {
                 UpgradeBagList upgrade = new UpgradeBagList(user, im.getBagQueryRunner());
-                LoginHandler.runBagUpgrade(upgrade, im, user);
+                UpgradeBagRunner.runBagUpgrade(upgrade, im, user);
             }
             LOG.info("UPGRADING BAGS FOR " + user.getUsername());
         }

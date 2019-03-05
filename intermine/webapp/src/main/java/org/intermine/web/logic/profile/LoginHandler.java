@@ -184,63 +184,7 @@ public abstract class LoginHandler extends InterMineAction
         return setUpProfile(session, profile);
     }
 
-    /**
-     * Does whatever needs to be done to a permissions object to get it ready
-     * for a life cyle in a web service request. At the moment, this just means
-     * determining if this is the super user, and running the bag upgrade
-     * thread.
-     *
-     * @param api
-     *            The InterMine API object.
-     * @param permission
-     *            The permission that needs setting up.
-     */
-    public static void setUpPermission(InterMineAPI api,
-            ApiPermission permission) {
-        final ProfileManager pm = api.getProfileManager();
-        final Profile profile = permission.getProfile();
-        final String userName = profile.getUsername();
-        if (profile.isSuperuser() || (userName != null && userName.equals(pm.getSuperuser()))) {
-            permission.addRole("SUPERUSER");
-        }
-        if (!api.getBagManager().isAnyBagInState(profile, BagState.UPGRADING)) {
-            UpgradeBagList upgrade = new UpgradeBagList(profile, api.getBagQueryRunner());
-            runBagUpgrade(upgrade, api, profile);
-        }
-    }
 
-    /**
-     * Kick off a bag upgrade for current user.
-     * @param procedure The bag upgrade routine.
-     * @param api The InterMine state object.
-     * @param profile The current user's profile.
-     */
-    public static void runBagUpgrade(
-            UpgradeBagList procedure,
-            InterMineAPI api,
-            Profile profile) {
-        Connection con = null;
-        try {
-            con = ((ObjectStoreWriterInterMineImpl) api.getProfileManager()
-                    .getProfileObjectStoreWriter()).getDatabase()
-                    .getConnection();
-            if (api.getBagManager().isAnyBagNotCurrent(profile)
-                    && !DatabaseUtil.isBagValuesEmpty(con)) {
-                Thread upgrade = new Thread(procedure);
-                upgrade.setDaemon(true);
-                upgrade.start();
-            }
-        } catch (SQLException sqle) {
-            LOG.error("Problems retrieving the connection", sqle);
-        } finally {
-            try {
-                if (con != null) {
-                    con.close();
-                }
-            } catch (SQLException sqle) {
-            }
-        }
-    }
     /**
      * Sets up a profile ready for a session in InterMine.
      *
@@ -255,7 +199,7 @@ public abstract class LoginHandler extends InterMineAction
             session.setAttribute(Constants.IS_SUPERUSER, Boolean.TRUE);
         }
         UpgradeBagList upgrade = new UpgradeBagList(profile, im.getBagQueryRunner());
-        runBagUpgrade(upgrade, im, profile);
+        UpgradeBagRunner.runBagUpgrade(upgrade, im, profile);
         return profile;
     }
 
