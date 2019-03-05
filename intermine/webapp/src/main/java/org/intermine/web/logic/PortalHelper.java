@@ -181,18 +181,6 @@ public final class PortalHelper
         return url;
     }
 
-
-    /**
-     * Generate a link to the object details page using the internal id. This does not produce
-     * a link suitable for use as a permalink.
-     * @param elem a result element
-     * @param baseUrl The base URL to use to create the link.
-     * @return The URL.
-     */
-    public static String generateReportLink(ResultElement elem, String baseUrl) {
-        return baseUrl + generateReportPath(elem);
-    }
-
     /**
      * Get the path fragment (starting with "/") for the report page for an object in the mine.
      * @param elem The element containing data related to this object.
