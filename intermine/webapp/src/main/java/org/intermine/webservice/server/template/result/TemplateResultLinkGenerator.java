@@ -24,7 +24,7 @@ import org.intermine.pathquery.PathConstraintNull;
 import org.intermine.template.SwitchOffAbility;
 import org.intermine.template.TemplateQuery;
 import org.intermine.metadata.StringUtil;
-import org.intermine.webservice.server.CodeTranslator;
+import org.intermine.web.logic.CodeTranslator;
 import org.intermine.webservice.server.LinkGeneratorBase;
 import org.intermine.webservice.server.WebServiceConstants;
 import org.intermine.webservice.server.WebServiceRequestParser;

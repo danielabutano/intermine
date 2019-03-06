@@ -1,4 +1,4 @@
-package org.intermine.webservice.server;
+package org.intermine.web.logic;
 
 /*
  * Copyright (C) 2002-2019 FlyMine

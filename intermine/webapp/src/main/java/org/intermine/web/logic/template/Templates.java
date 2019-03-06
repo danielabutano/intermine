@@ -32,7 +32,7 @@ import org.intermine.pathquery.PathQuery;
 import org.intermine.template.SwitchOffAbility;
 import org.intermine.template.TemplateQuery;
 import org.intermine.template.TemplateValue;
-import org.intermine.webservice.server.CodeTranslator;
+import org.intermine.web.logic.CodeTranslator;
 
 /**
  * A utility class with static methods for dealing with templates.
