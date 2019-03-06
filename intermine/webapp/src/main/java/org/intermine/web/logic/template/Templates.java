@@ -217,7 +217,7 @@ public final class Templates
      * @throws TemplateValueParseException if the input is bad.
      */
     public static Map<String, List<TemplateValue>> getValuesFromInput(TemplateQuery template,
-            TemplateResultInput input) throws TemplateValueParseException {
+            TemplateInputInterface input) throws TemplateValueParseException {
         Map<String, List<TemplateValue>> values = new HashMap<String, List<TemplateValue>>();
         for (String path : template.getEditablePaths()) {
             List<PathConstraint> constraintsForPath = template.getEditableConstraints(path);

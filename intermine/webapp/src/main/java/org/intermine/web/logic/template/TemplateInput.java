@@ -9,40 +9,21 @@ package org.intermine.web.logic.template;
  * information or http://www.gnu.org/copyleft/lesser.html.
  *
  */
+
 import java.util.List;
 import java.util.Map;
 
-import org.intermine.webservice.server.WebServiceInput;
-
 /**
- * TemplateResultInput is parameter object representing parameters for
- * TemplateResultService web service.
- * @author Jakub Kulaviak
+ * TemplateInput is parameter object representing parameters to load template
+ * @author Daniela Butano
  **/
-public class TemplateResultInput extends WebServiceInput implements TemplateInputInterface
+public class TemplateInput implements TemplateInputInterface
 {
     private String name;
-
     private Map<String, List<ConstraintInput>> constraints;
 
-    private String layout;
-
     /**
-     * @return layout string specifying result table layout
-     */
-    public String getLayout() {
-        return layout;
-    }
-
-    /**
-     * @param layout string specifying result table layout
-     */
-    public void setLayout(String layout) {
-        this.layout = layout;
-    }
-
-    /**
-     *  {@inheritDoc}
+     * {@inheritDoc}
      */
     public String getName() {
         return name;
