@@ -1,5 +1,15 @@
 package org.intermine.web.logic.profile;
 
+/*
+ * Copyright (C) 2002-2019 FlyMine
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public Licence.  This should
+ * be distributed with the code.  See the LICENSE file for more
+ * information or http://www.gnu.org/copyleft/lesser.html.
+ *
+ */
+
 import org.apache.log4j.Logger;
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.Profile;
@@ -11,8 +21,11 @@ import java.sql.SQLException;
 
 /**
  * Start upgrading bag for current user
+ *
+ * @author Daniela Butano
  */
-public abstract class UpgradeBagRunner {
+public abstract class UpgradeBagRunner
+{
     private static final Logger LOG = Logger.getLogger(UpgradeBagRunner.class);
 
     /**

@@ -18,7 +18,6 @@ import org.intermine.api.LinkRedirectManager;
 import org.intermine.api.results.ResultCell;
 import org.intermine.model.InterMineObject;
 import org.intermine.web.context.InterMineContext;
-import org.intermine.web.logic.PortalHelper;
 import org.json.JSONObject;
 
 /**

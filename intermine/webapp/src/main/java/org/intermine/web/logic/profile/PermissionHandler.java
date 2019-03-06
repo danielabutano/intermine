@@ -1,22 +1,27 @@
 package org.intermine.web.logic.profile;
 
-import org.apache.log4j.Logger;
+/*
+ * Copyright (C) 2002-2019 FlyMine
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public Licence.  This should
+ * be distributed with the code.  See the LICENSE file for more
+ * information or http://www.gnu.org/copyleft/lesser.html.
+ *
+ */
+
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.BagState;
 import org.intermine.api.profile.Profile;
 import org.intermine.api.profile.ProfileManager;
-import org.intermine.objectstore.intermine.ObjectStoreWriterInterMineImpl;
-import org.intermine.sql.DatabaseUtil;
-
-import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * Configure permission object for webservices
+ *
+ * @author Daniela Butano
  */
-public abstract class PermissionHandler {
-    private static final Logger LOG = Logger.getLogger(PermissionHandler.class);
-
+public abstract class PermissionHandler
+{
     /**
      * Does whatever needs to be done to a permissions object to get it ready
      * for a life cyle in a web service request. At the moment, this just means

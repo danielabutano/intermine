@@ -93,7 +93,6 @@ import org.intermine.web.logic.aspects.AspectBinding;
 import org.intermine.web.logic.config.FieldConfig;
 import org.intermine.web.logic.config.FieldConfigHelper;
 import org.intermine.web.logic.config.WebConfig;
-import org.intermine.web.logic.profile.LoginHandler;
 import org.intermine.web.logic.profile.UpgradeBagList;
 import org.intermine.web.logic.profile.UpgradeBagRunner;
 import org.intermine.web.logic.session.SessionMethods;
