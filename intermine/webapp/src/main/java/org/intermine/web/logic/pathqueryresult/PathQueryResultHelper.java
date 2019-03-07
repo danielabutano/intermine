@@ -39,7 +39,7 @@ import org.intermine.pathquery.PathQuery;
 import org.intermine.util.CollectionUtil;
 import org.intermine.util.DynamicUtil;
 import org.intermine.metadata.TypeUtil;
-import org.intermine.web.logic.WebUtil;
+import org.intermine.web.logic.WebCoreUtil;
 import org.intermine.web.logic.config.FieldConfig;
 import org.intermine.web.logic.config.WebConfig;
 
@@ -422,7 +422,7 @@ public final class PathQueryResultHelper
             } catch (PathException e) {
                 throw new RuntimeException(e);
             }
-            aliasedViews.add(WebUtil.formatPath(viewPath, webConfig));
+            aliasedViews.add(WebCoreUtil.formatPath(viewPath, webConfig));
         }
 
         return aliasedViews;
