@@ -151,10 +151,8 @@ public final class PathQueryResultHelper
 
     /**
      * Get the view as configured in the webconfig. Guarantees to return a non-empty non-null list.
-     * @param type The type we are trying to get a view for.
-     * @param model The data model
+     * @param cld the class descriptor
      * @param webConfig The web-configuration.
-     * @param fieldConfigs
      * @return The list of paths that we can use to construct a query.
      * @throws UnconfiguredException if the class has not configured view.
      */
