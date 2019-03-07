@@ -15,8 +15,8 @@ import java.util.Properties;
 
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.intermine.metadata.Model;
-import org.intermine.web.logic.session.SessionMethods;
-import org.intermine.web.struts.MockServletContext;
+import org.intermine.web.logic.Constants;
+import org.intermine.web.logic.MockServletContext;
 
 public class WebConfigTest extends XMLTestCase
 {
@@ -29,7 +29,7 @@ public class WebConfigTest extends XMLTestCase
         final Properties p = new Properties();
         p.setProperty("web.config.classname.mappings", "CLASS_NAME_MAPPINGS");
         p.setProperty("web.config.fieldname.mappings", "FIELD_NAME_MAPPINGS");
-        SessionMethods.setWebProperties(context, p);
+        context.setAttribute(Constants.WEB_PROPERTIES, p);
 
         final InputStream is = getClass().getClassLoader().getResourceAsStream("WebConfigTest.xml");
         final InputStream classesIS = getClass().getClassLoader().getResourceAsStream("testClassMappings.properties");

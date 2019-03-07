@@ -25,10 +25,9 @@ import org.intermine.model.testmodel.Department;
 import org.intermine.model.testmodel.Employee;
 import org.intermine.objectstore.ObjectStoreWriter;
 import org.intermine.objectstore.ObjectStoreWriterFactory;
+import org.intermine.web.logic.Constants;
+import org.intermine.web.logic.MockServletContext;
 import org.intermine.web.logic.config.WebConfig;
-import org.intermine.web.logic.session.SessionMethods;
-import org.intermine.web.struts.MockServletContext;
-
 
 /**
  * A TestCase that sets up a webconfig for use in TestCases that extend this class.  The
@@ -49,7 +48,7 @@ public class WidgetConfigTestCase extends InterMineAPITestCase {
         final Properties p = new Properties();
         p.setProperty("web.config.classname.mappings", "CLASS_NAME_MAPPINGS");
         p.setProperty("web.config.fieldname.mappings", "FIELD_NAME_MAPPINGS");
-        SessionMethods.setWebProperties(context, p);
+        context.setAttribute(Constants.WEB_PROPERTIES, p);
 
         final InputStream is = getClass().getClassLoader().getResourceAsStream("WebConfigTest.xml");
         final InputStream classesIS = getClass().getClassLoader().getResourceAsStream("testClassMappings.properties");

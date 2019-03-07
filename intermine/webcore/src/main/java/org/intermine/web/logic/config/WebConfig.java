@@ -37,7 +37,7 @@ import org.intermine.metadata.Model;
 import org.intermine.pathquery.Path;
 import org.intermine.pathquery.PathConstraint;
 import org.intermine.pathquery.PathException;
-import org.intermine.web.logic.session.SessionMethods;
+import org.intermine.web.logic.Constants;
 import org.intermine.web.logic.widget.config.EnrichmentWidgetConfig;
 import org.intermine.web.logic.widget.config.GraphWidgetConfig;
 import org.intermine.web.logic.widget.config.HTMLWidgetConfig;
@@ -285,7 +285,8 @@ public class WebConfig
         final Model model)
         throws IOException {
 
-        final Properties webProperties = SessionMethods.getWebProperties(context);
+        final Properties webProperties = (Properties) context
+                .getAttribute(Constants.WEB_PROPERTIES);
 
         final List<String> classFileNames = getClassMappingFileNames(webProperties);
         final List<String> fieldFileNames = getFieldMappingFileNames(webProperties);
