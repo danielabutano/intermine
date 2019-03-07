@@ -13,6 +13,7 @@ import java.util.Set;
 
 public class MockServletContext implements ServletContext {
     private Map<String, InputStream> inputStreams = new HashMap<String, InputStream>();
+    protected HashMap attributes = new HashMap();
 
     public MockServletContext() {
         // Auto-generated constructor stub
@@ -20,6 +21,10 @@ public class MockServletContext implements ServletContext {
 
     public void addInputStream(String resourceName, InputStream is) {
         inputStreams.put(resourceName, is);
+    }
+
+    public InputStream getResourceAsStream(String name) {
+        return inputStreams.get(name);
     }
 
     @Override
@@ -52,18 +57,14 @@ public class MockServletContext implements ServletContext {
         return null;
     }
 
-    public InputStream getResourceAsStream(String name) {
-        return inputStreams.get(name);
-    }
-
     @Override
     public RequestDispatcher getRequestDispatcher(String path) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public RequestDispatcher getNamedDispatcher(String name) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     public String getServerInfo() {
@@ -72,27 +73,29 @@ public class MockServletContext implements ServletContext {
 
     @Override
     public String getInitParameter(String name) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Enumeration getInitParameterNames() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Object getAttribute(String name) {
-        return null;
+        return (attributes.get(name));
     }
 
     @Override
-    public Enumeration getAttributeNames() {
-        return null;
-    }
+    public Enumeration getAttributeNames() { return null; }
 
     @Override
     public void setAttribute(String name, Object object) {
-
+        if (object == null) {
+            attributes.remove(name);
+        } else {
+            attributes.put(name, object);
+        }
     }
 
     @Override
@@ -113,19 +116,13 @@ public class MockServletContext implements ServletContext {
     }
 
     @Override
-    public void log(String msg) {
-
-    }
+    public void log(String msg) {}
 
     @Override
-    public void log(Exception exception, String msg) {
-
-    }
+    public void log(Exception exception, String msg) {}
 
     @Override
-    public void log(String message, Throwable throwable) {
-
-    }
+    public void log(String message, Throwable throwable) {}
 
     @Override
     public String getRealPath(String path) {
