@@ -25,8 +25,8 @@ import org.apache.commons.lang.StringUtils;
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.bag.BagManager;
 import org.intermine.api.profile.Profile;
+import org.intermine.bio.web.logic.GenomicRegionSearchCoreUtil;
 import org.intermine.bio.web.logic.GenomicRegionSearchQueryRunner;
-import org.intermine.bio.web.logic.GenomicRegionSearchUtil;
 import org.intermine.bio.web.logic.RegionParseException;
 import org.intermine.bio.web.model.ChromosomeInfo;
 import org.intermine.bio.web.model.GenomicRegion;
@@ -275,7 +275,7 @@ public class GenomicRegionSearchListInput extends ListInput
                 = GenomicRegionSearchQueryRunner.getChromosomeInfo(api).get(getOrganism());
             for (String span : spans) {
                 try {
-                    newRegions.add(GenomicRegionSearchUtil.parseRegion(
+                    newRegions.add(GenomicRegionSearchCoreUtil.parseRegion(
                             span, isInterbase(), chromsForOrg));
                 } catch (RegionParseException e) {
                     invalidSpans.add(span + "; " + e.getMessage());

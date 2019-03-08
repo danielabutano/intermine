@@ -30,7 +30,7 @@ import org.intermine.api.mines.Mine;
 import org.intermine.metadata.ClassDescriptor;
 import org.intermine.metadata.Model;
 import org.intermine.model.InterMineObject;
-import org.intermine.web.logic.session.SessionMethods;
+import org.intermine.web.logic.Constants;
 
 /**
  * Show Other Mines Links on "Gene" page
@@ -46,11 +46,11 @@ public class OtherMinesLinkController extends TilesAction
     @Override
     public ActionForward execute(ComponentContext context, ActionMapping mapping, ActionForm form,
                                  HttpServletRequest request, HttpServletResponse response) {
-
-        final InterMineAPI im = SessionMethods.getInterMineAPI(request.getSession());
-        final HttpSession session = request.getSession();
-        final ServletContext servletContext = session.getServletContext();
-        final Properties props = SessionMethods.getWebProperties(servletContext);
+        final ServletContext servletContext = request.getSession().getServletContext();
+        final InterMineAPI im = (InterMineAPI) servletContext.getAttribute(
+                Constants.INTERMINE_API);
+        final Properties props = (Properties) servletContext.getAttribute(
+                Constants.WEB_PROPERTIES);
         InterMineObject o = (InterMineObject) request.getAttribute("object");
         Model model = im.getModel();
         Set<ClassDescriptor> classDescriptors = model.getClassDescriptorsForClass(o.getClass());

@@ -21,6 +21,7 @@ import org.intermine.api.bag.ClassKeysNotFoundException;
 import org.intermine.api.bag.UnknownBagTypeException;
 import org.intermine.api.profile.InterMineBag;
 import org.intermine.api.profile.Profile;
+import org.intermine.bio.web.logic.GenomicRegionSearchCoreUtil;
 import org.intermine.bio.web.logic.GenomicRegionSearchQueryRunner;
 import org.intermine.bio.web.logic.GenomicRegionSearchUtil;
 import org.intermine.bio.web.model.GenomicRegion;
@@ -145,7 +146,7 @@ public class GenomicRegionSearchService extends ListMakerService
      * @return A map from a region to the query needed to find objects in that region.
      */
     protected Map<GenomicRegion, Query> createQueries(GenomicRegionSearchInfo info) {
-        return GenomicRegionSearchUtil.createRegionListQueries(info.getGenomicRegions(),
+        return GenomicRegionSearchCoreUtil.createRegionListQueries(info.getGenomicRegions(),
                 info.getExtension(), GenomicRegionSearchQueryRunner.getChromosomeInfo(im).get(
                 info.getOrganism()), info.getOrganism(), info.getFeatureClasses(),
                 info.getStrandSpecific());

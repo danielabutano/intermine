@@ -1,8 +1,9 @@
 rootProject.name = 'bio'
 
-include ':bio-core', ':bio-model', ':bio-testresources', ':bio-tools', ':bio-webapp'
+include ':bio-core', ':bio-model', ':bio-testresources', ':bio-tools', ':bio-webcore', ':bio-webapp'
 project(':bio-core').projectDir = new File(settingsDir, './core')
 project(':bio-model').projectDir = new File(settingsDir, './model')
 project(':bio-tools').projectDir = new File(settingsDir, './tools')
+project(':bio-webcore').projectDir = new File(settingsDir, './webcore')
 project(':bio-webapp').projectDir = new File(settingsDir, './webapp')
 project(':bio-testresources').projectDir = new File(settingsDir, './testresources')
