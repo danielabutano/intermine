@@ -23,7 +23,6 @@ import org.intermine.api.profile.InterMineBag;
 import org.intermine.api.profile.Profile;
 import org.intermine.bio.web.logic.GenomicRegionSearchCoreUtil;
 import org.intermine.bio.web.logic.GenomicRegionSearchQueryRunner;
-import org.intermine.bio.web.logic.GenomicRegionSearchUtil;
 import org.intermine.bio.web.model.GenomicRegion;
 import org.intermine.bio.webservice.GenomicRegionSearchListInput.GenomicRegionSearchInfo;
 import org.intermine.objectstore.ObjectStoreException;
