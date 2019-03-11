@@ -28,9 +28,9 @@ configurations {
 dependencies {
     providedCompile project(':bio-core')
     providedCompile project(':bio-model')
+    providedCompile project(':bio-webcore')
     providedCompile group: "org.intermine", name: "intermine-webcore", version: System.getProperty("imVersion")
     providedCompile group: "org.intermine", name: "intermine-webapp", version: System.getProperty("imVersion"), classifier: "classes"
-    compile group: "org.intermine", name: "bio-webcore", version: System.getProperty("imVersion")
     providedCompile group: 'org.apache.struts', name: 'struts-tiles', version: '1.3.10'
     providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.0.1'
 
