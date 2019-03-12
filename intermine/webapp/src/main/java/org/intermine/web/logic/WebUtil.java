@@ -304,6 +304,30 @@ public abstract class WebUtil extends WebCoreUtil
     }
 
     /**
+     * Formats a column name, using the webconfig to produce configured labels.
+     * EG: MRNA.scoreType --&gt; mRNA &gt; Score Type
+     *
+     * @param pathString
+     *            A string representing a path to format
+     * @param api
+     *            the webapp configuration to aquire a model from
+     * @param webConfig
+     *            The configuration to find labels in
+     * @return A formatted column name
+     */
+    public static String formatPath(final String pathString,
+                                    final InterMineAPI api, final WebConfig webConfig) {
+        Path viewPath;
+        try {
+            viewPath = new Path(api.getModel(), pathString);
+        } catch (Throwable t) {
+            // In all error cases, return the original string.
+            return pathString;
+        }
+        return formatPath(viewPath, webConfig);
+    }
+
+    /**
      * Format a path into a displayable field name.
      *
      * eg: Employee.fullTime &rarr; Full Time
