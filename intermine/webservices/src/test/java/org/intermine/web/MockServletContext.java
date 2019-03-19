@@ -1,4 +1,4 @@
-package org.intermine.web.struts;
+package org.intermine.web;
 
 import java.io.InputStream;
 import java.util.HashMap;

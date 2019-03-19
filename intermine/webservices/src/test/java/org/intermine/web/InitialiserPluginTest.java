@@ -1,4 +1,4 @@
-package org.intermine.web.struts;
+package org.intermine.web;
 
 /*
  * Copyright (C) 2002-2019 FlyMine
@@ -39,6 +39,7 @@ import org.intermine.objectstore.query.QueryField;
 import org.intermine.objectstore.query.QueryValue;
 import org.intermine.objectstore.query.SimpleConstraint;
 import org.intermine.objectstore.query.SingletonResults;
+import org.intermine.web.InitialiserPlugin;
 
 /**
  *
