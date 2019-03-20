@@ -96,7 +96,7 @@ import org.intermine.webservice.server.query.result.XMLValidator;
  *
  * @author Andrew Varley
  * @author Thomas Riley
- * @uthor Daniela Butano
+ * @author Daniela Butano
  */
 public class InitialiserPlugin implements PlugIn
 {
