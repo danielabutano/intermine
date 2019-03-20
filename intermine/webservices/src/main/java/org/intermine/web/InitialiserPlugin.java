@@ -91,11 +91,12 @@ import org.intermine.web.logic.profile.UpgradeBagRunner;
 import org.intermine.webservice.server.query.result.XMLValidator;
 
 /**
- * Initialiser for the InterMine web application.
+ * Initialiser for the InterMine web services.
  * Anything that needs global initialisation goes here.
  *
  * @author Andrew Varley
  * @author Thomas Riley
+ * @uthor Daniela Butano
  */
 public class InitialiserPlugin implements PlugIn
 {
@@ -142,13 +143,8 @@ public class InitialiserPlugin implements PlugIn
             throw new ServletException("webProperties is null");
         }
 
-        // set XML library
-       // initXMLLibrary();
-
         // read in additional webapp specific information and put in servletContext
         loadClassDescriptions(servletContext);
-        //loadOpenIDProviders(servletContext);
-        //loadOAuth2Providers(servletContext, webProperties);
 
         // web properties
         // set up core InterMine application
@@ -590,58 +586,6 @@ public class InitialiserPlugin implements PlugIn
         }
         return trimProperties;
     }
-
-/*    private void loadOpenIDProviders(ServletContext context) {
-        Set<String> providers = new HashSet<String>();
-        Properties providerProps = new Properties();
-
-        InputStream is = getClass().getClassLoader()
-            .getResourceAsStream("openid-providers.properties");
-        if (is == null) {
-            LOG.debug("couldn't find openid providers, using system class-loader");
-            is = ClassLoader.getSystemClassLoader()
-                .getResourceAsStream("openid-properties.properties");
-        }
-        if (is != null) {
-            try {
-                providerProps.load(is);
-            } catch (IOException e) {
-                LOG.error("Could not load openid-providers.properties", e);
-                blockingErrorKeys.put("errors.init.openidprovidersloading", null);
-                return;
-            }
-        } else {
-            LOG.error("Could not find openid-providers.properties");
-            blockingErrorKeys.put("errors.init.openidproviders", null);
-            return;
-        }
-
-        for (Object key: providerProps.keySet()) {
-            String keyString = (String) key;
-            if (!keyString.endsWith(".alias")) {
-                providers.add(keyString);
-                LOG.debug("Added " + keyString);
-            }
-        }
-
-        SessionMethods.setOpenIdProviders(context, providers);
-    }
-
-    private void loadOAuth2Providers(ServletContext context, Properties webProperties) {
-        Set<String> providers = new LinkedHashSet<String>();
-
-        // All all the providers found in oauth2.providers that have at least
-        // a client-id configured.
-        String oauth2Providers = webProperties.getProperty("oauth2.providers", "");
-        for (String provider: oauth2Providers.split(",")) {
-            String providerName = provider.trim().toUpperCase();
-            if (webProperties.containsKey("oauth2." + providerName + ".client-id")) {
-                providers.add(providerName);
-            }
-        }
-
-        SessionMethods.setOAuth2Providers(context, providers);
-    }*/
 
     private LinkRedirectManager getLinkRedirector(Properties webProperties) {
         final String err = "Initialisation of link redirector failed: ";
