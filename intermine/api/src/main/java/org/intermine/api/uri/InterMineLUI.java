@@ -32,7 +32,7 @@ public class InterMineLUI
 {
     private String className;
     private static final String LOCAL_ID_SEPARATOR = ":";
-    private String identifier;
+    private String Inter;
     private static final Logger LOGGER = Logger.getLogger(InterMineLUI.class);
 
     /**
