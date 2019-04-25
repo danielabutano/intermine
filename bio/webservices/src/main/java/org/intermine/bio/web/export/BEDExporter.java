@@ -20,13 +20,13 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.intermine.api.results.ResultElement;
 import org.intermine.bio.io.bed.BEDRecord;
+import org.intermine.bio.web.logic.BioExportHelper;
 import org.intermine.bio.web.logic.OrganismGenomeBuildLookup;
 import org.intermine.metadata.StringUtil;
 import org.intermine.model.bio.SequenceFeature;
 import org.intermine.pathquery.Path;
 import org.intermine.util.IntPresentSet;
 import org.intermine.web.logic.export.ExportException;
-import org.intermine.web.logic.export.ExportHelper;
 import org.intermine.web.logic.export.Exporter;
 
 /**
@@ -267,6 +267,6 @@ public class BEDExporter implements Exporter
      * @return true if this exporter can export result composed of specified classes
      */
     public static boolean canExportStatic(List<Class<?>> clazzes) {
-        return ExportHelper.getClassIndex(clazzes, SequenceFeature.class) >= 0;
+        return BioExportHelper.getClassIndex(clazzes, SequenceFeature.class) >= 0;
     }
 }

@@ -91,11 +91,7 @@ public class GenomicRegionSearchService
     private static Map<String, String> orgTaxonIdMap = null;
     private List<String> selectionInfo = new ArrayList<String>();
 
-    /**
-     * Default batch size to be used for region search initialisation queries.
-     */
-    public static final int DEFAULT_REGION_INIT_BATCH_SIZE = 10000;
-    private int initBatchSize = DEFAULT_REGION_INIT_BATCH_SIZE;
+    private int initBatchSize = GenomicRegionSearchConstants.DEFAULT_REGION_INIT_BATCH_SIZE;
 
     private static final String CHROMOSOME_LOCATION_MISSING =
         "Chromosome location information is missing";
@@ -458,7 +454,7 @@ public class GenomicRegionSearchService
                         + " property:" + initBatchSizeStr);
             }
         }
-        return DEFAULT_REGION_INIT_BATCH_SIZE;
+        return GenomicRegionSearchConstants.DEFAULT_REGION_INIT_BATCH_SIZE;
     }
 
     /**

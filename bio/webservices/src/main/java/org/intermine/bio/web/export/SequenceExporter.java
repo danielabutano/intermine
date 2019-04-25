@@ -10,6 +10,7 @@ package org.intermine.bio.web.export;
  *
  */
 
+import org.intermine.bio.web.logic.BioExportHelper;
 import org.intermine.objectstore.query.ClobAccess;
 import org.intermine.bio.util.ClobAccessReverseComplement;
 
@@ -48,7 +49,6 @@ import org.intermine.objectstore.ObjectStore;
 import org.intermine.pathquery.Path;
 import org.intermine.util.IntPresentSet;
 import org.intermine.web.logic.export.ExportException;
-import org.intermine.web.logic.export.ExportHelper;
 import org.intermine.web.logic.export.Exporter;
 
 /**
@@ -427,10 +427,10 @@ public class SequenceExporter implements Exporter
      *         classes
      */
     public static boolean canExportStatic(List<Class<?>> clazzes) {
-        return (ExportHelper.getClassIndex(clazzes,
+        return (BioExportHelper.getClassIndex(clazzes,
                 SequenceFeature.class) >= 0
-                || ExportHelper.getClassIndex(clazzes, Protein.class) >= 0
-//                || ExportHelper.getClassIndex(clazzes, Sequence.class) >= 0
+                || BioExportHelper.getClassIndex(clazzes, Protein.class) >= 0
+//                || BioExportHelper.getClassIndex(clazzes, Sequence.class) >= 0
                 );
     }
 }

@@ -24,10 +24,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.Profile;
+import org.intermine.web.logic.Constants;
 import org.intermine.bio.web.model.ChromosomeInfo;
 import org.intermine.bio.web.model.GenomicRegion;
 import org.intermine.bio.web.model.GenomicRegionSearchConstraint;
@@ -45,8 +47,6 @@ import org.intermine.objectstore.query.QueryObjectReference;
 import org.intermine.objectstore.query.Results;
 import org.intermine.objectstore.query.ResultsRow;
 import org.intermine.pathquery.PathQuery;
-import org.intermine.web.logic.session.SessionMethods;
-
 
 /**
  * This class has all database query logics for genomic region search.
@@ -159,8 +159,9 @@ public class GenomicRegionSearchQueryRunner implements Runnable
             request.getSession().setAttribute("spanOverlapFullStatMap", spanOverlapFullStatMap);
 
             try {
-                ObjectStore os = SessionMethods.getInterMineAPI(
-                        request.getSession()).getObjectStore();
+                ServletContext context = request.getServletContext();
+                ObjectStore os = ((InterMineAPI) context.getAttribute(Constants.INTERMINE_API))
+                        .getObjectStore();
 
                 for (Entry<GenomicRegion, Query> e : queryMap.entrySet()) {
                     Results results = os.execute(e.getValue());
@@ -224,7 +225,7 @@ public class GenomicRegionSearchQueryRunner implements Runnable
      */
     public static Map<String, Map<String, ChromosomeInfo>> getChromosomeInfo(InterMineAPI im) {
 
-        return getChromosomeInfo(im, GenomicRegionSearchService.DEFAULT_REGION_INIT_BATCH_SIZE);
+        return getChromosomeInfo(im, GenomicRegionSearchConstants.DEFAULT_REGION_INIT_BATCH_SIZE);
     }
 
     /**
