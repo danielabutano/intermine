@@ -93,7 +93,7 @@
 
   <servlet-mapping>
   <servlet-name>ws-query-results</servlet-name>
-  <url-pattern>/service/query/results/*</url-pattern>
+  <url-pattern>/query/results/*</url-pattern>
   <metadata>
     <name>Query Results</name>
     <minVersion>1</minVersion>
@@ -140,7 +140,7 @@
 
   <servlet-mapping>
     <servlet-name>ws-query-to-list</servlet-name>
-    <url-pattern>/service/query/tolist/*</url-pattern>
+    <url-pattern>/query/tolist/*</url-pattern>
     <metadata>
         <name>Create List from Query</name>
         <minVersion>4</minVersion>
@@ -190,7 +190,7 @@ attribute when using this service.
 
   <servlet-mapping>
     <servlet-name>ws-query-append</servlet-name>
-    <url-pattern>/service/query/append/tolist/*</url-pattern>
+    <url-pattern>/query/append/tolist/*</url-pattern>
     <metadata>
           <name>Add to List from Query</name>
           <minVersion>4</minVersion>
@@ -225,7 +225,7 @@ attribute when using this service.
 
   <servlet-mapping>
     <servlet-name>ws-query-upload</servlet-name>
-    <url-pattern>/service/query/upload</url-pattern>
+    <url-pattern>/query/upload</url-pattern>
     <metadata>
         <name>Save Query</name>
         <minVersion>4</minVersion>
@@ -264,7 +264,7 @@ attribute when using this service.
 
   <servlet-mapping>
     <servlet-name>ws-lists</servlet-name>
-    <url-pattern>/service/listswithobject/*</url-pattern>
+    <url-pattern>/listswithobject/*</url-pattern>
     <metadata>
         <name>Find Lists Containing an Object</name>
         <minVersion>1</minVersion>
@@ -315,7 +315,7 @@ attribute when using this service.
 
   <servlet-mapping>
     <servlet-name>ws-list-append</servlet-name>
-    <url-pattern>/service/lists/append/*</url-pattern>
+    <url-pattern>/lists/append/*</url-pattern>
     <metadata>
       <name>Append to List</name>
       <minVersion>4</minVersion>
@@ -367,7 +367,7 @@ attribute when using this service.
 
   <servlet-mapping>
   <servlet-name>ws-list-union</servlet-name>
-  <url-pattern>/service/lists/union/*</url-pattern>
+  <url-pattern>/lists/union/*</url-pattern>
   <metadata>
       <name>List Union</name>
       <minVersion>4</minVersion>
@@ -415,7 +415,7 @@ attribute when using this service.
 
   <servlet-mapping>
   <servlet-name>ws-list-subtract</servlet-name>
-  <url-pattern>/service/lists/subtract/*</url-pattern>
+  <url-pattern>/lists/subtract/*</url-pattern>
   <metadata>
       <name>List Subtraction</name>
       <minVersion>4</minVersion>
@@ -469,7 +469,7 @@ attribute when using this service.
 
   <servlet-mapping>
   <servlet-name>ws-list-intersect</servlet-name>
-  <url-pattern>/service/lists/intersect/*</url-pattern>
+  <url-pattern>/lists/intersect/*</url-pattern>
   <metadata>
       <name>List Intersection</name>
       <minVersion>4</minVersion>
@@ -516,7 +516,7 @@ attribute when using this service.
 
   <servlet-mapping>
   <servlet-name>ws-list-diff</servlet-name>
-  <url-pattern>/service/lists/diff/*</url-pattern>
+  <url-pattern>/lists/diff/*</url-pattern>
   <metadata>
       <name>List Difference</name>
       <minVersion>4</minVersion>
@@ -554,7 +554,7 @@ attribute when using this service.
 
   <servlet-mapping>
     <servlet-name>ws-available-lists</servlet-name>
-    <url-pattern>/service/lists/*</url-pattern>
+    <url-pattern>/lists/*</url-pattern>
     <metadata>
         <name>Lists</name>
         <minVersion>4</minVersion>
@@ -640,7 +640,7 @@ attribute when using this service.
 
   <servlet-mapping>
   <servlet-name>ws-rename-list</servlet-name>
-  <url-pattern>/service/lists/rename/*</url-pattern>
+  <url-pattern>/lists/rename/*</url-pattern>
   <metadata>
     <name>List Renaming</name>
     <minVersion>4</minVersion>
@@ -673,7 +673,7 @@ attribute when using this service.
 
     <servlet-mapping>
         <servlet-name>ws-lists-jaccard-index</servlet-name>
-        <url-pattern>/service/lists/jaccard-index/*</url-pattern>
+        <url-pattern>/lists/jaccard-index/*</url-pattern>
         <metadata>
             <name>Jaccard Index</name>
             <minVersion>30</minVersion>
@@ -715,7 +715,7 @@ attribute when using this service.
 
   <servlet-mapping>
     <servlet-name>ws-template-upload</servlet-name>
-    <url-pattern>/service/template/upload</url-pattern>
+    <url-pattern>/template/upload</url-pattern>
     <metadata>
       <name>Template Upload</name>
       <method type="POST" authenticationRequired="true" ALSO="GET">
@@ -747,7 +747,7 @@ attribute when using this service.
 
   <servlet-mapping>
     <servlet-name>ws-template-results</servlet-name>
-    <url-pattern>/service/template/results</url-pattern>
+    <url-pattern>/template/results</url-pattern>
     <metadata>
       <name>Template Results</name>
       <method type="GET" ALSO="POST" authenticationRequired="false">
@@ -847,7 +847,7 @@ for each editable constraint on the query. These are not required for optional c
 
   <servlet-mapping>
   <servlet-name>ws-template-to-list</servlet-name>
-  <url-pattern>/service/template/tolist/*</url-pattern>
+  <url-pattern>/template/tolist/*</url-pattern>
   <metadata>
       <name>Template to list</name>
       <method type="GET" ALSO="POST" authenticationRequired="true">
@@ -952,7 +952,7 @@ for each editable constraint on the query. These are not required for optional c
 
   <servlet-mapping>
     <servlet-name>ws-template-append</servlet-name>
-    <url-pattern>/service/template/append/tolist/*</url-pattern>
+    <url-pattern>/template/append/tolist/*</url-pattern>
     <metadata>
       <name>Append to List from Template Results</name>
       <minVersion>4</minVersion>
@@ -1057,7 +1057,7 @@ for each editable constraint on the query. These are not required for optional c
 
   <servlet-mapping>
     <servlet-name>ws-template</servlet-name>
-    <url-pattern>/service/templates</url-pattern>
+    <url-pattern>/templates</url-pattern>
     <metadata>
         <name>Templates</name>
         <method type="GET" authenticationRequired="false">
@@ -1111,7 +1111,7 @@ to will also be returned.
 
   <servlet-mapping>
     <servlet-name>ws-model</servlet-name>
-    <url-pattern>/service/model/*</url-pattern>
+    <url-pattern>/model/*</url-pattern>
     <metadata>
         <name>Data Model</name>
         <method type="GET" authenticationRequired="false">
@@ -1140,7 +1140,7 @@ to will also be returned.
 
   <servlet-mapping>
     <servlet-name>ws-version</servlet-name>
-    <url-pattern>/service/version/*</url-pattern>
+    <url-pattern>/version/*</url-pattern>
     <metadata>
         <name>Version</name>
         <method type="GET" authenticationRequired="false">
@@ -1192,7 +1192,7 @@ to will also be returned.
 
   <servlet-mapping>
     <servlet-name>ws-check-resource</servlet-name>
-    <url-pattern>/service/check/*</url-pattern>
+    <url-pattern>/check/*</url-pattern>
     <metadata>
         <deprecated/>
         <name>Check Resource</name>
@@ -1225,7 +1225,7 @@ to will also be returned.
 
   <servlet-mapping>
     <servlet-name>ws-possible-values</servlet-name>
-    <url-pattern>/service/path/values</url-pattern>
+    <url-pattern>/path/values</url-pattern>
     <metadata>
         <name>Possible Values</name>
         <minVersion>6</minVersion>
@@ -1258,7 +1258,7 @@ to will also be returned.
 
   <servlet-mapping>
     <servlet-name>ws-schemata</servlet-name>
-    <url-pattern>/service/schema/*</url-pattern>
+    <url-pattern>/schema/*</url-pattern>
     <metadata>
         <name>Schemata</name>
         <minVersion>6</minVersion>
@@ -1296,7 +1296,7 @@ to will also be returned.
 
   <servlet-mapping>
     <servlet-name>ws-summary-fields</servlet-name>
-    <url-pattern>/service/summaryfields</url-pattern>
+    <url-pattern>/summaryfields</url-pattern>
     <metadata>
         <name>Summary Fields</name>
         <minVersion>7</minVersion>
@@ -1321,7 +1321,7 @@ to will also be returned.
 
   <servlet-mapping>
     <servlet-name>ws-code-gen</servlet-name>
-    <url-pattern>/service/query/code</url-pattern>
+    <url-pattern>/query/code</url-pattern>
     <metadata>
         <name>Generated Code</name>
         <minVersion>7</minVersion>
@@ -1365,7 +1365,7 @@ to will also be returned.
 
   <servlet-mapping>
     <servlet-name>ws-list-tags</servlet-name>
-    <url-pattern>/service/list/tags/*</url-pattern>
+    <url-pattern>/list/tags/*</url-pattern>
     <metadata>
         <name>List Tags</name>
         <minVersion>7</minVersion>
@@ -1420,7 +1420,7 @@ to will also be returned.
 
   <servlet-mapping>
     <servlet-name>ws-available-widgets</servlet-name>
-    <url-pattern>/service/widgets/*</url-pattern>
+    <url-pattern>/widgets/*</url-pattern>
     <metadata>
         <name>Widgets</name>
         <minVersion>8</minVersion>
@@ -1461,7 +1461,7 @@ to will also be returned.
 
   <servlet-mapping>
     <servlet-name>ws-widgets</servlet-name>
-    <url-pattern>/service/list/enrichment/*</url-pattern>
+    <url-pattern>/list/enrichment/*</url-pattern>
     <metadata>
         <name>Enrichment Widgets</name>
         <minVersion>8</minVersion>
@@ -1524,7 +1524,7 @@ to will also be returned.
 
   <servlet-mapping>
     <servlet-name>ws-list-graphs</servlet-name>
-    <url-pattern>/service/list/chart/*</url-pattern>
+    <url-pattern>/list/chart/*</url-pattern>
     <!-- Custom extensions that allow us to automatically generate documentation -->
     <metadata>
         <name>Graphical Widgets</name>
@@ -1566,7 +1566,7 @@ to will also be returned.
 
   <servlet-mapping>
     <servlet-name>ws-list-table</servlet-name>
-    <url-pattern>/service/list/table/*</url-pattern>
+    <url-pattern>/list/table/*</url-pattern>
     <!-- Custom extensions that allow us to automatically generate documentation -->
     <metadata>
         <name>Table Widgets</name>
@@ -1603,7 +1603,7 @@ to will also be returned.
 
     <servlet-mapping>
         <servlet-name>ws-facet-search</servlet-name>
-        <url-pattern>/service/facets</url-pattern>
+        <url-pattern>/facets</url-pattern>
         <!-- Custom extensions that allow us to automatically generate documentation -->
         <metadata>
             <name>FacetSearch</name>
@@ -1634,7 +1634,7 @@ to will also be returned.
 
     <servlet-mapping>
         <servlet-name>ws-facet-list</servlet-name>
-        <url-pattern>/service/facet-list</url-pattern>
+        <url-pattern>/facet-list</url-pattern>
         <!-- Custom extensions that allow us to automatically generate documentation -->
         <metadata>
             <name>FacetList</name>
@@ -1662,7 +1662,7 @@ to will also be returned.
 
   <servlet-mapping>
     <servlet-name>ws-quick-search</servlet-name>
-    <url-pattern>/service/search</url-pattern>
+    <url-pattern>/search</url-pattern>
     <!-- Custom extensions that allow us to automatically generate documentation -->
     <metadata>
         <name>QuickSearch</name>
@@ -1701,7 +1701,7 @@ to will also be returned.
 
   <servlet-mapping>
     <servlet-name>ws-whoami</servlet-name>
-    <url-pattern>/service/user/whoami</url-pattern>
+    <url-pattern>/user/whoami</url-pattern>
     <!-- Custom extensions that allow us to automatically generate documentation -->
     <metadata>
         <name>Who-Am-I?</name>
@@ -1730,7 +1730,7 @@ to will also be returned.
 
   <servlet-mapping>
     <servlet-name>ws-24hr-token</servlet-name>
-    <url-pattern>/service/user/token</url-pattern>
+    <url-pattern>/user/token</url-pattern>
     <!-- Custom extensions that allow us to automatically generate documentation -->
     <metadata>
         <name>Token</name>
@@ -1770,7 +1770,7 @@ to will also be returned.
 
   <servlet-mapping>
     <servlet-name>ws-new-user</servlet-name>
-    <url-pattern>/service/users</url-pattern>
+    <url-pattern>/users</url-pattern>
     <!-- Custom extensions that allow us to automatically generate documentation -->
     <metadata>
       <name>Users</name>
@@ -1805,7 +1805,7 @@ to will also be returned.
 
   <servlet-mapping>
     <servlet-name>ws-classkeys</servlet-name>
-    <url-pattern>/service/classkeys/*</url-pattern>
+    <url-pattern>/classkeys/*</url-pattern>
     <metadata>
         <name>Key Fields</name>
         <minVersion>9</minVersion>
@@ -1831,7 +1831,7 @@ to will also be returned.
 
    <servlet-mapping>
      <servlet-name>ws-id-resolver</servlet-name>
-     <url-pattern>/service/ids/*</url-pattern>
+     <url-pattern>/ids/*</url-pattern>
       <metadata>
         <name>ID Resolution</name>
         <minVersion>10</minVersion>
@@ -1921,7 +1921,7 @@ following [json-schema](http://json-schema.org/) schema:
 
    <servlet-mapping>
      <servlet-name>ws-list-invitations</servlet-name>
-     <url-pattern>/service/lists/invitations/*</url-pattern>
+     <url-pattern>/lists/invitations/*</url-pattern>
      <metadata>
        <name>List Invitations</name>
        <minVersion>11</minVersion>
@@ -1998,7 +1998,7 @@ following [json-schema](http://json-schema.org/) schema:
 
    <servlet-mapping>
      <servlet-name>ws-list-shares</servlet-name>
-     <url-pattern>/service/lists/shares/*</url-pattern>
+     <url-pattern>/lists/shares/*</url-pattern>
      <metadata>
        <name>List Sharing</name>
        <minVersion>11</minVersion>
@@ -2075,7 +2075,7 @@ following [json-schema](http://json-schema.org/) schema:
 
    <servlet-mapping>
      <servlet-name>ws-user-preferences</servlet-name>
-     <url-pattern>/service/user/preferences/*</url-pattern>
+     <url-pattern>/user/preferences/*</url-pattern>
      <metadata>
        <name>User Preferences</name>
        <minVersion>11</minVersion>
@@ -2139,7 +2139,7 @@ following [json-schema](http://json-schema.org/) schema:
 
   <servlet-mapping>
     <servlet-name>ws-query-store</servlet-name>
-    <url-pattern>/service/queries/*</url-pattern>
+    <url-pattern>/queries/*</url-pattern>
     <metadata>
         <name>Query Store</name>
         <minVersion>12</minVersion>
@@ -2181,7 +2181,7 @@ following [json-schema](http://json-schema.org/) schema:
 
   <servlet-mapping>
      <servlet-name>ws-sequence</servlet-name>
-     <url-pattern>/service/sequence/*</url-pattern>
+     <url-pattern>/sequence/*</url-pattern>
      <metadata>
         <name>Sequence Access</name>
         <minVersion>13</minVersion>
@@ -2233,7 +2233,7 @@ query could be used:
 
    <servlet-mapping>
     <servlet-name>ws-jbrowse</servlet-name>
-    <url-pattern>/service/jbrowse/*</url-pattern>
+    <url-pattern>/jbrowse/*</url-pattern>
     <metadata>
         <name>JBrowse Endpoint</name>
         <minVersion>16</minVersion>
@@ -2422,7 +2422,7 @@ query could be used:
 
    <servlet-mapping>
     <servlet-name>ws-jbrowse-names</servlet-name>
-    <url-pattern>/service/jbrowse/names/*</url-pattern>
+    <url-pattern>/jbrowse/names/*</url-pattern>
     <metadata>
         <name>JBrowse Name Lookup</name>
         <minVersion>16</minVersion>
@@ -2484,7 +2484,7 @@ query could be used:
 
    <servlet-mapping>
     <servlet-name>ws-deregistration-token</servlet-name>
-    <url-pattern>/service/user/deregistration/*</url-pattern>
+    <url-pattern>/user/deregistration/*</url-pattern>
     <metadata>
         <name>Deregistration Tokens</name>
         <minVersion>16</minVersion>
@@ -2545,7 +2545,7 @@ query could be used:
 
    <servlet-mapping>
      <servlet-name>ws-user</servlet-name>
-     <url-pattern>/service/user</url-pattern>
+     <url-pattern>/user</url-pattern>
      <metadata>
          <name>User</name>
          <minVersion>16</minVersion>
@@ -2601,7 +2601,7 @@ query could be used:
 
    <servlet-mapping>
      <servlet-name>ws-perma-tokens</servlet-name>
-     <url-pattern>/service/user/tokens</url-pattern>
+     <url-pattern>/user/tokens</url-pattern>
      <metadata>
          <name>Tokens</name>
          <minVersion>16</minVersion>
@@ -2678,7 +2678,7 @@ The different token types are:
 
    <servlet-mapping>
      <servlet-name>ws-perma-token</servlet-name>
-     <url-pattern>/service/user/tokens/*</url-pattern>
+     <url-pattern>/user/tokens/*</url-pattern>
      <metadata>
          <name>Permanent Token</name>
          <minVersion>16</minVersion>
@@ -2732,7 +2732,7 @@ The different token types are:
 
   <servlet-mapping>
      <servlet-name>ws-branding</servlet-name>
-     <url-pattern>/service/branding</url-pattern>
+     <url-pattern>/branding</url-pattern>
      <metadata>
          <name>Branding</name>
          <minVersion>16</minVersion>
@@ -2772,7 +2772,7 @@ The different token types are:
 
   <servlet-mapping>
      <servlet-name>ws-saved-queries</servlet-name>
-     <url-pattern>/service/user/queries</url-pattern>
+     <url-pattern>/user/queries</url-pattern>
      <metadata>
          <name>Saved Queries</name>
          <minVersion>16</minVersion>
@@ -2874,7 +2874,7 @@ The different token types are:
 
   <servlet-mapping>
      <servlet-name>ws-saved-query</servlet-name>
-     <url-pattern>/service/user/queries/*</url-pattern>
+     <url-pattern>/user/queries/*</url-pattern>
      <metadata>
          <name>Saved Query</name>
          <minVersion>16</minVersion>
@@ -2916,7 +2916,7 @@ The different token types are:
 
   <servlet-mapping>
      <servlet-name>ws-saved-template</servlet-name>
-     <url-pattern>/service/templates/*</url-pattern>
+     <url-pattern>/templates/*</url-pattern>
      <metadata>
          <name>Saved Template</name>
          <minVersion>16</minVersion>
@@ -2972,7 +2972,7 @@ The different token types are:
 
   <servlet-mapping>
      <servlet-name>ws-session</servlet-name>
-     <url-pattern>/service/session</url-pattern>
+     <url-pattern>/session</url-pattern>
      <metadata>
          <name>Sessions</name>
          <minVersion>16</minVersion>
@@ -3002,7 +3002,7 @@ The different token types are:
 
   <servlet-mapping>
       <servlet-name>ws-data</servlet-name>
-      <url-pattern>/service/data/*</url-pattern>
+      <url-pattern>/data/*</url-pattern>
       <metadata>
           <name>JBrowse Simple Data Service</name>
           <minVersion>16</minVersion>
@@ -3047,7 +3047,7 @@ The different token types are:
 
    <servlet-mapping>
     <servlet-name>ws-jbrowse-config</servlet-name>
-    <url-pattern>/service/jbrowse/config/*</url-pattern>
+    <url-pattern>/jbrowse/config/*</url-pattern>
     <metadata>
         <name>JBrowse Configuration Files</name>
         <minVersion>17</minVersion>
@@ -3106,7 +3106,7 @@ The different token types are:
 
    <servlet-mapping>
     <servlet-name>ws-complexes-export</servlet-name>
-    <url-pattern>/service/complexes/export/*</url-pattern>
+    <url-pattern>/complexes/export/*</url-pattern>
     <metadata>
         <name>Complex Interaction Lookup</name>
         <minVersion>18</minVersion>
@@ -3142,7 +3142,7 @@ The different token types are:
 
   <servlet-mapping>
     <servlet-name>ws-web-properties</servlet-name>
-    <url-pattern>/service/web-properties/*</url-pattern>
+    <url-pattern>/web-properties/*</url-pattern>
     <metadata>
         <name>Web properties</name>
         <method type="GET" authenticationRequired="false">
@@ -3171,7 +3171,7 @@ The different token types are:
 
  <servlet-mapping>
         <servlet-name>ws-system-template</servlet-name>
-        <url-pattern>/service/templates/system</url-pattern>
+        <url-pattern>/templates/system</url-pattern>
         <metadata>
             <name>Templates (System)</name>
             <method type="GET" authenticationRequired="false">
@@ -3213,7 +3213,7 @@ The different token types are:
 
     <servlet-mapping>
         <servlet-name>ws-template-tags</servlet-name>
-        <url-pattern>/service/template/tags/*</url-pattern>
+        <url-pattern>/template/tags/*</url-pattern>
         <metadata>
             <name>Template Tags</name>
             <minVersion>7</minVersion>
@@ -3267,7 +3267,7 @@ The different token types are:
 
   <servlet-mapping>
     <servlet-name>ws-datacatalog-markup</servlet-name>
-    <url-pattern>/service/semantic-markup/datacatalog</url-pattern>
+    <url-pattern>/semantic-markup/datacatalog</url-pattern>
     <metadata>
         <name>Semantic Markup</name>
         <minVersion>29</minVersion>
@@ -3294,7 +3294,7 @@ The different token types are:
 
   <servlet-mapping>
     <servlet-name>ws-dataset-markup</servlet-name>
-    <url-pattern>/service/semantic-markup/dataset</url-pattern>
+    <url-pattern>/semantic-markup/dataset</url-pattern>
     <metadata>
         <name>Semantic Markup</name>
         <minVersion>29</minVersion>
@@ -3333,7 +3333,7 @@ The different token types are:
 
   <servlet-mapping>
     <servlet-name>ws-bioentity-markup</servlet-name>
-    <url-pattern>/service/semantic-markup/bioentity</url-pattern>
+    <url-pattern>/semantic-markup/bioentity</url-pattern>
     <metadata>
         <name>Semantic Markup</name>
         <minVersion>29</minVersion>
@@ -3368,7 +3368,7 @@ The different token types are:
 
   <servlet-mapping>
     <servlet-name>ws-permanent-url</servlet-name>
-    <url-pattern>/service/permanent-url</url-pattern>
+    <url-pattern>/permanent-url</url-pattern>
     <metadata>
         <name>Permanent URL</name>
         <minVersion>29</minVersion>
@@ -3395,7 +3395,7 @@ The different token types are:
   <!-- MUST BE LISTED LAST OF ALL WEBSERVICES AS IT IS THE MOST GENERAL -->
   <servlet-mapping>
     <servlet-name>ws-service-listing</servlet-name>
-    <url-pattern>/service</url-pattern>
+    <url-pattern></url-pattern>
     <metadata>
       <name>Service Listing</name>
       <method type="GET" authenticationRequired="false">
@@ -3445,7 +3445,7 @@ The different token types are:
 
   <filter-mapping>
       <filter-name>SessionlessRequests</filter-name>
-      <url-pattern>/service/*</url-pattern>
+      <url-pattern>/*</url-pattern>
   </filter-mapping>
 
   <filter>
@@ -3471,7 +3471,7 @@ The different token types are:
 
   <filter-mapping>
     <filter-name>AllowCORSWebServiceRequests</filter-name>
-    <url-pattern>/service/*</url-pattern>
+    <url-pattern>/*</url-pattern>
   </filter-mapping>
 
   <filter>
