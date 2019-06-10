@@ -10,13 +10,13 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 /**
- * VersionRelease
+ * Model
  */
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-05-26T23:19:30.817+05:30[Asia/Kolkata]")
-public class VersionRelease   {
-  @JsonProperty("version")
-  private String version = null;
+public class Model   {
+  @JsonProperty("model")
+  private Object model = null;
 
   @JsonProperty("executionTime")
   private String executionTime = null;
@@ -30,26 +30,26 @@ public class VersionRelease   {
   @JsonProperty("statusCode")
   private Integer statusCode = null;
 
-  public VersionRelease version(String version) {
-    this.version = version;
+  public Model model(Object model) {
+    this.model = model;
     return this;
   }
 
   /**
-   * Get version
-   * @return version
+   * Get model
+   * @return model
   **/
   @ApiModelProperty(value = "")
 
-  public String getVersion() {
-    return version;
+  public Object getModel() {
+    return model;
   }
 
-  public void setVersion(String version) {
-    this.version = version;
+  public void setModel(Object model) {
+    this.model = model;
   }
 
-  public VersionRelease executionTime(String executionTime) {
+  public Model executionTime(String executionTime) {
     this.executionTime = executionTime;
     return this;
   }
@@ -68,7 +68,7 @@ public class VersionRelease   {
     this.executionTime = executionTime;
   }
 
-  public VersionRelease wasSuccessful(Boolean wasSuccessful) {
+  public Model wasSuccessful(Boolean wasSuccessful) {
     this.wasSuccessful = wasSuccessful;
     return this;
   }
@@ -87,7 +87,7 @@ public class VersionRelease   {
     this.wasSuccessful = wasSuccessful;
   }
 
-  public VersionRelease error(String error) {
+  public Model error(String error) {
     this.error = error;
     return this;
   }
@@ -106,7 +106,7 @@ public class VersionRelease   {
     this.error = error;
   }
 
-  public VersionRelease statusCode(Integer statusCode) {
+  public Model statusCode(Integer statusCode) {
     this.statusCode = statusCode;
     return this;
   }
@@ -134,25 +134,25 @@ public class VersionRelease   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    VersionRelease versionRelease = (VersionRelease) o;
-    return Objects.equals(this.version, versionRelease.version) &&
-        Objects.equals(this.executionTime, versionRelease.executionTime) &&
-        Objects.equals(this.wasSuccessful, versionRelease.wasSuccessful) &&
-        Objects.equals(this.error, versionRelease.error) &&
-        Objects.equals(this.statusCode, versionRelease.statusCode);
+    Model model = (Model) o;
+    return Objects.equals(this.model, model.model) &&
+        Objects.equals(this.executionTime, model.executionTime) &&
+        Objects.equals(this.wasSuccessful, model.wasSuccessful) &&
+        Objects.equals(this.error, model.error) &&
+        Objects.equals(this.statusCode, model.statusCode);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(version, executionTime, wasSuccessful, error, statusCode);
+    return Objects.hash(model, executionTime, wasSuccessful, error, statusCode);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class VersionRelease {\n");
+    sb.append("class Model {\n");
     
-    sb.append("    version: ").append(toIndentedString(version)).append("\n");
+    sb.append("    model: ").append(toIndentedString(model)).append("\n");
     sb.append("    executionTime: ").append(toIndentedString(executionTime)).append("\n");
     sb.append("    wasSuccessful: ").append(toIndentedString(wasSuccessful)).append("\n");
     sb.append("    error: ").append(toIndentedString(error)).append("\n");

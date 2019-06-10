@@ -1,7 +1,6 @@
 package org.intermine.webservicesspring.api;
 
-import org.intermine.webservicesspring.model.Version;
-import org.intermine.webservicesspring.model.VersionRelease;
+import org.intermine.webservicesspring.model.Summaryfields;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
@@ -24,33 +23,23 @@ import java.util.List;
 import java.util.Map;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-05-26T23:19:30.817+05:30[Asia/Kolkata]")
 @Controller
-public class VersionApiController implements VersionApi {
+public class SummaryfieldsApiController implements SummaryfieldsApi {
 
-    private static final Logger log = LoggerFactory.getLogger(VersionApiController.class);
+    private static final Logger log = LoggerFactory.getLogger(SummaryfieldsApiController.class);
 
     private final ObjectMapper objectMapper;
 
     private final HttpServletRequest request;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public VersionApiController(ObjectMapper objectMapper, HttpServletRequest request) {
+    public SummaryfieldsApiController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.request = request;
     }
 
-    public ResponseEntity<Version> version(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false) String format) {
+    public ResponseEntity<Summaryfields> summaryfields(@ApiParam(value = "Whether to exclude references from the summary fields") @Valid @RequestParam(value = "norefs", required = false) Boolean norefs) {
         String accept = request.getHeader("Accept");
-        return new ResponseEntity<Version>(HttpStatus.NOT_IMPLEMENTED);
-    }
-
-    public ResponseEntity<VersionRelease> versionIntermine(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false) String format) {
-        String accept = request.getHeader("Accept");
-        return new ResponseEntity<VersionRelease>(HttpStatus.NOT_IMPLEMENTED);
-    }
-
-    public ResponseEntity<VersionRelease> versionRelease(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false) String format) {
-        String accept = request.getHeader("Accept");
-        return new ResponseEntity<VersionRelease>(HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<Summaryfields>(HttpStatus.NOT_IMPLEMENTED);
     }
 
 }
