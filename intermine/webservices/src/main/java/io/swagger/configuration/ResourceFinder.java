@@ -1,4 +1,4 @@
-package org.intermine.web;
+package io.swagger.configuration;
 
 /*
  * Copyright (C) 2002-2019 FlyMine
@@ -10,18 +10,16 @@ package org.intermine.web;
  *
  */
 
+import org.intermine.web.logic.ResourceOpener;
+
+import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-
-import javax.servlet.ServletContext;
-
-import org.intermine.web.logic.ResourceOpener;
-
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A class for finding resources in the WEB-INF directory at run-time based on patterns.

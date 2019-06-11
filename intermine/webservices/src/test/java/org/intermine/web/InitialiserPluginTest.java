@@ -9,7 +9,7 @@ package org.intermine.web;
  * information or http://www.gnu.org/copyleft/lesser.html.
  *
  */
-
+/*
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -39,13 +39,12 @@ import org.intermine.objectstore.query.QueryField;
 import org.intermine.objectstore.query.QueryValue;
 import org.intermine.objectstore.query.SimpleConstraint;
 import org.intermine.objectstore.query.SingletonResults;
-import org.intermine.web.InitialiserPlugin;
-
+*/
 /**
  *
  * @author Kim Rutherford
  */
-public class InitialiserPluginTest extends TestCase
+/*public class InitialiserPluginTest extends TestCase
 {
     private Profile bobProfile;
     private ProfileManager pm;
@@ -163,3 +162,4 @@ public class InitialiserPluginTest extends TestCase
         assertEquals(bobsTagsClasses + 3, tags.size());
     }
 }
+*/

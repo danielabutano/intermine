@@ -39,7 +39,12 @@ dependencies {
     testCompile project(':intermine-webcore').sourceSets.test.output
 }
 
-
+configurations {
+    providedRuntime
+    all*.exclude module : 'spring-boot-starter-logging'
+    providedRuntime
+    compile.exclude group:'ch.qos.logback'
+}
 task classesJar(type: Jar) {
     classifier = 'classes'
     from sourceSets.main.output
