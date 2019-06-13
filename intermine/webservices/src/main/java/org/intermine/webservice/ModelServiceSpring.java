@@ -1,28 +1,4 @@
-package org.intermine.webservice.server.model;
-
-/*
- * Copyright (C) 2002-2019 FlyMine
- *
- * This code may be freely distributed and modified under the
- * terms of the GNU Lesser General Public Licence.  This should
- * be distributed with the code.  See the LICENSE file for more
- * information or http://www.gnu.org/copyleft/lesser.html.
- *
- */
-
-import java.util.Date;
-import java.util.Calendar;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+package org.intermine.webservice;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -30,11 +6,7 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.Profile;
 import org.intermine.api.profile.TagManager;
 import org.intermine.api.tag.TagTypes;
-import org.intermine.metadata.AttributeDescriptor;
-import org.intermine.metadata.ClassDescriptor;
-import org.intermine.metadata.FieldDescriptor;
-import org.intermine.metadata.Model;
-import org.intermine.metadata.StringUtil;
+import org.intermine.metadata.*;
 import org.intermine.objectstore.ObjectStoreSummary;
 import org.intermine.pathquery.Path;
 import org.intermine.pathquery.PathException;
@@ -43,32 +15,32 @@ import org.intermine.web.logic.WebCoreUtil;
 import org.intermine.web.logic.config.FieldConfig;
 import org.intermine.web.logic.config.FieldConfigHelper;
 import org.intermine.web.logic.config.WebConfig;
-import org.intermine.webservice.WebServiceSpring;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
 import org.intermine.webservice.server.exceptions.ServiceException;
 import org.intermine.webservice.server.output.JSONFormatter;
 import org.intermine.webservice.util.ResponseUtilSpring;
+import org.intermine.webservice.model.Model;
+import org.springframework.stereotype.Service;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
-/**
- * Web service that returns a serialised representation of the data model. The currently
- * supported formats are JSON and XML.
- *
- * @author Jakub Kulaviak
- * @author Alex Kalderimis
- */
-public class ModelService extends WebServiceSpring
-{
+@Service
+public class ModelServiceSpring extends WebServiceSpring {
 
-    public org.intermine.webservice.model.Model getResponseModel() {
+
+    public Model getResponseModel() {
         return responseModel;
     }
 
-    private org.intermine.webservice.model.Model responseModel;
+    private Model responseModel;
+
     private static final String DEFAULT_CALLBACK = "parseModel";
-    private static final Logger LOG = Logger.getLogger(ModelService.class);
+    private static final Logger LOG = Logger.getLogger(ModelServiceSpring.class);
     private static final String FILE_BASE_NAME = "model";
     private WebConfig config = null;
     private Path node = null;
@@ -77,11 +49,12 @@ public class ModelService extends WebServiceSpring
      * Constructor.
      * @param im The API settings bundle
      */
-    public ModelService(InterMineAPI im) {
+    public ModelServiceSpring(InterMineAPI im) {
         super(im);
         config = InterMineContext.getWebConfig();
-        responseModel = new org.intermine.webservice.model.Model();
+        responseModel = new Model();
     }
+
 
     @Override
     protected Format getDefaultFormat() {
@@ -120,12 +93,13 @@ public class ModelService extends WebServiceSpring
         return format == Format.XML || format == Format.JSON;
     }
 
+
     /**
      * {@inheritDoc}}
      */
     @Override
     protected void execute() {
-        final Model model = this.im.getModel();
+        final org.intermine.metadata.Model model = this.im.getModel();
         if (formatIsJSON()) {
             ResponseUtilSpring.setJSONHeader(responseHeaders, FILE_BASE_NAME + ".json", formatIsJSONP());
             if (formatIsJSONP()) {
@@ -154,10 +128,10 @@ public class ModelService extends WebServiceSpring
         }
     }
 
-    private Map<String, Object> getAnnotatedModel(Model model) {
+    private Map<String, Object> getAnnotatedModel(org.intermine.metadata.Model model) {
         TagManager tm = im.getTagManager();
         ObjectStoreSummary oss = im.getObjectStoreSummary();
-        Model.ModelAST modelData = model.toJsonAST();
+        org.intermine.metadata.Model.ModelAST modelData = model.toJsonAST();
         Map<String, Map<String, Object>> classes = modelData.getClasses();
         Profile p = getPermission().getProfile();
         String userName = p.getUsername();
@@ -191,8 +165,8 @@ public class ModelService extends WebServiceSpring
                 // Get the Attributes for this class.
                 Object allAttributes = classData.get("attributes");
                 Map<String, Object> attributes = (HashMap<String, Object>) allAttributes;
-                Iterator<Entry<String, Object>> attributesIterator
-                    = attributes.entrySet().iterator();
+                Iterator<Map.Entry<String, Object>> attributesIterator
+                        = attributes.entrySet().iterator();
                 while (attributesIterator.hasNext()) {
                     Map.Entry<String, Object> entry = attributesIterator.next();
                     Map<String, Object> attribute = (HashMap<String, Object>) entry.getValue();
@@ -206,7 +180,7 @@ public class ModelService extends WebServiceSpring
                 // Get the refs for this class.
                 Object allReferences = classData.get("references");
                 Map<String, Object> refs = (HashMap<String, Object>) allReferences;
-                Iterator<Entry<String, Object>> refIterator = refs.entrySet().iterator();
+                Iterator<Map.Entry<String, Object>> refIterator = refs.entrySet().iterator();
                 while (refIterator.hasNext()) {
                     Map.Entry<String, Object> entry = refIterator.next();
                     Map<String, Object> ref = (HashMap<String, Object>) entry.getValue();
@@ -219,7 +193,7 @@ public class ModelService extends WebServiceSpring
                 // Get the collections for this class.
                 Object allCollections = classData.get("collections");
                 Map<String, Object> collections = (HashMap<String, Object>) allCollections;
-                Iterator<Entry<String, Object>> collIterator = collections.entrySet().iterator();
+                Iterator<Map.Entry<String, Object>> collIterator = collections.entrySet().iterator();
                 while (collIterator.hasNext()) {
                     Map.Entry<String, Object> entry = collIterator.next();
                     Map<String, Object> collection = (HashMap<String, Object>) entry.getValue();

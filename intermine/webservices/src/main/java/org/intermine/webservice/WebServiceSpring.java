@@ -1,0 +1,620 @@
+package org.intermine.webservice;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.intermine.api.InterMineAPI;
+import org.intermine.api.profile.Profile;
+import org.intermine.api.profile.ProfileManager;
+import org.intermine.api.util.AnonProfile;
+import org.intermine.util.PropertiesUtil;
+import org.intermine.web.context.InterMineContext;
+import org.intermine.web.logic.export.ResponseUtil;
+import org.intermine.web.logic.profile.PermissionHandler;
+import org.intermine.web.security.KeyStorePublicKeySource;
+import org.intermine.web.security.PublicKeySource;
+import org.intermine.webservice.server.*;
+import org.intermine.webservice.server.exceptions.NotAcceptableException;
+import org.intermine.webservice.server.exceptions.ServiceException;
+import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
+import org.intermine.webservice.server.exceptions.UnauthorizedException;
+import org.intermine.webservice.server.output.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+@Service
+public class WebServiceSpring {
+
+    /** Default jsonp callback **/
+    public static final String DEFAULT_CALLBACK = "callback";
+
+    private static final Logger LOG = Logger.getLogger(WebServiceSpring.class);
+    private static final String AUTHENTICATION_FIELD_NAME = "Authorization";
+    private static final String AUTH_TOKEN_PARAM_KEY = "token";
+    private static final Profile ANON_PROFILE = new AnonProfile();
+
+    protected String errorMessage = null;
+    protected int status = HttpStatus.OK.value();
+
+    /**
+     * Constants for property keys in global property configuration.
+     */
+    private static final String WS_HEADERS_PREFIX = "ws.response.header";
+    private static final String BOTS = "ws.robots";
+    private static final String WEB_SERVICE_DISABLED_PROPERTY = "webservice.disabled";
+
+
+    /**
+     * The servlet request.
+     */
+    protected HttpServletRequest request;
+
+    protected HttpServletResponse response;
+
+    public HttpHeaders getResponseHeaders() {
+        return responseHeaders;
+    }
+
+    protected HttpHeaders responseHeaders;
+
+    public HttpStatus getHttpStatus() {
+        return httpStatus;
+    }
+
+    protected HttpStatus httpStatus;
+
+
+    /**
+     * The configuration object.
+     */
+    protected final InterMineAPI im;
+
+    /** The properties this mine was configured with **/
+    protected final Properties webProperties = InterMineContext.getWebProperties();
+    private ProfileManager.ApiPermission permission = ProfileManager.getDefaultPermission(ANON_PROFILE);
+    private boolean initialised = false;
+    private String propertyNameSpace = null;
+
+    /**
+     * Construct the web service with the InterMine API object that gives access
+     * to the core InterMine functionality.
+     *
+     * @param im
+     *            the InterMine application
+     */
+    public WebServiceSpring(InterMineAPI im) {
+        this.im = im;
+        responseHeaders = new HttpHeaders();
+    }
+
+    /**
+     * Get a configuration property by name.
+     *
+     * @param name
+     *            The name of the property to retrieve.
+     * @return A configuration value.
+     */
+    protected String getProperty(String name) {
+        if (StringUtils.contains(name, '.')) {
+            return webProperties.getProperty(name);
+        }
+        return webProperties.getProperty(propertyNameSpace == null ? name
+                : propertyNameSpace + "." + name);
+    }
+
+    /**
+     * Starting method of web service. The web service should be run like
+     *
+     * <pre>
+     * new ListsService().service(request, response);
+     * </pre>
+     *
+     * Ensures initialisation of web service and makes steps common for all web
+     * services and after that executes the <tt>execute</tt> method, for which
+     * each subclass must provide an implementation.
+     *
+     * @param request
+     *            The request, as received by the servlet.
+     */
+    public void service(HttpServletRequest request, HttpServletResponse response) {
+        this.request = request;
+        this.response = response;
+        try {
+            if (agentIsRobot()) {
+                response.sendError(HttpStatus.FORBIDDEN.value());
+            } else {
+                setHeaders();
+                initState();
+                checkEnabled();
+                authenticate();
+                initialised = true;
+                execute();
+            }
+        } catch (Throwable t) {
+            sendError(t,response);
+        }
+
+    }
+
+    private boolean agentIsRobot() {
+        String ua = request.getHeader("User-Agent");
+        if (ua != null) {
+            ua = ua.toLowerCase();
+            String[] robots = StringUtils.split(
+                    webProperties.getProperty(BOTS, ""), ',');
+            for (String bot : robots) {
+                if (ua.contains(bot.trim())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void setHeaders() {
+        Properties headerProps = PropertiesUtil.getPropertiesStartingWith(
+                WS_HEADERS_PREFIX, webProperties);
+
+
+        for (Object o : headerProps.values()) {
+            String h = o.toString();
+            String[] parts = StringUtils.split(h, ":", 2);
+            if (parts.length != 2) {
+                LOG.warn("Ignoring invalid response header: " + h);
+            } else {
+                responseHeaders.set(parts[0].trim(), parts[1].trim());
+            }
+        }
+
+        String origin = request.getHeader("Origin");
+        if (StringUtils.isNotBlank(origin)) {
+            responseHeaders.set("Access-Control-Allow-Origin", origin);
+        }
+
+    }
+
+    /**
+     * Subclasses can put initialisation here.
+     */
+    protected void initState() {
+        // No-op stub
+    }
+
+
+    /**
+     * @return Whether or not the requested result format is one of our JSON
+     *         formats.
+     */
+    protected final boolean formatIsJSON() {
+        return Format.JSON_FORMATS.contains(getFormat());
+    }
+
+    /**
+     * @return Whether or not the format is a JSON-P format
+     */
+    protected final boolean formatIsJSONP() {
+        if (isJsonP == null) {
+            isJsonP = WebServiceRequestParser.isJsonP(request);
+        }
+        return isJsonP;
+    }
+
+    /**
+     * @return Whether or not the format is a flat-file format
+     */
+    protected final boolean formatIsFlatFile() {
+        return Format.FLAT_FILES.contains(getFormat());
+    }
+
+    /**
+     * @return Whether or not the format is XML.
+     */
+    public boolean formatIsXML() {
+        return (getFormat() == Format.XML);
+    }
+
+
+    /**
+     * @return The default file name for this service. (default = "result.tsv")
+     */
+    protected String getDefaultFileName() {
+        return "result";
+    }
+
+
+    /**
+     * @return The default format constant for this service.
+     */
+    protected Format getDefaultFormat() {
+        return Format.EMPTY;
+    }
+
+
+    private Format format = null;
+    private Boolean isJsonP = null;
+
+    /**
+     * Returns required output format.
+     *
+     * Cannot be overridden.
+     *
+     * @return format
+     */
+    public final Format getFormat() {
+        if (format == null) {
+            List<Format> askedFor = WebServiceRequestParser.getAcceptableFormats(request);
+            if (askedFor.isEmpty()) {
+                format = getDefaultFormat();
+            } else {
+                for (Format acceptable: askedFor) {
+                    if (Format.DEFAULT == acceptable) {
+                        format = getDefaultFormat();
+                        break;
+                    }
+                    // Serve the first acceptable format.
+                    if (canServe(acceptable)) {
+                        format = acceptable;
+                        break;
+                    }
+                }
+                // Nothing --> NotAcceptable
+                if (format == null) {
+                    throw new NotAcceptableException();
+                }
+                // But empty --> default
+                if (format == Format.EMPTY) {
+                    format = getDefaultFormat();
+                }
+            }
+        }
+
+        return format;
+    }
+
+    /**
+     * For very picky services, you can just set it yourself, and say "s****w you requester".
+     *
+     * Use this with caution, and fall-back to getFormat(). Please.
+     *
+     * @param format The format you have decided this request really wants.
+     */
+    protected void setFormat(Format format) {
+        this.format = format;
+    }
+
+    /**
+     * Get the value of the callback parameter.
+     *
+     * @return The value, or null if this request type does not support this.
+     */
+    public String getCallback() {
+        if (formatIsJSONP()) {
+            return getOptionalParameter(
+                    WebServiceRequestParser.CALLBACK_PARAMETER,
+                    DEFAULT_CALLBACK);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Check whether the format is acceptable.
+     *
+     * By default returns true. Services with a particular set of accepted
+     * formats should override this and check.
+     * @param format The format to check.
+     * @return whether or not this format is acceptable.
+     */
+    protected boolean canServe(Format format) {
+        return format == getDefaultFormat();
+    }
+
+    private void checkEnabled() {
+        if ("true".equalsIgnoreCase(webProperties
+                .getProperty(WEB_SERVICE_DISABLED_PROPERTY))) {
+            throw new ServiceForbiddenException("Web service is disabled.");
+        }
+    }
+    private JWTVerifier.Verification getIdentityFromBearerToken(final String rawString) {
+        JWTVerifier verifier;
+        PublicKeySource keys;
+
+        try {
+            keys = new KeyStorePublicKeySource(InterMineContext.getKeyStore());
+        } catch (KeyStoreException e) {
+            throw new ServiceException("Failed to load key store.", e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new ServiceException("Key store incorrectly configured", e);
+        } catch (CertificateException e) {
+            throw new ServiceException("Key store incorrectly configured", e);
+        } catch (IOException e) {
+            throw new ServiceException("Failed to load key store.", e);
+        }
+        try {
+            verifier = new JWTVerifier(keys, webProperties);
+            return verifier.verify(rawString);
+        } catch (JWTVerifier.VerificationError e) {
+            throw new UnauthorizedException(e.getMessage());
+        }
+    }
+
+    private String getIdentityAssertion() {
+        String header = webProperties.getProperty("authentication.identity.assertion.header");
+
+        if (StringUtils.isNotBlank(header)) {
+            return request.getHeader(header);
+        }
+        return null;
+    }
+
+    /**
+     * Return the permission object representing the authorisation state of the
+     * request. This is guaranteed to not be null.
+     *
+     * @return A permission object, from which a service may inspect the level
+     *         of authorisation, and retrieve details about whom the request is
+     *         authorised for.
+     */
+    protected ProfileManager.ApiPermission getPermission() {
+        if (permission == null) {
+            throw new IllegalStateException(
+                    "There should always be a valid permission object");
+        }
+        return permission;
+    }
+
+    /**
+     * Get a parameter this service deems to be optional, or the default value.
+     *
+     * @param name
+     *            The name of the parameter.
+     * @param defaultValue
+     *            The default value.
+     * @return The value provided, if there is a non-blank one, or the default
+     *         value.
+     */
+    protected String getOptionalParameter(String name, String defaultValue) {
+        String value = request.getParameter(name);
+        if (StringUtils.isBlank(value)) {
+            return defaultValue;
+        }
+        return value;
+    }
+
+    /**
+     * This method is responsible for setting the Permission for the current
+     * request. It can be derived in a number of ways:
+     *
+     * <ul>
+     *   <li>
+     *     <h4>Basic Authentication</h3>
+     *     Standard username and password stuff - best avoided.
+     *   </li>
+     *   <li>
+     *     <h4>Token authentication</h4>
+     *     User passes back an opaque token which has no meaning outside of this
+     *     application. Recommended. The token can be either passed as the value of the
+     *     <code>token</code> query parameter, or provided in the
+     *     <code>Authorization</code> header with the string <code>"Token "</code>
+     *     preceding it, i.e.:
+     *     <code>Authorization: Token somelongtokenstring</code>
+     *   </li>
+     *   <li>
+     *     <h4>JWT bearer tokens</h4>
+     *     The user passes back a bearer token issued by someone we trust (could
+     *     include ourselves). This requires the configuration of a keystore
+     *     {@see KeyStoreBuilder}. Provides delegated authentication capabilities.
+     *     Overkill for most users. The token must be provided in the <code>Authorization</code>
+     *     header, preceded by the string <code>"Bearer "</code>, e.g.:
+     *     <code>Authorization: Bearer yourjwttokenhere</code>
+     *   </li>
+     * </ul>
+     *
+     * {@link "http://en.wikipedia.org/wiki/Basic_access_authentication"}
+     * {@link "http://jwt.io/"}
+     */
+    private void authenticate() {
+
+        String authToken = request.getParameter(AUTH_TOKEN_PARAM_KEY);
+        JWTVerifier.Verification identity = null;
+        final String authString = request.getHeader(AUTHENTICATION_FIELD_NAME);
+        final ProfileManager pm = im.getProfileManager();
+
+        if (StringUtils.isEmpty(authToken) && StringUtils.isEmpty(authString)) {
+            return; // Not Authenticated.
+        }
+        // Accept tokens passed in the Authorization header.
+        if (StringUtils.isEmpty(authToken)) {
+            if (StringUtils.startsWith(authString, "Token ")) {
+                authToken = StringUtils.removeStart(authString, "Token ");
+                try { // Allow bearer tokens to be passed in as normal tokens.
+                    identity = getIdentityFromBearerToken(authToken);
+                } catch (UnauthorizedException e) {
+                    // pass - check the token below.
+                }
+            } else if (StringUtils.startsWith(authString, "Bearer ")) {
+                identity = getIdentityFromBearerToken(
+                        StringUtils.removeStart(authString, "Bearer "));
+            } else {
+                String identityAssertion = getIdentityAssertion();
+                if (StringUtils.isNotBlank(identityAssertion)) {
+                    identity = getIdentityFromBearerToken(identityAssertion);
+                }
+            }
+        }
+
+        try {
+            // Use a token if provided.
+            if (identity != null) {
+                permission = pm.grantPermission(
+                        identity.getIssuer(),
+                        identity.getIdentity(),
+                        im.getClassKeys());
+            } else if (StringUtils.isNotEmpty(authToken)) {
+                permission = pm.getPermission(authToken, im.getClassKeys());
+            } else {
+                // Try and read the authString as a basic auth header.
+                // Strip off the "Basic" part - but don't require it.
+                final String encoded = StringUtils.removeStart(authString, "Basic ");
+                final String decoded = new String(Base64.decodeBase64(encoded.getBytes()));
+                final String[] parts = decoded.split(":", 2);
+                if (parts.length != 2) {
+                    throw new UnauthorizedException(
+                            "Invalid request authentication. "
+                                    + "Authorization field contains invalid value. "
+                                    + "Decoded authorization value: "
+                                    + parts[0]);
+                }
+                // Allow tokens to be passed in basic auth headers.
+                if (StringUtils.isEmpty(parts[1])) {
+                    permission = pm.getPermission(parts[0], im.getClassKeys());
+                } else {
+                    final String username = StringUtils.lowerCase(parts[0]);
+                    final String password = parts[1];
+
+                    permission = pm.getPermission(username, password, im.getClassKeys());
+                }
+            }
+        } catch (ProfileManager.AuthenticationException e) {
+            throw new UnauthorizedException(e.getMessage());
+        }
+
+        PermissionHandler.setUpPermission(im, permission);
+    }
+
+    private void sendError(Throwable t, HttpServletResponse response) {
+
+        errorMessage = WebServiceConstants.SERVICE_FAILED_MSG;
+        boolean showAllMsgs = webProperties.containsKey("i.am.a.dev");
+
+        if (t instanceof ServiceException) {
+            status = ((ServiceException) t).getHttpErrorCode();
+        } else {
+            status = HttpStatus.INTERNAL_SERVER_ERROR.value();
+        }
+        String realMsg = t.getMessage();
+        if ((showAllMsgs || status < 500) && !StringUtils.isBlank(realMsg)) {
+            errorMessage = realMsg;
+        }
+        logError(t, realMsg, status);
+        if (!formatIsJSONP()) {
+            // Don't set errors statuses on jsonp requests, to enable
+            // better error checking in the browser.
+            response.setStatus(status);
+        } else {
+            // But do set callbacks
+            String callback = getCallback();
+            if (callback == null) {
+                callback = "makeInterMineResultsTable";
+            }
+            Map<String, Object> attributes = new HashMap<String, Object>();
+            responseHeaders.add(JSONResultFormatter.KEY_CALLBACK, callback);
+        }
+
+    }
+
+    private void logError(Throwable t, String msg, int code) {
+
+        // Stack traces for all!
+        String truncatedStackTrace = getTruncatedStackTrace(t);
+        LOG.error("**********INSIDE logERROR**********");
+        if (code == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+            LOG.error("Service failed by internal error. Request parameters: \n"
+                    + requestParametersToString() + t + "\n" + truncatedStackTrace);
+        } else {
+            LOG.debug("Service didn't succeed. It's not an internal error. "
+                    + "Reason: " + getErrorDescription(msg, code) + "\n"
+                    + truncatedStackTrace);
+        }
+    }
+
+    private String getTruncatedStackTrace(Throwable t) {
+        StackTraceElement[] stack = t.getStackTrace();
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(b);
+        boolean tooDeep = false;
+
+        for (int i = 0; !tooDeep && i < stack.length; i++) {
+            StackTraceElement element = stack[i];
+            if (element.getClassName().contains("catalina")) {
+                // We have descended as far as is useful. stop here.
+                tooDeep = true;
+                ps.print("\n ...");
+            } else {
+                ps.print("\n  at ");
+                ps.print(element);
+            }
+        }
+        if (t.getCause() != null) {
+            ps.print("\n caused by: " + t.getCause() + "\n" + getTruncatedStackTrace(t.getCause()));
+        }
+        ps.flush();
+        return b.toString();
+    }
+
+    private String requestParametersToString() {
+        StringBuilder sb = new StringBuilder();
+        @SuppressWarnings("unchecked") // Old pre-generic API.
+                Map<String, String[]> map = request.getParameterMap();
+        for (String name : map.keySet()) {
+            for (String value : map.get(name)) {
+                sb.append(name);
+                sb.append(": ");
+                sb.append(value);
+                sb.append("\n");
+            }
+        }
+        return sb.toString();
+    }
+
+    private String getErrorDescription(String msg, int errorCode) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(StatusDictionary.getDescription(errorCode));
+        sb.append(" ");
+        sb.append(msg);
+        return sb.toString();
+    }
+
+    /**
+     * Set output format to default
+     */
+    protected void getDefaultOutput() {
+        //formatter = new TabFormatter();
+        ResponseUtil.setTabHeader(response, getDefaultFileName());
+    }
+
+    /**
+     * Set the executionTime, wasSuccessful, error and statusCode of the respective response model
+     * Standard procedure is to override this method in subclasses for respective model classes
+     */
+    public void setFooter(){
+
+    }
+
+    /**
+     * Runs service. Standard procedure is overwrite this
+     * method in subclasses and let this method to be called from
+     * WebService.doGet method that encapsulates logic common for all web
+     * services else you can overwrite doGet method in your web service class
+     * and manage all the things alone.
+     *
+     * @throws Exception
+     *             if some error occurs
+     */
+    protected void execute() throws Exception {
+
+    }
+
+}
