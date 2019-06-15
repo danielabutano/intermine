@@ -42,21 +42,21 @@ public class ModelApiController implements ModelApi {
         this.request = request;
     }
 
-    public ResponseEntity<?> model(@ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "xml") String format, HttpServletResponse response) {
+    public ResponseEntity<?> model(@ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "xml") String format) {
         String accept = request.getHeader("Accept");
 
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         ModelService modelService = new ModelService(im);
-        modelService.service(request,response);
+        modelService.service(request);
         Model model = modelService.getResponseModel();
         httpHeaders = modelService.getResponseHeaders();
         httpStatus = modelService.getHttpStatus();
         if(format.equals("json")) {
             modelService.setFooter();
-            return new ResponseEntity<Model>(model, httpHeaders, HttpStatus.OK);
+            return new ResponseEntity<Model>(model, httpHeaders, httpStatus);
         }
-        return new ResponseEntity<Object>(model.getModel(),httpHeaders,HttpStatus.OK);
+        return new ResponseEntity<Object>(model.getModel(),httpHeaders,httpStatus);
     }
 
 }

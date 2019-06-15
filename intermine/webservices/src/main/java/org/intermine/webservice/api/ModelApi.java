@@ -25,6 +25,5 @@ public interface ModelApi {
     @RequestMapping(value = "/model",
         produces = { "application/json", "application/xml" }, 
         method = RequestMethod.GET)
-    ResponseEntity<?> model(@ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "xml") String format, HttpServletResponse response);
-
+    ResponseEntity<?> model(@ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "xml") String format);
 }

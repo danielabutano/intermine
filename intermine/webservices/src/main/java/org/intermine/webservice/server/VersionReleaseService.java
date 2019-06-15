@@ -11,15 +11,15 @@ package org.intermine.webservice.server;
  */
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 import org.intermine.api.InterMineAPI;
-import org.intermine.web.logic.Constants;
 import org.intermine.webservice.JSONServiceSpring;
-import org.intermine.webservice.model.Version;
+import org.intermine.webservice.model.VersionRelease;
 import org.intermine.webservice.server.output.HTMLTableFormatter;
 
 /**
@@ -27,34 +27,34 @@ import org.intermine.webservice.server.output.HTMLTableFormatter;
  * @author Alex Kalderimis
  *
  */
-public class VersionService extends JSONServiceSpring
+public class VersionReleaseService extends JSONServiceSpring
 {
-    public Version getVersion() {
-        return version;
+    public VersionRelease getVersionRelease() {
+        return versionRelease;
     }
 
-    private Version version;
+    private VersionRelease versionRelease;
 
     /**
      * Constructor
      * @param im The InterMine configuration object.
      */
-    public VersionService(InterMineAPI im) {
+    public VersionReleaseService(InterMineAPI im) {
         super(im);
-        version = new Version();
+        versionRelease = new VersionRelease();
     }
 
     @Override
     protected void execute() throws Exception {
         setHeadersPostInit();
-        version.setVersion(Constants.WEB_SERVICE_VERSION);
+        versionRelease.setVersion(webProperties.getProperty("project.releaseVersion"));
     }
 
     @Override
     protected void setHeadersPostInit() {
         super.setHeadersPostInit();
         if (Format.HTML == getFormat()) {
-            responseHeaders.add(HTMLTableFormatter.KEY_COLUMN_HEADERS, "API Version");
+            responseHeaders.add(HTMLTableFormatter.KEY_COLUMN_HEADERS, "Release");
         }
     }
 
@@ -75,8 +75,8 @@ public class VersionService extends JSONServiceSpring
     @Override
     protected boolean canServe(Format format) {
         return format == Format.JSON
-            || format == Format.HTML
-            || format == Format.TEXT;
+                || format == Format.HTML
+                || format == Format.TEXT;
     }
 
     @Override
@@ -84,15 +84,13 @@ public class VersionService extends JSONServiceSpring
         Date now = Calendar.getInstance().getTime();
         DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
         String executionTime = dateFormatter.format(now);
-        version.setExecutionTime(executionTime);
-
-
+        versionRelease.setExecutionTime(executionTime);
         if (status >= 400) {
-            version.setWasSuccessful(false);
-            version.setError(escapeJava(errorMessage));
+            versionRelease.setWasSuccessful(false);
+            versionRelease.setError(escapeJava(errorMessage));
         } else {
-            version.setWasSuccessful(true);
+            versionRelease.setWasSuccessful(true);
         }
-        version.setStatusCode(status);
+        versionRelease.setStatusCode(status);
     }
 }

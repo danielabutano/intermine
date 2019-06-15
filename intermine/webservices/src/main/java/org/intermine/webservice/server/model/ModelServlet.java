@@ -47,6 +47,6 @@ public class ModelServlet extends HttpServlet
     private void runService(HttpServletRequest request,
             HttpServletResponse response) {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
-        new ModelService(im).service(request, response);
+        //new ModelService(im).service(request, response);
     }
 }

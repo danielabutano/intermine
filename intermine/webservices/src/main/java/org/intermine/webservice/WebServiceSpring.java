@@ -9,27 +9,29 @@ import org.intermine.api.profile.ProfileManager;
 import org.intermine.api.util.AnonProfile;
 import org.intermine.util.PropertiesUtil;
 import org.intermine.web.context.InterMineContext;
-import org.intermine.web.logic.export.ResponseUtil;
 import org.intermine.web.logic.profile.PermissionHandler;
 import org.intermine.web.security.KeyStorePublicKeySource;
 import org.intermine.web.security.PublicKeySource;
-import org.intermine.webservice.server.*;
+import org.intermine.webservice.server.Format;
+import org.intermine.webservice.server.JWTVerifier;
+import org.intermine.webservice.server.StatusDictionary;
+import org.intermine.webservice.server.WebServiceConstants;
+import org.intermine.webservice.server.WebServiceRequestParser;
 import org.intermine.webservice.server.exceptions.NotAcceptableException;
 import org.intermine.webservice.server.exceptions.ServiceException;
-import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
 import org.intermine.webservice.server.exceptions.UnauthorizedException;
-import org.intermine.webservice.server.output.*;
+import org.intermine.webservice.server.output.JSONResultFormatter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -52,16 +54,11 @@ public class WebServiceSpring {
      * Constants for property keys in global property configuration.
      */
     private static final String WS_HEADERS_PREFIX = "ws.response.header";
-    private static final String BOTS = "ws.robots";
-    private static final String WEB_SERVICE_DISABLED_PROPERTY = "webservice.disabled";
-
 
     /**
      * The servlet request.
      */
     protected HttpServletRequest request;
-
-    protected HttpServletResponse response;
 
     public HttpHeaders getResponseHeaders() {
         return responseHeaders;
@@ -97,6 +94,7 @@ public class WebServiceSpring {
     public WebServiceSpring(InterMineAPI im) {
         this.im = im;
         responseHeaders = new HttpHeaders();
+        httpStatus = HttpStatus.OK;
     }
 
     /**
@@ -128,39 +126,18 @@ public class WebServiceSpring {
      * @param request
      *            The request, as received by the servlet.
      */
-    public void service(HttpServletRequest request, HttpServletResponse response) {
+    public void service(HttpServletRequest request) {
         this.request = request;
-        this.response = response;
         try {
-            if (agentIsRobot()) {
-                response.sendError(HttpStatus.FORBIDDEN.value());
-            } else {
-                setHeaders();
-                initState();
-                checkEnabled();
-                authenticate();
-                initialised = true;
-                execute();
-            }
+            setHeaders();
+            initState();
+            authenticate();
+            initialised = true;
+            execute();
         } catch (Throwable t) {
-            sendError(t,response);
+            sendError(t);
         }
 
-    }
-
-    private boolean agentIsRobot() {
-        String ua = request.getHeader("User-Agent");
-        if (ua != null) {
-            ua = ua.toLowerCase();
-            String[] robots = StringUtils.split(
-                    webProperties.getProperty(BOTS, ""), ',');
-            for (String bot : robots) {
-                if (ua.contains(bot.trim())) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     public void setHeaders() {
@@ -310,6 +287,16 @@ public class WebServiceSpring {
     }
 
     /**
+     * Determine whether a callback was supplied to this request.
+     *
+     * @return Whether or not a callback was supplied.
+     */
+    public boolean hasCallback() {
+        return getOptionalParameter(WebServiceRequestParser.CALLBACK_PARAMETER) != null;
+    }
+
+
+    /**
      * Check whether the format is acceptable.
      *
      * By default returns true. Services with a particular set of accepted
@@ -321,12 +308,6 @@ public class WebServiceSpring {
         return format == getDefaultFormat();
     }
 
-    private void checkEnabled() {
-        if ("true".equalsIgnoreCase(webProperties
-                .getProperty(WEB_SERVICE_DISABLED_PROPERTY))) {
-            throw new ServiceForbiddenException("Web service is disabled.");
-        }
-    }
     private JWTVerifier.Verification getIdentityFromBearerToken(final String rawString) {
         JWTVerifier verifier;
         PublicKeySource keys;
@@ -391,6 +372,17 @@ public class WebServiceSpring {
             return defaultValue;
         }
         return value;
+    }
+
+    /**
+     * Get a parameter this service deems to be optional, or <code>null</code>.
+     *
+     * @param name
+     *            The name of the parameter.
+     * @return The value of the parameter, or <code>null</code>
+     */
+    protected String getOptionalParameter(String name) {
+        return getOptionalParameter(name, null);
     }
 
     /**
@@ -494,7 +486,7 @@ public class WebServiceSpring {
         PermissionHandler.setUpPermission(im, permission);
     }
 
-    private void sendError(Throwable t, HttpServletResponse response) {
+    private void sendError(Throwable t) {
 
         errorMessage = WebServiceConstants.SERVICE_FAILED_MSG;
         boolean showAllMsgs = webProperties.containsKey("i.am.a.dev");
@@ -512,14 +504,13 @@ public class WebServiceSpring {
         if (!formatIsJSONP()) {
             // Don't set errors statuses on jsonp requests, to enable
             // better error checking in the browser.
-            response.setStatus(status);
+            httpStatus = HttpStatus.valueOf(status);
         } else {
             // But do set callbacks
             String callback = getCallback();
             if (callback == null) {
                 callback = "makeInterMineResultsTable";
             }
-            Map<String, Object> attributes = new HashMap<String, Object>();
             responseHeaders.add(JSONResultFormatter.KEY_CALLBACK, callback);
         }
 
@@ -529,7 +520,6 @@ public class WebServiceSpring {
 
         // Stack traces for all!
         String truncatedStackTrace = getTruncatedStackTrace(t);
-        LOG.error("**********INSIDE logERROR**********");
         if (code == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
             LOG.error("Service failed by internal error. Request parameters: \n"
                     + requestParametersToString() + t + "\n" + truncatedStackTrace);
@@ -587,13 +577,6 @@ public class WebServiceSpring {
         return sb.toString();
     }
 
-    /**
-     * Set output format to default
-     */
-    protected void getDefaultOutput() {
-        //formatter = new TabFormatter();
-        ResponseUtil.setTabHeader(response, getDefaultFileName());
-    }
 
     /**
      * Set the executionTime, wasSuccessful, error and statusCode of the respective response model

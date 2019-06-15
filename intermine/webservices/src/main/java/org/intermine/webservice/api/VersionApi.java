@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-05-26T23:19:30.817+05:30[Asia/Kolkata]")
@@ -25,7 +26,7 @@ public interface VersionApi {
     @RequestMapping(value = "/version",
         produces = { "application/json", "text/plain" }, 
         method = RequestMethod.GET)
-    ResponseEntity<Version> version(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false) String format);
+    ResponseEntity<?> version(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format);
 
 
     @ApiOperation(value = "Get the InterMine Release Version.", nickname = "versionIntermine", notes = "Get the InterMine version number. This number represents the version of InterMine code currently running. See https://github.com/intermine/intermine/releases for full details on release dates and versions.", response = VersionRelease.class, tags={  })
@@ -34,7 +35,7 @@ public interface VersionApi {
     @RequestMapping(value = "/version/intermine",
         produces = { "application/json", "text/plain" }, 
         method = RequestMethod.GET)
-    ResponseEntity<VersionRelease> versionIntermine(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false) String format);
+    ResponseEntity<?> versionIntermine(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format);
 
 
     @ApiOperation(value = "Get the Data-Warehouse Release Version.", nickname = "versionRelease", notes = "Get the release version of the data-warehouse. This is a string that is changed each time data is added or removed from the server. Thus this number is meant to reflect the contents rather than the interface of this set of services.", response = VersionRelease.class, tags={  })
@@ -43,6 +44,6 @@ public interface VersionApi {
     @RequestMapping(value = "/version/release",
         produces = { "application/json", "text/plain" }, 
         method = RequestMethod.GET)
-    ResponseEntity<VersionRelease> versionRelease(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false) String format);
+    ResponseEntity<?> versionRelease(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format);
 
 }
