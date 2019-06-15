@@ -10,7 +10,11 @@ package org.intermine.webservice.server;
  *
  */
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,17 +29,27 @@ import org.intermine.web.context.InterMineContext;
 import org.intermine.web.logic.config.FieldConfig;
 import org.intermine.web.logic.config.FieldConfigHelper;
 import org.intermine.web.logic.config.WebConfig;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.Summaryfields;
 import org.intermine.webservice.server.core.JSONService;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 /**
  * Serve up the paths used to summarise each class.
  * @author Alexis Kalderimis
  *
  */
-public class SummaryService extends JSONService
+public class SummaryService extends JSONServiceSpring
 {
 
     private static final Logger LOG = Logger.getLogger(SummaryService.class);
+
+    public Summaryfields getSummaryfields() {
+        return summaryfields;
+    }
+
+    private Summaryfields summaryfields;
 
     /**
      * Constructor
@@ -43,11 +57,11 @@ public class SummaryService extends JSONService
      */
     public SummaryService(InterMineAPI im) {
         super(im);
+        summaryfields = new Summaryfields();
     }
 
     /**
-     * @see org.intermine.webservice.server.WebService#execute(
-     * javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     * @see org.intermine.webservice.WebServiceSpring#execute()
      * @throws Exception if anything goes wrong
      */
     @Override
@@ -55,9 +69,8 @@ public class SummaryService extends JSONService
         Boolean refsAllowed = !Boolean.valueOf(getOptionalParameter("norefs", "false"));
         WebConfig webConfig = InterMineContext.getWebConfig();
 
-        Map<String, Object> summaryFieldsForCd = getMapping(refsAllowed, webConfig);
+        summaryfields.setClasses(getMapping(refsAllowed, webConfig));
 
-        addResultItem(summaryFieldsForCd, false);
     }
 
     private Map<String, Object> getMapping(Boolean refsAllowed, WebConfig webConfig) {
@@ -91,6 +104,23 @@ public class SummaryService extends JSONService
     @Override
     protected String getDefaultFileName() {
         return "summary_fields.json";
+    }
+
+    @Override
+    public void setFooter(){
+        Date now = Calendar.getInstance().getTime();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
+        String executionTime = dateFormatter.format(now);
+        summaryfields.setExecutionTime(executionTime);
+
+
+        if (status >= 400) {
+            summaryfields.setWasSuccessful(false);
+            summaryfields.setError(escapeJava(errorMessage));
+        } else {
+            summaryfields.setWasSuccessful(true);
+        }
+        summaryfields.setStatusCode(status);
     }
 
 }

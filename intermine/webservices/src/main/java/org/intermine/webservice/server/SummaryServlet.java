@@ -32,6 +32,6 @@ public class SummaryServlet extends HttpServlet
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) {
         SummaryService sum = new SummaryService(InterMineContext.getInterMineAPI());
-        sum.service(request, response);
+        //sum.service(request, response);
     }
 }
