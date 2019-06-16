@@ -49,7 +49,7 @@ public class SummaryService extends JSONServiceSpring
         return summaryfields;
     }
 
-    private Summaryfields summaryfields;
+    protected Summaryfields summaryfields;
 
     /**
      * Constructor

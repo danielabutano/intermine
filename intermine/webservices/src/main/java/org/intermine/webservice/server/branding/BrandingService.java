@@ -10,6 +10,10 @@ package org.intermine.webservice.server.branding;
  *
  */
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -19,7 +23,10 @@ import java.util.Queue;
 import org.apache.log4j.Logger;
 import org.intermine.api.InterMineAPI;
 import org.intermine.util.PropertiesUtil;
-import org.intermine.webservice.server.core.JSONService;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.Branding;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 /**
  * Serve branding information so that a client can provide a branded
@@ -27,7 +34,7 @@ import org.intermine.webservice.server.core.JSONService;
  * @author Alex Kalderimis
  *
  */
-public class BrandingService extends JSONService
+public class BrandingService extends JSONServiceSpring
 {
 
     private static final String PROPERTIES_NEED_2_SECTIONS
@@ -35,15 +42,22 @@ public class BrandingService extends JSONService
     private static final String PREFIX = "branding.";
     private static final Logger LOG = Logger.getLogger(BrandingService.class);
 
+    public Branding getBranding() {
+        return branding;
+    }
+
+    private Branding branding;
+
     /** @param im The InterMine state object. **/
     public BrandingService(InterMineAPI im) {
         super(im);
+        branding = new Branding();
     }
 
     @Override
     protected void execute() throws Exception {
         Properties props = PropertiesUtil.getPropertiesStartingWith(PREFIX, webProperties);
-        Map<String, Object> branding = new HashMap<String, Object>();
+        Map<String, Object> brandingMap = new HashMap<String, Object>();
         for (Object key: props.keySet()) {
             String keyString = String.valueOf(key);
             String[] keyParts = keyString.split("\\.");
@@ -55,9 +69,9 @@ public class BrandingService extends JSONService
             for (int i = 1; i < keyParts.length; i++) {
                 path.add(keyParts[i]);
             }
-            setProperty(branding, path, props.getProperty(keyString));
+            setProperty(brandingMap, path, props.getProperty(keyString));
         }
-        addResultItem(branding, false);
+        branding.setProperties(brandingMap);
     }
 
     @Override
@@ -83,6 +97,23 @@ public class BrandingService extends JSONService
             }
             setProperty(thisLevel, path, value);
         }
+    }
+
+    @Override
+    public void setFooter(){
+        Date now = Calendar.getInstance().getTime();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
+        String executionTime = dateFormatter.format(now);
+        branding.setExecutionTime(executionTime);
+
+
+        if (status >= 400) {
+            branding.setWasSuccessful(false);
+            branding.setError(escapeJava(errorMessage));
+        } else {
+            branding.setWasSuccessful(true);
+        }
+        branding.setStatusCode(status);
     }
 
 }

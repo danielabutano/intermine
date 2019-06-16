@@ -46,7 +46,6 @@ public class ClassKeysService extends SummaryService
         }
         Map<String, List<String>> ckData = new HashMap<String, List<String>>();
         Model m = im.getModel();
-        //output.setHeaderAttributes(getHeaderAttributes());
         for (ClassDescriptor cd : m.getClassDescriptors()) {
             List<String> keyFields = new ArrayList<String>();
             String cname = cd.getUnqualifiedName();
@@ -59,10 +58,7 @@ public class ClassKeysService extends SummaryService
                 }
             }
         }
-
-        JSONObject jo = new JSONObject(ckData);
-
-        //output.addResultItem(Collections.singletonList(jo.toString()));
+        summaryfields.setClasses(ckData);
     }
 
 }
