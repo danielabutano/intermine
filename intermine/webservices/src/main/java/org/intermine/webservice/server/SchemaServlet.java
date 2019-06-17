@@ -103,7 +103,7 @@ public class SchemaServlet extends HttpServlet
 
     private void serveSchemaList(HttpServletRequest req, HttpServletResponse resp) {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
-        new SchemaListService(im).service(req, resp);
+        //new SchemaListService(im).service(req, resp);
     }
 
 }
