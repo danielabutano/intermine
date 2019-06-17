@@ -13,7 +13,16 @@ package org.intermine.webservice.server;
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.Profile;
 import org.intermine.api.profile.ProfileManager;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.Session;
 import org.intermine.webservice.server.core.JSONService;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 /**
  *  Open a new 24-hour session.
@@ -26,12 +35,19 @@ import org.intermine.webservice.server.core.JSONService;
  * @author Alex Kalderimis
  *
  */
-public class SessionService extends JSONService
+public class SessionService extends JSONServiceSpring
 {
+
+    public Session getSession() {
+        return session;
+    }
+
+    private Session session;
 
     /** @param im The InterMine state object **/
     public SessionService(InterMineAPI im) {
         super(im);
+        session = new Session();
     }
 
     @Override
@@ -51,7 +67,7 @@ public class SessionService extends JSONService
         }
         String token = pm.generate24hrKey(p);
         p.setDayToken(token);
-        addResultValue(token, false);
+        session.setToken(token);
     }
 
 }

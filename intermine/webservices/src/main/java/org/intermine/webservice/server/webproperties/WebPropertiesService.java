@@ -10,7 +10,11 @@ package org.intermine.webservice.server.webproperties;
  *
  */
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -19,7 +23,10 @@ import java.util.Queue;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.util.PropertiesUtil;
-import org.intermine.webservice.server.core.JSONService;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.WebProperties;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 
 /**
@@ -27,15 +34,22 @@ import org.intermine.webservice.server.core.JSONService;
  *
  * @author Julie
  */
-public class WebPropertiesService extends JSONService
+public class WebPropertiesService extends JSONServiceSpring
 {
     //private static final Logger LOG = Logger.getLogger(WebPropertiesService.class);
     // if there is a parent property with an additional child value, we need a key
     private static final String DEFAULT_PATH = "default";
 
+    public WebProperties getWebPropertiesModel() {
+        return webPropertiesModel;
+    }
+
+    private WebProperties webPropertiesModel;
+
     /** @param im The InterMine state object. **/
     public WebPropertiesService(InterMineAPI im) {
         super(im);
+        webPropertiesModel = new WebProperties();
     }
 
     @Override
@@ -60,7 +74,7 @@ public class WebPropertiesService extends JSONService
         // defaults for iodocs, only setting default query right now
         appendProperties(webPropertiesMap, "services");
 
-        addResultItem(webPropertiesMap, false);
+        webPropertiesModel.setWebProperties(webPropertiesMap);
     }
 
     @Override
@@ -111,6 +125,23 @@ public class WebPropertiesService extends JSONService
             }
             setProperty(thisLevel, path, value);
         }
+    }
+
+    @Override
+    public void setFooter(){
+        Date now = Calendar.getInstance().getTime();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
+        String executionTime = dateFormatter.format(now);
+        webPropertiesModel.setExecutionTime(executionTime);
+
+
+        if (status >= 400) {
+            webPropertiesModel.setWasSuccessful(false);
+            webPropertiesModel.setError(escapeJava(errorMessage));
+        } else {
+            webPropertiesModel.setWasSuccessful(true);
+        }
+        webPropertiesModel.setStatusCode(status);
     }
 
 }

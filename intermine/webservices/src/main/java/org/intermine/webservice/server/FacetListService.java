@@ -16,13 +16,21 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.api.searchengine.KeywordSearchFacet;
 import org.intermine.api.searchengine.KeywordSearchHandler;
 import org.intermine.api.searchengine.solr.SolrKeywordSearchHandler;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.FacetList;
 import org.intermine.webservice.server.core.JSONService;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 
 /**
@@ -30,10 +38,16 @@ import java.util.Map;
  * @author arunans23
  *
  */
-public class FacetListService extends JSONService
+public class FacetListService extends JSONServiceSpring
 {
 
     private static final Logger LOG = Logger.getLogger(FacetService.class);
+
+    public FacetList getFacetList() {
+        return facetList;
+    }
+
+    private FacetList facetList;
 
     /**
      * Constructor
@@ -41,6 +55,7 @@ public class FacetListService extends JSONService
      */
     public FacetListService(InterMineAPI im) {
         super(im);
+        facetList = new FacetList();
     }
 
     @Override
@@ -54,7 +69,7 @@ public class FacetListService extends JSONService
         Collection<KeywordSearchFacet> keywordSearchFacets
                 = searchHandler.doFacetSearch(im, "*:*", facetValues);
 
-        output.setHeaderAttributes(getHeaderAttributes());
+        setHeadersPostInit();
 
         Map<String, List<String>> ckData = new HashMap<String, List<String>>();
 
@@ -68,13 +83,29 @@ public class FacetListService extends JSONService
             ckData.put(keywordSearchFacet.getName(), facetInnerList);
         }
 
-        addResultItem(ckData, false);
-
+        facetList.setFacetlist(ckData);
     }
 
     @Override
     protected String getResultsKey() {
         return "facet-list";
+    }
+
+    @Override
+    public void setFooter(){
+        Date now = Calendar.getInstance().getTime();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
+        String executionTime = dateFormatter.format(now);
+        facetList.setExecutionTime(executionTime);
+
+
+        if (status >= 400) {
+            facetList.setWasSuccessful(false);
+            facetList.setError(escapeJava(errorMessage));
+        } else {
+            facetList.setWasSuccessful(true);
+        }
+        facetList.setStatusCode(status);
     }
 
 }

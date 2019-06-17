@@ -600,4 +600,13 @@ public class WebServiceSpring {
 
     }
 
+    /**
+     * @return true if this request has been authenticated to a specific
+     *         existing user.
+     */
+    public boolean isAuthenticated() {
+        return getPermission().getProfile() != ANON_PROFILE;
+    }
+
+
 }
