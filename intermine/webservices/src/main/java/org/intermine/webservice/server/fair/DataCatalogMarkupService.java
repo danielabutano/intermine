@@ -12,32 +12,64 @@ package org.intermine.webservice.server.fair;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.web.fair.SemanticMarkupUtil;
-import org.intermine.webservice.server.core.JSONService;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.SemanticMarkup;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 /**
  * Serve datacatalog markup to be added to the home page
  * @author Daniela Butano
  *
  */
-public class DataCatalogMarkupService extends JSONService
+public class DataCatalogMarkupService extends JSONServiceSpring
 {
+    public SemanticMarkup getSemanticMarkup() {
+        return semanticMarkup;
+    }
+
+    private SemanticMarkup semanticMarkup;
+
     /**
      * Constructor
      * @param im The InterMine state object.
      **/
     public DataCatalogMarkupService(InterMineAPI im) {
         super(im);
+        semanticMarkup = new SemanticMarkup();
     }
 
     @Override
     protected void execute() throws Exception {
         if (SemanticMarkupUtil.isEnabled()) {
-            addResultItem(SemanticMarkupUtil.getDataCatalogMarkup(request), false);
+            semanticMarkup.setProperties(SemanticMarkupUtil.getDataCatalogMarkup(request));
         }
     }
 
     @Override
     public String getResultsKey() {
         return "properties";
+    }
+
+    @Override
+    public void setFooter(){
+        Date now = Calendar.getInstance().getTime();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
+        String executionTime = dateFormatter.format(now);
+        semanticMarkup.setExecutionTime(executionTime);
+
+
+        if (status >= 400) {
+            semanticMarkup.setWasSuccessful(false);
+            semanticMarkup.setError(escapeJava(errorMessage));
+        } else {
+            semanticMarkup.setWasSuccessful(true);
+        }
+        semanticMarkup.setStatusCode(status);
     }
 }

@@ -11,7 +11,11 @@ package org.intermine.webservice.server.template;
  */
 
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +27,8 @@ import org.intermine.api.template.TemplateHelper;
 import org.intermine.api.template.TemplateManager;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.web.logic.export.ResponseUtil;
+import org.intermine.webservice.WebServiceSpring;
+import org.intermine.webservice.model.TemplatesSystem;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.WebService;
 import org.intermine.webservice.server.exceptions.NotAcceptableException;
@@ -31,16 +37,25 @@ import org.intermine.webservice.server.output.JSONFormatter;
 import org.intermine.webservice.server.output.Output;
 import org.intermine.webservice.server.output.PlainFormatter;
 import org.intermine.webservice.server.output.StreamedOutput;
+import org.intermine.webservice.util.ResponseUtilSpring;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 /**
  * Fetch the names of public template queries tagged with "im:converter"
  * for use with the System Templates web service.
  * @author Julie Sullivan
  */
-public class SystemTemplatesService extends WebService
+public class SystemTemplatesService extends WebServiceSpring
 {
 
     private static final String FILE_BASE_NAME = "templates";
+
+    public TemplatesSystem getTemplatesSystem() {
+        return templatesSystem;
+    }
+
+    private TemplatesSystem templatesSystem;
 
     /**
      * Constructor.
@@ -48,12 +63,7 @@ public class SystemTemplatesService extends WebService
      */
     public SystemTemplatesService(InterMineAPI im) {
         super(im);
-    }
-
-    @Override
-    protected Output makeXMLOutput(PrintWriter out, String separator) {
-        ResponseUtil.setXMLHeader(response, FILE_BASE_NAME + ".xml");
-        return new StreamedOutput(out, new PlainFormatter(), separator);
+        templatesSystem = new TemplatesSystem();
     }
 
     @Override
@@ -74,28 +84,44 @@ public class SystemTemplatesService extends WebService
 
         switch (getFormat()) {
             case XML:
-                output.addResultItem(Arrays.asList(TemplateHelper.apiTemplateMapToXml(templates,
-                        PathQuery.USERPROFILE_VERSION)));
+                ResponseUtilSpring.setXMLHeader(responseHeaders, FILE_BASE_NAME + ".xml");
+                templatesSystem.setTemplates(TemplateHelper.apiTemplateMapToXml(templates,
+                        PathQuery.USERPROFILE_VERSION));
                 break;
             case JSON:
-                Map<String, Object> attributes = new HashMap<String, Object>();
                 if (formatIsJSONP()) {
-                    attributes.put(JSONFormatter.KEY_CALLBACK, getCallback());
+                    responseHeaders.add(JSONFormatter.KEY_CALLBACK, getCallback());
                 }
-                attributes.put(JSONFormatter.KEY_INTRO, "\"templates\":");
-                output.setHeaderAttributes(attributes);
-                output.addResultItem(Arrays.asList(
-                        TemplateHelper.apiTemplateMapToJson(im, templates, null)));
+                responseHeaders.add(JSONFormatter.KEY_INTRO, "\"templates\":");
+                templatesSystem.setTemplates(
+                        TemplateHelper.apiTemplateMapToJson(im, templates, null));
                 break;
             case TEXT:
                 Set<String> templateNames = new TreeSet<String>(templates.keySet());
                 for (String templateName : templateNames) {
-                    output.addResultItem(Arrays.asList(templateName));
+                    templatesSystem.setTemplates(templateName);
                 }
             case HTML:
                 throw new ServiceException("Not implemented: " + Format.HTML);
             default:
                 throw new NotAcceptableException();
         }
+    }
+
+    @Override
+    public void setFooter(){
+        Date now = Calendar.getInstance().getTime();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
+        String executionTime = dateFormatter.format(now);
+        templatesSystem.setExecutionTime(executionTime);
+
+
+        if (status >= 400) {
+            templatesSystem.setWasSuccessful(false);
+            templatesSystem.setError(escapeJava(errorMessage));
+        } else {
+            templatesSystem.setWasSuccessful(true);
+        }
+        templatesSystem.setStatusCode(status);
     }
 }
