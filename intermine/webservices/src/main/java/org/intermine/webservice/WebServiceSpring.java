@@ -133,6 +133,7 @@ public class WebServiceSpring {
             initState();
             authenticate();
             initialised = true;
+            validateState();
             execute();
         } catch (Throwable t) {
             sendError(t);
@@ -169,6 +170,13 @@ public class WebServiceSpring {
         // No-op stub
     }
 
+    /**
+     * Subclasses can put initialisation checks here. The main use case is for
+     * confirming authentication.
+     */
+    protected void validateState() {
+        // No-op stub
+    }
 
     /**
      * @return Whether or not the requested result format is one of our JSON

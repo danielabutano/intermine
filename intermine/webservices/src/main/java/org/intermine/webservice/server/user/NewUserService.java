@@ -10,9 +10,15 @@ package org.intermine.webservice.server.user;
  *
  */
 
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -23,6 +29,8 @@ import org.intermine.api.profile.ProfileManager;
 import org.intermine.util.Emailer;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.web.context.MailAction;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.Users;
 import org.intermine.webservice.server.core.JSONService;
 import org.intermine.webservice.server.core.RateLimitHistory;
 import org.intermine.webservice.server.exceptions.BadRequestException;
@@ -37,7 +45,7 @@ import org.json.JSONObject;
  * @author Alex Kalderimis.
  *
  */
-public class NewUserService extends JSONService
+public class NewUserService extends JSONServiceSpring
 {
 
     private static final String DEFAULTING_TO_1000PH
@@ -46,12 +54,19 @@ public class NewUserService extends JSONService
     private int maxNewUsersPerAddressPerHour = 1000;
     private static RateLimitHistory requestHistory = null;
 
+    public Users getUsers() {
+        return users;
+    }
+
+    private Users users;
+
     /**
      * Constructor.
      * @param im The InterMine API object.
      */
     public NewUserService(InterMineAPI im) {
         super(im);
+        users = new Users();
         if (requestHistory == null) {
             Properties webProperties = InterMineContext.getWebProperties();
             String rateLimit = webProperties.getProperty("webservice.newuser.ratelimit");
@@ -80,12 +95,14 @@ public class NewUserService extends JSONService
 
     @Override
     protected void execute() throws Exception {
+        setHeadersPostInit();
         ProfileManager pm = im.getProfileManager();
         NewUserInput input = new NewUserInput();
 
         pm.createNewProfile(input.getUsername(), input.getPassword());
 
-        JSONObject user = new JSONObject();
+        Map<String, Object> user = new HashMap<>();
+        //JSONObject user = new JSONObject();
         user.put("username", input.getUsername());
 
         MailAction welcomeMessage = new WelcomeAction(input.getUsername());
@@ -110,14 +127,13 @@ public class NewUserService extends JSONService
         }
         user.put("temporaryToken", pm.generate24hrKey(p));
 
-        output.addResultItem(Arrays.asList(user.toString()));
+        users.setUser(user);
     }
 
     @Override
-    protected Map<String, Object> getHeaderAttributes() {
-        Map<String, Object> retval = super.getHeaderAttributes();
-        retval.put(JSONFormatter.KEY_INTRO, "\"user\":");
-        return retval;
+    protected void setHeadersPostInit() {
+        super.setHeadersPostInit();
+        responseHeaders.add(JSONFormatter.KEY_INTRO, "\"user\":");
     }
 
     private static class WelcomeAction implements MailAction
@@ -186,6 +202,23 @@ public class NewUserService extends JSONService
                 throw new BadRequestException(USER_EXISTS_MSG);
             }
         }
+    }
+
+    @Override
+    public void setFooter(){
+        Date now = Calendar.getInstance().getTime();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
+        String executionTime = dateFormatter.format(now);
+        users.setExecutionTime(executionTime);
+
+
+        if (status >= 400) {
+            users.setWasSuccessful(false);
+            users.setError(escapeJava(errorMessage));
+        } else {
+            users.setWasSuccessful(true);
+        }
+        users.setStatusCode(status);
     }
 
 }

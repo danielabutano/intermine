@@ -27,9 +27,9 @@ public class FacetServlet extends WebServiceServlet
         ServletContext ctx = this.getServletContext();
         switch (method) {
             case GET:
-                return new FacetService(api);
+                //return new FacetService(api);
             case POST:
-                return new FacetService(api);
+                //return new FacetService(api);
             default:
                 throw new NoServiceException();
 
