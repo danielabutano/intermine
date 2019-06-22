@@ -7,15 +7,16 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.webservice.model.Model;
 import org.intermine.webservice.server.model.ModelService;
+import org.intermine.webservice.util.ResponseUtilSpring;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 

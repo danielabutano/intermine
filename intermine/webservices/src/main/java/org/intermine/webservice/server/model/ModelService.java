@@ -84,6 +84,10 @@ public class ModelService extends WebServiceSpring
     }
 
     @Override
+    protected void makeXMLOutput() {
+        ResponseUtilSpring.setXMLHeader(responseHeaders, FILE_BASE_NAME + ".xml");
+    }
+    @Override
     protected Format getDefaultFormat() {
         return Format.XML;
     }

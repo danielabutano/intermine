@@ -21,6 +21,7 @@ import org.intermine.webservice.server.exceptions.NotAcceptableException;
 import org.intermine.webservice.server.exceptions.ServiceException;
 import org.intermine.webservice.server.exceptions.UnauthorizedException;
 import org.intermine.webservice.server.output.JSONResultFormatter;
+import org.intermine.webservice.util.ResponseUtilSpring;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,10 @@ public class WebServiceSpring {
 
     /** Default jsonp callback **/
     public static final String DEFAULT_CALLBACK = "callback";
+
+    private static final String COMPRESS = "compress";
+    private static final String GZIP = "gzip";
+    private static final String ZIP = "zip";
 
     private static final Logger LOG = Logger.getLogger(WebServiceSpring.class);
     private static final String AUTHENTICATION_FIELD_NAME = "Authorization";
@@ -158,8 +163,64 @@ public class WebServiceSpring {
 
         String origin = request.getHeader("Origin");
         if (StringUtils.isNotBlank(origin)) {
-            responseHeaders.set("Access-Control-Allow-Origin", origin);
+            responseHeaders.setAccessControlAllowOrigin(origin);
         }
+
+        String filename = getRequestFileName();
+        switch (getFormat()) {
+            case HTML:
+                ResponseUtilSpring.setHTMLContentType(responseHeaders);
+                break;
+            case XML:
+                makeXMLOutput();
+                break;
+            case TSV:
+                filename += ".tsv";
+                if (isUncompressed()) {
+                    ResponseUtilSpring.setTabHeader(responseHeaders, filename);
+                }
+                break;
+            case CSV:
+                filename += ".csv";
+                if (isUncompressed()) {
+                    ResponseUtilSpring.setCSVHeader(responseHeaders, filename);
+                }
+                break;
+            case TEXT:
+                filename += getExtension();
+                if (isUncompressed()) {
+                    ResponseUtilSpring.setPlainTextHeader(responseHeaders, filename);
+                }
+                break;
+            case JSON:
+                filename += ".json";
+                if (isUncompressed()) {
+                    ResponseUtilSpring.setJSONHeader(responseHeaders, filename, formatIsJSONP());
+                }
+                break;
+            case OBJECTS:
+                filename += ".json";
+                if (isUncompressed()) {
+                    ResponseUtilSpring.setJSONHeader(responseHeaders, filename, formatIsJSONP());
+                }
+                break;
+            case TABLE:
+                filename = "resulttable.json";
+                if (isUncompressed()) {
+                    ResponseUtilSpring.setJSONHeader(responseHeaders, filename, formatIsJSONP());
+                }
+                break;
+            case ROWS:
+                if (isUncompressed()) {
+                    ResponseUtilSpring.setJSONHeader(responseHeaders, "result.json", formatIsJSONP());
+                }
+                break;
+            default:
+        }
+        if (!isUncompressed()) {
+            ResponseUtilSpring.setGzippedHeader(responseHeaders, filename + getExtension());
+        }
+
 
     }
 
@@ -210,6 +271,15 @@ public class WebServiceSpring {
         return (getFormat() == Format.XML);
     }
 
+    /**
+     * Set the XML response headers
+     * @return An Output that produces good XML.
+     */
+    protected void makeXMLOutput() {
+        String filename = getRequestFileName();
+        filename += ".xml";
+        ResponseUtilSpring.setXMLHeader(responseHeaders, filename);
+    }
 
     /**
      * @return The default file name for this service. (default = "result.tsv")
@@ -218,6 +288,20 @@ public class WebServiceSpring {
         return "result";
     }
 
+    /**
+     * If the request has a <code>filename</code> parameter then use that
+     * for the fileName, otherwise use the default fileName
+     * @return the fileName to use for the exported file
+     */
+    protected String getRequestFileName() {
+        String param = WebServiceRequestParser.FILENAME_PARAMETER;
+        String fileName = request.getParameter(param);
+        if (StringUtils.isBlank(fileName)) {
+            return getDefaultFileName();
+        } else {
+            return fileName.trim();
+        }
+    }
 
     /**
      * @return The default format constant for this service.
@@ -277,6 +361,41 @@ public class WebServiceSpring {
      */
     protected void setFormat(Format format) {
         this.format = format;
+    }
+
+    /**
+     * @return Whether or not this request wants gzipped data.
+     */
+    protected boolean isGzip() {
+        return GZIP.equalsIgnoreCase(request.getParameter(COMPRESS));
+    }
+
+    /**
+     * @return Whether or not this request wants zipped data.
+     */
+    protected boolean isZip() {
+        return ZIP.equalsIgnoreCase(request.getParameter(COMPRESS));
+    }
+
+
+    /**
+     * @return Whether or not this request wants uncompressed data.
+     */
+    protected boolean isUncompressed() {
+        return StringUtils.isEmpty(request.getParameter(COMPRESS));
+    }
+
+    /**
+     * @return the file-name extension for the result-set.
+     */
+    protected String getExtension() {
+        if (isGzip()) {
+            return ".gz";
+        } else if (isZip()) {
+            return ".zip";
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -584,6 +703,7 @@ public class WebServiceSpring {
         sb.append(msg);
         return sb.toString();
     }
+
 
 
     /**

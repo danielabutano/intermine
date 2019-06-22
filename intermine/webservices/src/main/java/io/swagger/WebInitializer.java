@@ -494,7 +494,7 @@ public class WebInitializer extends SpringBootServletInitializer {
         }
 
         // Load these last, as they always take precedence.
-        /*String modelPropertiesStreamPath = "/WEB-INF/web.properties";
+        String modelPropertiesStreamPath = "/WEB-INF/web.properties";
         LOG.info("Loading model webapp properties from " + modelPropertiesStreamPath);
         InputStream modelPropertiesStream = servletContext.getResourceAsStream(
                 modelPropertiesStreamPath);
@@ -507,7 +507,7 @@ public class WebInitializer extends SpringBootServletInitializer {
                 return webProperties;
             }
             updateOrigins(lastState, origins, modelPropertiesStreamPath, webProperties);
-        }*/
+        }
 
         servletContext.setAttribute(Constants.PROPERTIES_ORIGINS, origins);
         Properties trimProperties = trimProperties(webProperties);

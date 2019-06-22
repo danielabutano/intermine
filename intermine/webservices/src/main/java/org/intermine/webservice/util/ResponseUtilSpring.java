@@ -11,8 +11,10 @@ package org.intermine.webservice.util;
  */
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.Charset;
 
 
 /**
@@ -22,6 +24,11 @@ import javax.servlet.http.HttpServletResponse;
  **/
 public final class ResponseUtilSpring
 {
+    public static final MediaType MEDIA_TYPE_TAB = new MediaType("text", "tab-separated-values", Charset.forName("utf-8"));
+    public static final MediaType MEDIA_TYPE_CSV = new MediaType("text", "comma-separated-values", Charset.forName("utf-8"));
+    public static final MediaType MEDIA_TYPE_JSON_SCHEMA = new MediaType("application", "schema+json", Charset.forName("utf-8"));
+    public static final MediaType MEDIA_TYPE_JSONP = new MediaType("application", "javascript", Charset.forName("utf-8"));
+
     private ResponseUtilSpring() {
         // do nothing
     }
@@ -34,6 +41,7 @@ public final class ResponseUtilSpring
      */
     public static void setTabHeader(HttpHeaders httpHeaders, String fileName) {
         setNoCache(httpHeaders);
+        setTabContentType(httpHeaders);
         setFileName(httpHeaders, fileName);
     }
 
@@ -45,6 +53,7 @@ public final class ResponseUtilSpring
      */
     public static void setCSVHeader(HttpHeaders httpHeaders, String fileName) {
         setNoCache(httpHeaders);
+        setCSVContentType(httpHeaders);
         setFileName(httpHeaders, fileName);
     }
 
@@ -55,6 +64,7 @@ public final class ResponseUtilSpring
      */
     public static void setXMLHeader(HttpHeaders httpHeaders, String fileName) {
         setNoCache(httpHeaders);
+        setXMLContentType(httpHeaders);
         setFileName(httpHeaders, fileName);
     }
 
@@ -66,6 +76,7 @@ public final class ResponseUtilSpring
      */
     public static void setPlainTextHeader(HttpHeaders httpHeaders, String fileName) {
         setNoCache(httpHeaders);
+        setPlainTextContentType(httpHeaders);
         setFileName(httpHeaders, fileName);
     }
 
@@ -77,6 +88,7 @@ public final class ResponseUtilSpring
      */
     public static void setGzippedHeader(HttpHeaders httpHeaders, String fileName) {
         setNoCache(httpHeaders);
+        setGzippedContentType(httpHeaders);
         setFileName(httpHeaders, fileName);
     }
 
@@ -101,6 +113,7 @@ public final class ResponseUtilSpring
         if (isJSONP) {
             setJSONPHeader(httpHeaders, filename);
         } else {
+            setJSONContentType(httpHeaders);
             setFileName(httpHeaders, filename);
             setNoCache(httpHeaders);
         }
@@ -113,6 +126,7 @@ public final class ResponseUtilSpring
      */
     public static void setJSONSchemaHeader(HttpHeaders httpHeaders,
             String filename) {
+        setJSONSchemaContentType(httpHeaders);
         setFileName(httpHeaders, filename);
         setNoCache(httpHeaders);
     }
@@ -124,6 +138,7 @@ public final class ResponseUtilSpring
      */
     public static void setJSONPHeader(HttpHeaders httpHeaders,
             String filename) {
+        setJSONPContentType(httpHeaders);
         setFileName(httpHeaders, filename);
         setNoCache(httpHeaders);
     }
@@ -137,6 +152,7 @@ public final class ResponseUtilSpring
     public static void setCustomTypeHeader(HttpHeaders httpHeaders, String fileName,
             String contentType) {
         setNoCache(httpHeaders);
+        setCustomContentType(httpHeaders,contentType);
         setFileName(httpHeaders, fileName);
     }
 
@@ -149,8 +165,8 @@ public final class ResponseUtilSpring
     public static void setNoCache(HttpHeaders httpHeaders) {
         // http://www.phord.com/experiment/cache/
         // http://support.microsoft.com/kb/243717
-        httpHeaders.add("Pragma", "no-cache");
-        httpHeaders.add("Cache-Control", "must-revalidate, max-age=0");
+        httpHeaders.setPragma("no-cache");
+        httpHeaders.setCacheControl("must-revalidate, max-age=0");
     }
 
     /**
@@ -161,8 +177,8 @@ public final class ResponseUtilSpring
     public static void setNoCacheEnforced(HttpHeaders httpHeaders) {
         // should work for firefox and IE to refresh always the page when back button is pressed
         // http://forums.mozillazine.org/viewtopic.php?f=25&t=673135&start=30
-        httpHeaders.add("Cache-Control", "max-age=0, must-revalidate, no-store, no-cache");
-        httpHeaders.add("Pragma", "no-cache");
+        httpHeaders.setCacheControl("max-age=0, must-revalidate, no-store, no-cache");
+        httpHeaders.setPragma("no-cache");
         httpHeaders.add("Expires", "Wed, 11 Jan 1984 05:00:00 GMT");
     }
 
@@ -173,7 +189,89 @@ public final class ResponseUtilSpring
      * @param fileName the name of the downloaded file
      */
     public static void setFileName(HttpHeaders httpHeaders, String fileName) {
-        httpHeaders.add("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+        httpHeaders.setContentDispositionFormData("attachment",fileName);
+    }
+
+
+    /**
+     * Sets tab separated values content type.
+     * @param httpHeaders headers
+     */
+    public static void setTabContentType(HttpHeaders httpHeaders) {
+        httpHeaders.setContentType(MEDIA_TYPE_TAB);
+    }
+
+    /**
+     * Sets comma separated values content type.
+     * @param httpHeaders headers
+     */
+    public static void setCSVContentType(HttpHeaders httpHeaders) {
+        httpHeaders.setContentType(MEDIA_TYPE_CSV);
+    }
+
+    /**
+     * Sets plain text content type.
+     * @param httpHeaders headers
+     */
+    public static void setPlainTextContentType(HttpHeaders httpHeaders) {
+        httpHeaders.setContentType(MediaType.TEXT_PLAIN);
+    }
+
+    /**
+     * Sets XML content type.
+     * @param httpHeaders headers
+     */
+    public static void setXMLContentType(HttpHeaders httpHeaders) {
+        httpHeaders.setContentType(MediaType.APPLICATION_XML);
+    }
+
+    /**
+     * Sets HTML content type.
+     * @param httpHeaders headers
+     */
+    public static void setHTMLContentType(HttpHeaders httpHeaders) {
+        httpHeaders.setContentType(MediaType.TEXT_HTML);
+    }
+
+    /**
+     * Sets gzip content type ("application/octet-stream")
+     * @param httpHeaders headers
+     */
+    public static void setGzippedContentType(HttpHeaders httpHeaders) {
+        httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+    }
+
+    /**
+     * Sets content type to the parameter specified
+     * @param httpHeaders headers
+     * @param contentType custom MIME type to set as content type specified
+     */
+    public static void setCustomContentType(HttpHeaders httpHeaders, String contentType) {
+        httpHeaders.setContentType(MediaType.parseMediaType(contentType));
+    }
+
+    /**
+     * Sets the content type to "application/json"
+     * @param httpHeaders headers
+     */
+    public static void setJSONContentType(HttpHeaders httpHeaders) {
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+    }
+
+    /**
+     * Sets the content type to "application/schema+json"
+     * @param httpHeaders headers
+     */
+    public static void setJSONSchemaContentType(HttpHeaders httpHeaders) {
+        httpHeaders.setContentType(MEDIA_TYPE_JSON_SCHEMA);
+    }
+
+    /**
+     * Sets the content type to "text/javascript"
+     * @param httpHeaders headers
+     */
+    public static void setJSONPContentType(HttpHeaders httpHeaders) {
+        httpHeaders.setContentType(MEDIA_TYPE_JSONP);
     }
 
 }
