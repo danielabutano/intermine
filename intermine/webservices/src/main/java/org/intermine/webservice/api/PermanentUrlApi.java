@@ -5,7 +5,7 @@
  */
 package org.intermine.webservice.api;
 
-import org.intermine.webservice.model.Schema;
+import org.intermine.webservice.model.PermanentUrl;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -18,29 +18,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.util.List;
 import java.util.Map;
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-18T00:14:58.996+05:30[Asia/Kolkata]")
-@Api(value = "schema", description = "the schema API")
-public interface SchemaApi {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-22T06:09:52.181+05:30[Asia/Kolkata]")
+@Api(value = "permanent-url", description = "the permanent-url API")
+public interface PermanentUrlApi {
 
-    @ApiOperation(value = "Get all Schemata.", nickname = "allSchema", notes = "Get a listing of the available schemata.", response = Schema.class, tags={  })
+    @ApiOperation(value = "Get permanent URL for data object.", nickname = "permanentUrl", notes = "This service generates permanent URL based on the class type and identifier.", response = PermanentUrl.class, tags={  })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "OK", response = Schema.class) })
-    @RequestMapping(value = "/schema",
+        @ApiResponse(code = 200, message = "OK", response = PermanentUrl.class) })
+    @RequestMapping(value = "/permanent-url",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
-    ResponseEntity<Schema> allSchema();
-
-
-    @ApiOperation(value = "Get one Schema.", nickname = "oneSchema", notes = "Retrieve a specific schema.", tags={  })
-    @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "OK") })
-    @RequestMapping(value = "/schema/{name}/",
-        method = RequestMethod.GET)
-    ResponseEntity<?> oneSchema(@ApiParam(value = "The name of the schema to retrieve",required=true) @PathVariable("name") String name);
+    ResponseEntity<PermanentUrl> permanentUrl(@NotNull @ApiParam(value = "The type of the entity.", required = true) @Valid @RequestParam(value = "type", required = true) String type,@NotNull @ApiParam(value = "The internal intermine ID.", required = true) @Valid @RequestParam(value = "id", required = true) String id);
 
 }

@@ -9,14 +9,20 @@ import org.intermine.api.profile.ProfileManager;
 import org.intermine.api.util.AnonProfile;
 import org.intermine.util.PropertiesUtil;
 import org.intermine.web.context.InterMineContext;
+import org.intermine.web.logic.RequestUtil;
+import org.intermine.web.logic.export.Exporter;
 import org.intermine.web.logic.profile.PermissionHandler;
 import org.intermine.web.security.KeyStorePublicKeySource;
 import org.intermine.web.security.PublicKeySource;
+import org.intermine.webservice.server.ColumnHeaderStyle;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.JWTVerifier;
 import org.intermine.webservice.server.StatusDictionary;
 import org.intermine.webservice.server.WebServiceConstants;
 import org.intermine.webservice.server.WebServiceRequestParser;
+import org.intermine.webservice.server.core.ListManager;
+import org.intermine.webservice.server.exceptions.BadRequestException;
+import org.intermine.webservice.server.exceptions.MissingParameterException;
 import org.intermine.webservice.server.exceptions.NotAcceptableException;
 import org.intermine.webservice.server.exceptions.ServiceException;
 import org.intermine.webservice.server.exceptions.UnauthorizedException;
@@ -224,6 +230,23 @@ public class WebServiceSpring {
 
     }
 
+    private String lineBreak = null;
+
+    /**
+     * @return The line separator for the client's platform.
+     */
+    public String getLineBreak() {
+        if (lineBreak == null && request != null) {
+            if (RequestUtil.isWindowsClient(request)) {
+                lineBreak = Exporter.WINDOWS_SEPARATOR;
+            } else {
+                lineBreak = Exporter.UNIX_SEPARATOR;
+            }
+        }
+        return lineBreak;
+    }
+
+
     /**
      * Subclasses can put initialisation here.
      */
@@ -279,6 +302,44 @@ public class WebServiceSpring {
         String filename = getRequestFileName();
         filename += ".xml";
         ResponseUtilSpring.setXMLHeader(responseHeaders, filename);
+    }
+
+    /**
+     * Returns true if the request wants column headers as well as result rows
+     *
+     * @return true if the request declares it wants column headers
+     */
+    public boolean wantsColumnHeaders() {
+        String wantsCols = request
+                .getParameter(WebServiceRequestParser.ADD_HEADER_PARAMETER);
+        // Assume none wanted if empty
+        boolean no = (wantsCols == null || wantsCols.isEmpty()
+                // interpret standard falsy values as false
+                || "0".equals(wantsCols) || "false".equalsIgnoreCase(wantsCols)
+                // but none is what we really expect.
+                || "none".equalsIgnoreCase(wantsCols));
+        // All other values, including "true", "True", 1, and foo-bar are yes
+        return !no;
+    }
+
+    /**
+     * Get an enum which represents the column header style (path, friendly, or
+     * none)
+     *
+     * @return a column header style
+     */
+    public ColumnHeaderStyle getColumnHeaderStyle() {
+        if (wantsColumnHeaders()) {
+            String style = request
+                    .getParameter(WebServiceRequestParser.ADD_HEADER_PARAMETER);
+            if ("path".equalsIgnoreCase(style)) {
+                return ColumnHeaderStyle.PATH;
+            } else {
+                return ColumnHeaderStyle.FRIENDLY;
+            }
+        } else {
+            return ColumnHeaderStyle.NONE;
+        }
     }
 
     /**
@@ -483,6 +544,28 @@ public class WebServiceSpring {
         return permission;
     }
 
+    /** @return A ListManager for this user. **/
+    protected ListManager getListManager() {
+        return new ListManager(im, getPermission().getProfile());
+    }
+
+
+    /**
+     * Get a parameter this service deems to be required.
+     *
+     * @param name The name of the parameter
+     * @return The value of the parameter. Never null, never blank.
+     * @throws MissingParameterException
+     *             If the value of the parameter is blank or null.
+     */
+    protected String getRequiredParameter(String name) {
+        String value = request.getParameter(name);
+        if (StringUtils.isBlank(value)) {
+            throw new MissingParameterException(name);
+        }
+        return value;
+    }
+
     /**
      * Get a parameter this service deems to be optional, or the default value.
      *
@@ -510,6 +593,39 @@ public class WebServiceSpring {
      */
     protected String getOptionalParameter(String name) {
         return getOptionalParameter(name, null);
+    }
+
+    /**
+     * Get the value of a parameter that should be interpreted as an integer.
+     *
+     * @param name The name of the parameter.
+     * @return An integer
+     * @throws BadRequestException if The value is absent or mal-formed.
+     */
+    protected Integer getIntParameter(String name) {
+        String value = getRequiredParameter(name);
+        try {
+            return Integer.valueOf(value);
+        } catch (NumberFormatException e) {
+            String msg = String.format("%s should be a valid number. Got %s", name, value);
+            throw new BadRequestException(msg, e);
+        }
+    }
+
+    /**
+     * Get the value of a parameter that should be interpreted as an integer.
+     *
+     * @param name The name of the parameter.
+     * @param defaultValue The value to return if none is provided by the user.
+     * @return An integer
+     * @throw BadRequestException if the user provided a mal-formed value.
+     */
+    protected Integer getIntParameter(String name, Integer defaultValue) {
+        try {
+            return getIntParameter(name);
+        } catch (MissingParameterException e) {
+            return defaultValue;
+        }
     }
 
     /**

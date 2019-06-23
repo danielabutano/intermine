@@ -10,6 +10,10 @@ package org.intermine.webservice.server.clob;
  *
  */
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,14 +30,18 @@ import org.intermine.objectstore.query.QuerySelectable;
 import org.intermine.pathquery.Path;
 import org.intermine.pathquery.PathException;
 import org.intermine.pathquery.PathQuery;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.Sequence;
 import org.intermine.webservice.server.core.JSONService;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.NotImplementedException;
 import org.intermine.webservice.server.exceptions.ServiceException;
 import org.intermine.webservice.server.output.JSONFormatter;
-import org.intermine.webservice.server.query.AbstractQueryService;
+import org.intermine.webservice.server.query.AbstractQueryServiceSpring;
 import org.intermine.webservice.server.query.QueryRequestParser;
 import org.intermine.webservice.server.query.result.PathQueryBuilder;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 /**
  * <p>A service to provide access to substrings of <code>ClobAccess</code> data. Ideally this
@@ -52,15 +60,22 @@ import org.intermine.webservice.server.query.result.PathQueryBuilder;
  * @author Alex Kalderimis
  *
  */
-public class SequenceService extends JSONService
+public class SequenceService extends JSONServiceSpring
 {
 
     private static final String EXPECTED_CHAR_SEQUENCE
         = "Expected the column to provide a CharSequence value, got: ";
 
+    public Sequence getSequence() {
+        return sequence;
+    }
+
+    private Sequence sequence;
+
     /** @param im The InterMine state object. **/
     public SequenceService(InterMineAPI im) {
         super(im);
+        sequence = new Sequence();
     }
 
     /**
@@ -71,14 +86,12 @@ public class SequenceService extends JSONService
      * @return The header attributes.
      */
     @Override
-    protected Map<String, Object> getHeaderAttributes() {
-        final Map<String, Object> attributes = new HashMap<String, Object>();
-        attributes.putAll(super.getHeaderAttributes());
+    protected void setHeadersPostInit() {
+        super.setHeadersPostInit();
         if (formatIsJSON()) {
-            attributes.put(JSONFormatter.KEY_INTRO, "\"features\":[");
-            attributes.put(JSONFormatter.KEY_OUTRO, "]");
+            responseHeaders.add(JSONFormatter.KEY_INTRO, "\"features\":[");
+            responseHeaders.add(JSONFormatter.KEY_OUTRO, "]");
         }
-        return attributes;
     }
 
     @Override
@@ -86,12 +99,14 @@ public class SequenceService extends JSONService
         Integer start = getIntParameter("start", 0);
         Integer end = getIntParameter("end", null);
         PathQuery pq = getQuery();
-
+        CharSequence chars = "";
         Iterator<CharSequence> sequences = getSequences(pq);
         while (sequences.hasNext()) {
-            CharSequence chars = sequences.next();
-            addResultItem(makeFeature(chars, start, end), sequences.hasNext());
+            ((String) chars).concat(sequences.next().toString());
+            //CharSequence chars = sequences.next();
+            //addResultItem(makeFeature(chars, start, end), sequences.hasNext());
         }
+        sequence.setFeatures(makeFeature(chars,start,end));
     }
 
     private Iterator<CharSequence> getSequences(final PathQuery pq) {
@@ -180,12 +195,28 @@ public class SequenceService extends JSONService
 
     private PathQuery getQuery() {
         String query = new QueryRequestParser(im.getQueryStore(), request).getQueryXml();
-        String schemaUrl = AbstractQueryService.getSchemaLocation(request, "XML");
+        String schemaUrl = AbstractQueryServiceSpring.getSchemaLocation(request, "XML");
         if (!query.startsWith("<")) {
-            schemaUrl = AbstractQueryService.getSchemaLocation(request, "JSON");
+            schemaUrl = AbstractQueryServiceSpring.getSchemaLocation(request, "JSON");
         }
         PathQueryBuilder bdr = new PathQueryBuilder(im, query, schemaUrl, getListManager());
         return bdr.getQuery();
     }
 
+    @Override
+    public void setFooter(){
+        Date now = Calendar.getInstance().getTime();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
+        String executionTime = dateFormatter.format(now);
+        sequence.setExecutionTime(executionTime);
+
+
+        if (status >= 400) {
+            sequence.setWasSuccessful(false);
+            sequence.setError(escapeJava(errorMessage));
+        } else {
+            sequence.setWasSuccessful(true);
+        }
+        sequence.setStatusCode(status);
+    }
 }

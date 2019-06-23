@@ -12,21 +12,37 @@ package org.intermine.webservice.server.fair;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.web.fair.SemanticMarkupUtil;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.SemanticMarkup;
 import org.intermine.webservice.server.core.JSONService;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 /**
  * Serve dataset markup to be added to the report page
  * @author Daniela Butano
  *
  */
-public class DataSetMarkupService extends JSONService
+public class DataSetMarkupService extends JSONServiceSpring
 {
+    public SemanticMarkup getSemanticMarkup() {
+        return semanticMarkup;
+    }
+
+    private SemanticMarkup semanticMarkup;
+
     /**
      * Constructor
      * @param im The InterMine state object.
      **/
     public DataSetMarkupService(InterMineAPI im) {
         super(im);
+        semanticMarkup = new SemanticMarkup();
     }
 
     @Override
@@ -34,12 +50,28 @@ public class DataSetMarkupService extends JSONService
         String dataSetName = getRequiredParameter("name");
         String description = getOptionalParameter("description");
         String url = getOptionalParameter("url");
-        addResultItem(SemanticMarkupUtil.getDataSetMarkup(request, dataSetName, description, url),
-                false);
+        semanticMarkup.setProperties(SemanticMarkupUtil.getDataSetMarkup(request, dataSetName, description, url));
     }
 
     @Override
     public String getResultsKey() {
         return "properties";
+    }
+
+    @Override
+    public void setFooter(){
+        Date now = Calendar.getInstance().getTime();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
+        String executionTime = dateFormatter.format(now);
+        semanticMarkup.setExecutionTime(executionTime);
+
+
+        if (status >= 400) {
+            semanticMarkup.setWasSuccessful(false);
+            semanticMarkup.setError(escapeJava(errorMessage));
+        } else {
+            semanticMarkup.setWasSuccessful(true);
+        }
+        semanticMarkup.setStatusCode(status);
     }
 }

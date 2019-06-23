@@ -10,9 +10,15 @@ package org.intermine.webservice.server.data;
  *
  */
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,18 +38,33 @@ import org.intermine.pathquery.Constraints;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.pathquery.Path;
 import org.intermine.pathquery.PathException;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.JBrowseData;
 import org.intermine.webservice.server.core.JSONService;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
 import org.intermine.webservice.server.exceptions.ServiceException;
+import org.springframework.http.HttpStatus;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 /** @author Alex Kalderimis **/
-public class DataService extends JSONService
+public class DataService extends JSONServiceSpring
 {
 
+    public JBrowseData getjBrowseData() {
+        return jBrowseData;
+    }
+
+    private JBrowseData jBrowseData;
+
+    private String pathInfo;
+
     /** @param im The InterMine state object **/
-    public DataService(InterMineAPI im) {
+    public DataService(InterMineAPI im, String type) {
         super(im);
+        jBrowseData = new JBrowseData();
+        pathInfo = type;
     }
 
     @Override
@@ -58,7 +79,7 @@ public class DataService extends JSONService
 
     @Override
     protected void execute() {
-        String pathInfo = request.getPathInfo();
+
         String rangeHeader = request.getHeader("Range");
         int start = -1, end = -1;
         if (StringUtils.isNotBlank(rangeHeader)) {
@@ -69,7 +90,7 @@ public class DataService extends JSONService
         if (StringUtils.isBlank(pathInfo)) {
             throw new ResourceNotFoundException(pathInfo + " not found.");
         }
-        String className = pathInfo.substring(1);
+        String className = pathInfo;
         Model m = im.getModel();
         ClassDescriptor cd = m.getClassDescriptorByName(className);
         if (cd == null) {
@@ -132,7 +153,8 @@ public class DataService extends JSONService
                     throw e;
                 }
                 iter = results.range(start, end).iterator();
-                response.setStatus(206); // Partial content.
+                httpStatus = HttpStatus.valueOf(206);
+                //response.setStatus(206); // Partial content.
             } catch (ObjectStoreException e) {
                 throw new ServiceException("Could not retrieve results.", e);
             }
@@ -140,6 +162,7 @@ public class DataService extends JSONService
             iter = results.iterator();
         }
         Set<AttributeDescriptor> attrs = cd.getAllAttributeDescriptors();
+        List< Map<String, Object> > resultList = new ArrayList<>();
         while (iter.hasNext()) {
             FastPathObject result = (FastPathObject) iter.next();
             Map<String, Object> item = new HashMap<String, Object>();
@@ -151,8 +174,27 @@ public class DataService extends JSONService
                     throw new ServiceException("Could not read " + field, e);
                 }
             }
-            addResultItem(item, iter.hasNext());
+            resultList.add(item);
+            //addResultItem(item, iter.hasNext());
         }
+        jBrowseData.setResults(resultList);
+    }
+
+    @Override
+    public void setFooter(){
+        Date now = Calendar.getInstance().getTime();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
+        String executionTime = dateFormatter.format(now);
+        jBrowseData.setExecutionTime(executionTime);
+
+
+        if (status >= 400) {
+            jBrowseData.setWasSuccessful(false);
+            jBrowseData.setError(escapeJava(errorMessage));
+        } else {
+            jBrowseData.setWasSuccessful(true);
+        }
+        jBrowseData.setStatusCode(status);
     }
 
 }

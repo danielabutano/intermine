@@ -3,6 +3,7 @@ package org.intermine.webservice;
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.bag.BagManager;
 import org.intermine.metadata.Model;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.output.JSONFormatter;
 
 import java.util.HashMap;
@@ -44,19 +45,11 @@ public class JSONServiceSpring extends WebServiceSpring {
      * @return A map from string to object.
      */
     protected void setHeadersPostInit() {
-        String resultsKey = getResultsKey();
-        if (resultsKey != null) {
-            String intro = "\"" + resultsKey + "\":";
-            if (lazyList()) {
-                intro += "[";
-                responseHeaders.add(JSONFormatter.KEY_OUTRO, "]");
-            }
-            responseHeaders.add(JSONFormatter.KEY_INTRO, intro);
-        }
-        if (formatIsJSONP()) {
-            responseHeaders.add(JSONFormatter.KEY_CALLBACK, getCallback());
-        }
-        responseHeaders.add(JSONFormatter.KEY_KV_PAIRS, kvPairs.toString());
+
     }
 
+    @Override
+    protected Format getDefaultFormat() {
+        return Format.JSON;
+    }
 }

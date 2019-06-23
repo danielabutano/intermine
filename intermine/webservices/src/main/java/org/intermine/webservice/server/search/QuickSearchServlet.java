@@ -26,9 +26,9 @@ public class QuickSearchServlet extends WebServiceServlet
         ServletContext ctx = this.getServletContext();
         switch (method) {
             case GET:
-                return new QuickSearch(api, ctx);
+                //return new QuickSearch(api, ctx);
             case POST:
-                return new QuickSearch(api, ctx);
+                //return new QuickSearch(api, ctx);
             default:
                 throw new NoServiceException();
         }

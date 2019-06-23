@@ -189,7 +189,7 @@ public final class ResponseUtilSpring
      * @param fileName the name of the downloaded file
      */
     public static void setFileName(HttpHeaders httpHeaders, String fileName) {
-        httpHeaders.setContentDispositionFormData("attachment",fileName);
+        httpHeaders.set("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
     }
 
 

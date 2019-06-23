@@ -11,8 +11,12 @@ package org.intermine.webservice.server.search;
  */
 
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,15 +43,15 @@ import org.intermine.web.context.InterMineContext;
 import org.intermine.web.logic.RequestUtil;
 import org.intermine.web.logic.config.WebConfig;
 import org.intermine.web.logic.export.Exporter;
-import org.intermine.web.logic.export.ResponseUtil;
 import org.intermine.web.search.KeywordSearchResult;
 import org.intermine.web.search.SearchUtils;
-import org.intermine.webservice.server.core.JSONService;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.QuickSearch;
 import org.intermine.webservice.server.exceptions.BadRequestException;
-import org.intermine.webservice.server.output.JSONFormatter;
-import org.intermine.webservice.server.output.Output;
-import org.intermine.webservice.server.output.StreamedOutput;
 import org.intermine.webservice.server.output.XMLFormatter;
+import org.intermine.webservice.util.ResponseUtilSpring;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 
 /**
@@ -55,29 +59,35 @@ import org.intermine.webservice.server.output.XMLFormatter;
  * @author Alex Kalderimis
  *
  */
-public class QuickSearch extends JSONService
+public class QuickSearchService extends JSONServiceSpring
 {
-    private static final String FACET_PREFIX = "facet_";
+    private static final String FACET_PREFIX = "facet";
     private static final int PREFIX_LEN = FACET_PREFIX.length();
 
     private static final Logger LOG = Logger.getLogger(QuickSearch.class);
 
-    private Map<String, Map<String, Object>> headerObjs
-        = new HashMap<String, Map<String, Object>>();
-    Map<String, String> kvPairs = new HashMap<String, String>();
     private final ServletContext servletContext;
+
+
+    public QuickSearch getQuickSearch() {
+        return quickSearch;
+    }
+
+    private QuickSearch quickSearch;
 
     /**
      * @param im The InterMine state object
      * @param ctx The servlet context so that the index can be located.
      */
-    public QuickSearch(InterMineAPI im, ServletContext ctx) {
+    public QuickSearchService(InterMineAPI im, ServletContext ctx) {
         super(im);
         this.servletContext = ctx;
+        quickSearch = new QuickSearch();
     }
 
     @Override
     protected void execute() throws Exception {
+        setHeadersPostInit();
         String contextPath = servletContext.getRealPath("/");
 
         KeywordSearchPropertiesManager keywordSearchPropertiesManager
@@ -110,32 +120,32 @@ public class QuickSearch extends JSONService
 
                 facetData.put(kwsf.getField(), sfData);
             }
-            headerObjs.put("facets", facetData);
+            quickSearch.setFacets(facetData);
         }
 
-        kvPairs.put("totalHits", String.valueOf(results.getTotalHits()));
+        quickSearch.setTotalHits(String.valueOf(results.getTotalHits()));
 
-        QuickSearchResultProcessor processor = getProcessor();
-        Iterator<KeywordSearchResult> it = searchResultsParsed.iterator();
-        for (int i = 0; input.wantsMore(i) && it.hasNext(); i++) {
-            KeywordSearchResult kwsr = it.next();
-            output.addResultItem(processor.formatResult(kwsr,
-                    input.wantsMore(i + 1) && it.hasNext()));
-        }
-    }
-
-    @Override
-    protected Map<String, Object> getHeaderAttributes() {
-        final Map<String, Object> attributes = new HashMap<String, Object>();
-        attributes.putAll(super.getHeaderAttributes());
         if (formatIsJSON()) {
-
-            attributes.put(JSONFormatter.KEY_KV_PAIRS, kvPairs);
-            attributes.put(JSONFormatter.KEY_INTRO, "\"results\":[");
-            attributes.put(JSONFormatter.KEY_OUTRO, "]");
-            attributes.put(JSONFormatter.KEY_HEADER_OBJS, headerObjs);
+            List< Map<String,Object> > result = new ArrayList<>();
+            QuickSearchJSONProcessor processor = new QuickSearchJSONProcessor();
+            Iterator<KeywordSearchResult> it = searchResultsParsed.iterator();
+            for (int i = 0; input.wantsMore(i) && it.hasNext(); i++) {
+                KeywordSearchResult kwsr = it.next();
+                result.add(processor.formatResult(kwsr));
+            }
+            quickSearch.setResults(result);
         }
-        return attributes;
+        else {
+            List< List<String> > result = new ArrayList<>();
+            QuickSearchResultProcessor processor = getProcessor();
+            Iterator<KeywordSearchResult> it = searchResultsParsed.iterator();
+            for (int i = 0; input.wantsMore(i) && it.hasNext(); i++) {
+                KeywordSearchResult kwsr = it.next();
+                result.add(processor.formatResult(kwsr,
+                        input.wantsMore(i + 1) && it.hasNext()));
+            }
+            quickSearch.setResults(result);
+        }
     }
 
     private Map<String, String> getFacetValues(Vector<KeywordSearchFacetData> facets) {
@@ -250,9 +260,7 @@ public class QuickSearch extends JSONService
     }
 
     private QuickSearchResultProcessor getProcessor() {
-        if (formatIsJSON()) {
-            return new QuickSearchJSONProcessor();
-        } else if (formatIsXML()) {
+        if (formatIsXML()) {
             return new QuickSearchXMLProcessor();
         } else {
             final String separator;
@@ -266,9 +274,25 @@ public class QuickSearch extends JSONService
     }
 
     @Override
-    protected Output makeXMLOutput(PrintWriter out, String separator) {
-        ResponseUtil.setXMLHeader(response, "search.xml");
-        return new StreamedOutput(out, new QuickSearchXMLFormatter());
+    protected void makeXMLOutput() {
+        ResponseUtilSpring.setXMLHeader(responseHeaders, "search.xml");
+    }
+
+    @Override
+    public void setFooter(){
+        Date now = Calendar.getInstance().getTime();
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
+        String executionTime = dateFormatter.format(now);
+        quickSearch.setExecutionTime(executionTime);
+
+
+        if (status >= 400) {
+            quickSearch.setWasSuccessful(false);
+            quickSearch.setError(escapeJava(errorMessage));
+        } else {
+            quickSearch.setWasSuccessful(true);
+        }
+        quickSearch.setStatusCode(status);
     }
 
 

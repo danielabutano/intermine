@@ -5,7 +5,6 @@ import org.apache.log4j.Logger;
 import org.intermine.api.InterMineAPI;
 import org.intermine.metadata.StringUtil;
 import org.intermine.web.context.InterMineContext;
-import org.intermine.web.logic.export.ResponseUtil;
 import org.intermine.webservice.model.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
@@ -76,14 +75,15 @@ public class SchemaApiController implements SchemaApi {
         return new ResponseEntity<Schema>(schema,httpHeaders,httpStatus);
     }
 
-    public ResponseEntity<?> oneSchema(@ApiParam(value = "The name of the schema to retrieve",required=true) @PathVariable("name") String name, HttpServletResponse response) {
+    public ResponseEntity<?> oneSchema(@ApiParam(value = "The name of the schema to retrieve",required=true) @PathVariable("name") String name) {
         String accept = request.getHeader("Accept");
         httpStatus = HttpStatus.OK;
-        String responseObject = serveSpecificSchema(response,name);
-        return new ResponseEntity<String>(responseObject,httpStatus);
+        httpHeaders = new HttpHeaders();
+        String responseObject = serveSpecificSchema(name);
+        return new ResponseEntity<String>(responseObject,httpHeaders,httpStatus);
     }
 
-    private String serveSpecificSchema(HttpServletResponse resp, String fileName) {
+    private String serveSpecificSchema(String fileName) {
         Properties webProperties = InterMineContext.getWebProperties();
         Set<String> schemata = new HashSet<String>(
                 Arrays.asList(webProperties.getProperty("schema.filenames", "").split(",")));
@@ -92,11 +92,11 @@ public class SchemaApiController implements SchemaApi {
             return (fileName + " is not in the list of schemata.");
         } else {
             try {
-                ResponseUtil.setFileName(resp, fileName);
+                ResponseUtilSpring.setFileName(httpHeaders, fileName);
                 if (fileName.endsWith("schema")) {
-                    ResponseUtil.setJSONSchemaContentType(resp);
+                    ResponseUtilSpring.setJSONSchemaContentType(httpHeaders);
                 } else if (fileName.endsWith("xsd")) {
-                    ResponseUtil.setXMLContentType(resp);
+                    ResponseUtilSpring.setXMLContentType(httpHeaders);
                 }
                 InputStream in = servletContext.getResourceAsStream("/webservice/" + fileName);
                 return IOUtils.toString(in, "UTF-8");
