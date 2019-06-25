@@ -1,4 +1,4 @@
-package io.swagger;
+package spring.configuration;
 
 import io.swagger.configuration.ResourceFinder;
 import org.apache.commons.io.IOUtils;

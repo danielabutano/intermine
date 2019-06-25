@@ -30,7 +30,6 @@ public interface TemplatesApi {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = TemplatesSystem.class) })
     @RequestMapping(value = "/templates/system",
-        produces = { "application/json", "application/xml" }, 
         method = RequestMethod.GET)
     ResponseEntity<?> templatesSystem(@ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "xml") String format);
 

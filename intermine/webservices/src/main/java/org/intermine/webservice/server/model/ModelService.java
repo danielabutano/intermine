@@ -132,25 +132,9 @@ public class ModelService extends WebServiceSpring
         final Model model = this.im.getModel();
         if (formatIsJSON()) {
             ResponseUtilSpring.setJSONHeader(responseHeaders, FILE_BASE_NAME + ".json", formatIsJSONP());
-            if (formatIsJSONP()) {
-                String callback = getCallback();
-                if (callback == null || "".equals(callback)) {
-                    callback = DEFAULT_CALLBACK;
-                }
-                responseHeaders.add(JSONFormatter.KEY_CALLBACK, callback);
-            }
             if (node == null) {
-                responseHeaders.add(JSONFormatter.KEY_INTRO, "\"model\":");
                 responseModel.setModel(getAnnotatedModel(model));
             } else {
-                Map<String, String> kvPairs = new HashMap<String, String>();
-                kvPairs.put("name", getNodeName(node));
-                kvPairs.put("id", node.toStringNoConstraints());
-                kvPairs.put("display", WebCoreUtil.formatPath(node, config));
-                kvPairs.put("type", "class");
-                responseHeaders.add(JSONFormatter.KEY_KV_PAIRS, kvPairs.toString());
-                responseHeaders.add(JSONFormatter.KEY_INTRO, "\"fields\":[");
-                responseHeaders.add(JSONFormatter.KEY_OUTRO, "]");
                 responseModel.setModel(nodeChildrenToJSON(node));
             }
         } else {

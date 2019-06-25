@@ -23,7 +23,6 @@ public interface ModelApi {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = Model.class) })
     @RequestMapping(value = "/model",
-        produces = { "application/json", "application/xml" }, 
         method = RequestMethod.GET)
     ResponseEntity<?> model(@ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "xml") String format);
 }

@@ -24,7 +24,6 @@ public interface VersionApi {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = Version.class) })
     @RequestMapping(value = "/version",
-        produces = { "application/json", "text/plain" }, 
         method = RequestMethod.GET)
     ResponseEntity<?> version(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format);
 
@@ -33,7 +32,6 @@ public interface VersionApi {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = VersionRelease.class) })
     @RequestMapping(value = "/version/intermine",
-        produces = { "application/json", "text/plain" }, 
         method = RequestMethod.GET)
     ResponseEntity<?> versionIntermine(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format);
 
@@ -42,7 +40,6 @@ public interface VersionApi {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = VersionRelease.class) })
     @RequestMapping(value = "/version/release",
-        produces = { "application/json", "text/plain" }, 
         method = RequestMethod.GET)
     ResponseEntity<?> versionRelease(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format);
 

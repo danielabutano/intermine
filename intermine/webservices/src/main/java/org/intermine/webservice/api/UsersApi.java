@@ -30,7 +30,6 @@ public interface UsersApi {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = Users.class) })
     @RequestMapping(value = "/users",
-        produces = { "application/json", "application/xml" }, 
         method = RequestMethod.POST)
     ResponseEntity<Users> users(@NotNull @ApiParam(value = "The user name of the new user. It should be an email address if possible. There must not be any user with the same username.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "A password to associate with the account.", required = true) @Valid @RequestParam(value = "password", required = true) String password,@ApiParam(value = "Whether or not to subscribe to the mine's mailing list, if it has one. The username must be an email address if true.") @Valid @RequestParam(value = "subscribe-to-list", required = false) Boolean subscribeToList);
 
