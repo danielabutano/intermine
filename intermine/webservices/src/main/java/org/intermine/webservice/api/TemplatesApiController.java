@@ -6,6 +6,7 @@ import org.intermine.webservice.model.TemplatesSystem;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 import org.intermine.webservice.server.template.SystemTemplatesService;
+import org.intermine.webservice.util.ResponseUtilSpring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -39,6 +40,8 @@ public class TemplatesApiController implements TemplatesApi {
 
     private HttpStatus httpStatus;
 
+    private static final String FILE_BASE_NAME = "templates";
+
 
     @org.springframework.beans.factory.annotation.Autowired
     public TemplatesApiController(ObjectMapper objectMapper, HttpServletRequest request) {
@@ -47,8 +50,6 @@ public class TemplatesApiController implements TemplatesApi {
     }
 
     public ResponseEntity<?> templatesSystem(@ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "xml") String format) {
-        String accept = request.getHeader("Accept");
-
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         SystemTemplatesService systemTemplatesService = new SystemTemplatesService(im);
@@ -60,6 +61,7 @@ public class TemplatesApiController implements TemplatesApi {
             systemTemplatesService.setFooter();
             return new ResponseEntity<TemplatesSystem>(templatesSystem, httpHeaders, httpStatus);
         }
+        ResponseUtilSpring.setXMLHeader(httpHeaders, FILE_BASE_NAME + ".xml");
         return new ResponseEntity<Object>(templatesSystem.getTemplates(),httpHeaders,httpStatus);
     }
 

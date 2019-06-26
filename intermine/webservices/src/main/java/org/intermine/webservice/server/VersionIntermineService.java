@@ -48,15 +48,7 @@ public class VersionIntermineService extends JSONServiceSpring
 
     @Override
     protected void execute() throws Exception {
-        setHeadersPostInit();
-        versionRelease.setVersion(Constants.INTERMINE_VERSION);    }
-
-    @Override
-    protected void setHeadersPostInit() {
-        super.setHeadersPostInit();
-        if (Format.HTML == getFormat()) {
-            responseHeaders.add(HTMLTableFormatter.KEY_COLUMN_HEADERS, "InterMine release");
-        }
+        versionRelease.setVersion(Constants.INTERMINE_VERSION);
     }
 
     @Override

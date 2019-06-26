@@ -30,8 +30,7 @@ import org.intermine.web.logic.config.FieldConfig;
 import org.intermine.web.logic.config.FieldConfigHelper;
 import org.intermine.web.logic.config.WebConfig;
 import org.intermine.webservice.JSONServiceSpring;
-import org.intermine.webservice.model.Summaryfields;
-import org.intermine.webservice.server.core.JSONService;
+import org.intermine.webservice.model.SummaryFields;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
@@ -45,11 +44,11 @@ public class SummaryService extends JSONServiceSpring
 
     private static final Logger LOG = Logger.getLogger(SummaryService.class);
 
-    public Summaryfields getSummaryfields() {
-        return summaryfields;
+    public SummaryFields getSummaryFields() {
+        return summaryFields;
     }
 
-    protected Summaryfields summaryfields;
+    protected SummaryFields summaryFields;
 
     /**
      * Constructor
@@ -57,7 +56,7 @@ public class SummaryService extends JSONServiceSpring
      */
     public SummaryService(InterMineAPI im) {
         super(im);
-        summaryfields = new Summaryfields();
+        summaryFields = new SummaryFields();
     }
 
     /**
@@ -69,7 +68,7 @@ public class SummaryService extends JSONServiceSpring
         Boolean refsAllowed = !Boolean.valueOf(getOptionalParameter("norefs", "false"));
         WebConfig webConfig = InterMineContext.getWebConfig();
 
-        summaryfields.setClasses(getMapping(refsAllowed, webConfig));
+        summaryFields.setClasses(getMapping(refsAllowed, webConfig));
 
     }
 
@@ -111,16 +110,16 @@ public class SummaryService extends JSONServiceSpring
         Date now = Calendar.getInstance().getTime();
         DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
         String executionTime = dateFormatter.format(now);
-        summaryfields.setExecutionTime(executionTime);
+        summaryFields.setExecutionTime(executionTime);
 
 
         if (status >= 400) {
-            summaryfields.setWasSuccessful(false);
-            summaryfields.setError(escapeJava(errorMessage));
+            summaryFields.setWasSuccessful(false);
+            summaryFields.setError(escapeJava(errorMessage));
         } else {
-            summaryfields.setWasSuccessful(true);
+            summaryFields.setWasSuccessful(true);
         }
-        summaryfields.setStatusCode(status);
+        summaryFields.setStatusCode(status);
     }
 
 }

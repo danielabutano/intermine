@@ -69,7 +69,6 @@ public class ModelService extends WebServiceSpring
     private org.intermine.webservice.model.Model responseModel;
     private static final String DEFAULT_CALLBACK = "parseModel";
     private static final Logger LOG = Logger.getLogger(ModelService.class);
-    private static final String FILE_BASE_NAME = "model";
     private WebConfig config = null;
     private Path node = null;
 
@@ -83,10 +82,6 @@ public class ModelService extends WebServiceSpring
         responseModel = new org.intermine.webservice.model.Model();
     }
 
-    @Override
-    protected void makeXMLOutput() {
-        ResponseUtilSpring.setXMLHeader(responseHeaders, FILE_BASE_NAME + ".xml");
-    }
     @Override
     protected Format getDefaultFormat() {
         return Format.XML;
@@ -131,7 +126,6 @@ public class ModelService extends WebServiceSpring
     protected void execute() {
         final Model model = this.im.getModel();
         if (formatIsJSON()) {
-            ResponseUtilSpring.setJSONHeader(responseHeaders, FILE_BASE_NAME + ".json", formatIsJSONP());
             if (node == null) {
                 responseModel.setModel(getAnnotatedModel(model));
             } else {

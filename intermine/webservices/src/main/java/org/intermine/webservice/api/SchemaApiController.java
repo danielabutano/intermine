@@ -63,7 +63,7 @@ public class SchemaApiController implements SchemaApi {
     }
 
     public ResponseEntity<Schema> allSchema() {
-        String accept = request.getHeader("Accept");final InterMineAPI im = InterMineContext.getInterMineAPI();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         SchemaListService schemaListService = new SchemaListService(im);
         schemaListService.service(request);
@@ -76,7 +76,6 @@ public class SchemaApiController implements SchemaApi {
     }
 
     public ResponseEntity<?> oneSchema(@ApiParam(value = "The name of the schema to retrieve",required=true) @PathVariable("name") String name) {
-        String accept = request.getHeader("Accept");
         httpStatus = HttpStatus.OK;
         httpHeaders = new HttpHeaders();
         String responseObject = serveSpecificSchema(name);

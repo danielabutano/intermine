@@ -7,11 +7,11 @@ import org.springframework.validation.annotation.Validated;
 import java.util.Objects;
 
 /**
- * Summaryfields
+ * SummaryFields
  */
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-05-26T23:19:30.817+05:30[Asia/Kolkata]")
-public class Summaryfields   {
+public class SummaryFields {
   @JsonProperty("classes")
   private Object classes = null;
 
@@ -27,7 +27,7 @@ public class Summaryfields   {
   @JsonProperty("statusCode")
   private Integer statusCode = null;
 
-  public Summaryfields classes(Object classes) {
+  public SummaryFields classes(Object classes) {
     this.classes = classes;
     return this;
   }
@@ -46,7 +46,7 @@ public class Summaryfields   {
     this.classes = classes;
   }
 
-  public Summaryfields executionTime(String executionTime) {
+  public SummaryFields executionTime(String executionTime) {
     this.executionTime = executionTime;
     return this;
   }
@@ -65,7 +65,7 @@ public class Summaryfields   {
     this.executionTime = executionTime;
   }
 
-  public Summaryfields wasSuccessful(Boolean wasSuccessful) {
+  public SummaryFields wasSuccessful(Boolean wasSuccessful) {
     this.wasSuccessful = wasSuccessful;
     return this;
   }
@@ -84,7 +84,7 @@ public class Summaryfields   {
     this.wasSuccessful = wasSuccessful;
   }
 
-  public Summaryfields error(String error) {
+  public SummaryFields error(String error) {
     this.error = error;
     return this;
   }
@@ -103,7 +103,7 @@ public class Summaryfields   {
     this.error = error;
   }
 
-  public Summaryfields statusCode(Integer statusCode) {
+  public SummaryFields statusCode(Integer statusCode) {
     this.statusCode = statusCode;
     return this;
   }
@@ -131,7 +131,7 @@ public class Summaryfields   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Summaryfields summaryfields = (Summaryfields) o;
+    SummaryFields summaryfields = (SummaryFields) o;
     return Objects.equals(this.classes, summaryfields.classes) &&
         Objects.equals(this.executionTime, summaryfields.executionTime) &&
         Objects.equals(this.wasSuccessful, summaryfields.wasSuccessful) &&
@@ -147,7 +147,7 @@ public class Summaryfields   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Summaryfields {\n");
+    sb.append("class SummaryFields {\n");
 
     sb.append("    classes: ").append(toIndentedString(classes)).append("\n");
     sb.append("    executionTime: ").append(toIndentedString(executionTime)).append("\n");

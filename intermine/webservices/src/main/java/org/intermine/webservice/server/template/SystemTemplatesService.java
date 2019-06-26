@@ -48,9 +48,6 @@ import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
  */
 public class SystemTemplatesService extends WebServiceSpring
 {
-
-    private static final String FILE_BASE_NAME = "templates";
-
     public TemplatesSystem getTemplatesSystem() {
         return templatesSystem;
     }
@@ -84,15 +81,10 @@ public class SystemTemplatesService extends WebServiceSpring
 
         switch (getFormat()) {
             case XML:
-                ResponseUtilSpring.setXMLHeader(responseHeaders, FILE_BASE_NAME + ".xml");
                 templatesSystem.setTemplates(TemplateHelper.apiTemplateMapToXml(templates,
                         PathQuery.USERPROFILE_VERSION));
                 break;
             case JSON:
-                if (formatIsJSONP()) {
-                    responseHeaders.add(JSONFormatter.KEY_CALLBACK, getCallback());
-                }
-                responseHeaders.add(JSONFormatter.KEY_INTRO, "\"templates\":");
                 templatesSystem.setTemplates(
                         TemplateHelper.apiTemplateMapToJson(im, templates, null));
                 break;

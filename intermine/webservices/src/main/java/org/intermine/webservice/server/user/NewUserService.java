@@ -95,7 +95,6 @@ public class NewUserService extends JSONServiceSpring
 
     @Override
     protected void execute() throws Exception {
-        setHeadersPostInit();
         ProfileManager pm = im.getProfileManager();
         NewUserInput input = new NewUserInput();
 
@@ -128,12 +127,6 @@ public class NewUserService extends JSONServiceSpring
         user.put("temporaryToken", pm.generate24hrKey(p));
 
         users.setUser(user);
-    }
-
-    @Override
-    protected void setHeadersPostInit() {
-        super.setHeadersPostInit();
-        responseHeaders.add(JSONFormatter.KEY_INTRO, "\"user\":");
     }
 
     private static class WelcomeAction implements MailAction

@@ -170,7 +170,6 @@ public class CodeService extends AbstractQueryServiceSpring
         WebserviceCodeGenerator codeGen = getCodeGenerator(lang);
         String sc = codeGen.generate(info);
         if (formatIsJSON()) {
-            ResponseUtilSpring.setJSONHeader(responseHeaders, "querycode.json");
             sc = "\"" + StringEscapeUtils.escapeJava(sc) + "\"";
         }
 

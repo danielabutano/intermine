@@ -78,22 +78,6 @@ public class SequenceService extends JSONServiceSpring
         sequence = new Sequence();
     }
 
-    /**
-     * Why is the results key "features", pray? and not something more sensible, like,
-     * "results", say. Well, this it just seemed sensible to make this service
-     * directly consumable by <em>jbrowse</em>, which is obviously the whole point of this
-     * service. <em>Sigh</em>.
-     * @return The header attributes.
-     */
-    @Override
-    protected void setHeadersPostInit() {
-        super.setHeadersPostInit();
-        if (formatIsJSON()) {
-            responseHeaders.add(JSONFormatter.KEY_INTRO, "\"features\":[");
-            responseHeaders.add(JSONFormatter.KEY_OUTRO, "]");
-        }
-    }
-
     @Override
     protected void execute() {
         Integer start = getIntParameter("start", 0);

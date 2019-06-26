@@ -51,13 +51,11 @@ public class SearchApiController implements SearchApi {
     }
 
     public ResponseEntity<QuickSearch> quickSearchGet(@ApiParam(value = "The query string to search with. If absent, or blank, all results will be returned.") @Valid @RequestParam(value = "q", required = false) String q,@ApiParam(value = "The maximum number of records to return. If no limit is provided, up to 100 results will be returned.") @Valid @RequestParam(value = "size", required = false) Integer size,@ApiParam(value = "The index of the first result to return.") @Valid @RequestParam(value = "start", required = false) Integer start,@ApiParam(value = "A list to search within.") @Valid @RequestParam(value = "list", required = false) String list,@ApiParam(value = "A facet parameter, eg facet_Organism=D.melanogaster") @Valid @RequestParam(value = "facet_?", required = false) List<String> facet) {
-        String accept = request.getHeader("Accept");
         QuickSearch quickSearch = serve();
         return new ResponseEntity<QuickSearch>(quickSearch,httpHeaders,httpStatus);
     }
 
     public ResponseEntity<QuickSearch> quickSearchPost(@ApiParam(value = "The query string to search with. If absent, or blank, all results will be returned.") @Valid @RequestParam(value = "q", required = false) String q,@ApiParam(value = "The maximum number of records to return. If no limit is provided, up to 100 results will be returned.") @Valid @RequestParam(value = "size", required = false) Integer size,@ApiParam(value = "The index of the first result to return.") @Valid @RequestParam(value = "start", required = false) Integer start,@ApiParam(value = "A list to search within.") @Valid @RequestParam(value = "list", required = false) String list,@ApiParam(value = "A facet parameter, eg facet_Organism=D.melanogaster") @Valid @RequestParam(value = "facet_?", required = false) List<String> facet) {
-        String accept = request.getHeader("Accept");
         QuickSearch quickSearch = serve();
         return new ResponseEntity<QuickSearch>(quickSearch,httpHeaders,httpStatus);
     }

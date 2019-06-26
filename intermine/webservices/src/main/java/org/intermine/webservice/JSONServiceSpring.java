@@ -40,14 +40,6 @@ public class JSONServiceSpring extends WebServiceSpring {
         return false;
     }
 
-    /**
-     * Get the header attributes to apply to the formatter.
-     * @return A map from string to object.
-     */
-    protected void setHeadersPostInit() {
-
-    }
-
     @Override
     protected Format getDefaultFormat() {
         return Format.JSON;

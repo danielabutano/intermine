@@ -46,7 +46,6 @@ public class WebPropertiesApiController implements WebPropertiesApi {
     }
 
     public ResponseEntity<WebProperties> webProperties() {
-        String accept = request.getHeader("Accept");
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         WebPropertiesService webPropertiesService = new WebPropertiesService(im);

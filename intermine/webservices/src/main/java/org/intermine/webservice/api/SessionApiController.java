@@ -46,7 +46,6 @@ public class SessionApiController implements SessionApi {
     }
 
     public ResponseEntity<Session> session() {
-        String accept = request.getHeader("Accept");
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         SessionService sessionService = new SessionService(im);

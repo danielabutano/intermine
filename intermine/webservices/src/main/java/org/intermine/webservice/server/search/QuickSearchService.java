@@ -87,7 +87,6 @@ public class QuickSearchService extends JSONServiceSpring
 
     @Override
     protected void execute() throws Exception {
-        setHeadersPostInit();
         String contextPath = servletContext.getRealPath("/");
 
         KeywordSearchPropertiesManager keywordSearchPropertiesManager
@@ -271,11 +270,6 @@ public class QuickSearchService extends JSONServiceSpring
             }
             return new QuickSearchTextProcessor(separator);
         }
-    }
-
-    @Override
-    protected void makeXMLOutput() {
-        ResponseUtilSpring.setXMLHeader(responseHeaders, "search.xml");
     }
 
     @Override

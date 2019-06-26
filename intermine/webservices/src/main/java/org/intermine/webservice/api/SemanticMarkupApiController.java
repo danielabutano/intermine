@@ -48,7 +48,6 @@ public class SemanticMarkupApiController implements SemanticMarkupApi {
     }
 
     public ResponseEntity<SemanticMarkup> semanticMarkupDatacatalog() {
-        String accept = request.getHeader("Accept");
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         DataCatalogMarkupService dataCatalogMarkupService = new DataCatalogMarkupService(im);
@@ -77,7 +76,6 @@ public class SemanticMarkupApiController implements SemanticMarkupApi {
     }
 
     public ResponseEntity<SemanticMarkup> semanticMarkupDataset(@NotNull @ApiParam(value = "The name of the dataset.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@ApiParam(value = "The description of the dataset.") @Valid @RequestParam(value = "description", required = false) String description,@ApiParam(value = "The url of the dataset.") @Valid @RequestParam(value = "url", required = false) String url) {
-        String accept = request.getHeader("Accept");
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         DataSetMarkupService dataSetMarkupService = new DataSetMarkupService(im);

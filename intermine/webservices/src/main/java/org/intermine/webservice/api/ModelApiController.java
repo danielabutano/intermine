@@ -34,7 +34,7 @@ public class ModelApiController implements ModelApi {
 
     private HttpStatus httpStatus;
 
-
+    private static final String FILE_BASE_NAME = "model";
 
 
     @Autowired
@@ -54,10 +54,14 @@ public class ModelApiController implements ModelApi {
         httpHeaders = modelService.getResponseHeaders();
         httpStatus = modelService.getHttpStatus();
         if(format.equals("json")) {
+            ResponseUtilSpring.setJSONHeader(httpHeaders, FILE_BASE_NAME + ".json", false);
             modelService.setFooter();
             return new ResponseEntity<Model>(model, httpHeaders, httpStatus);
         }
+        ResponseUtilSpring.setXMLHeader(httpHeaders, FILE_BASE_NAME + ".xml");
         return new ResponseEntity<Object>(model.getModel(),httpHeaders,httpStatus);
     }
+
+
 
 }

@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.intermine.api.InterMineAPI;
 import org.intermine.web.context.InterMineContext;
-import org.intermine.webservice.model.Summaryfields;
+import org.intermine.webservice.model.SummaryFields;
 import org.intermine.webservice.server.SummaryService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ import javax.validation.Valid;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-05-26T23:19:30.817+05:30[Asia/Kolkata]")
 @Controller
-public class SummaryfieldsApiController implements SummaryfieldsApi {
+public class SummaryFieldsApiController implements SummaryFieldsApi {
 
     private static final Logger LOG = Logger.getLogger(ModelApiController.class);
 
@@ -31,23 +31,22 @@ public class SummaryfieldsApiController implements SummaryfieldsApi {
     private HttpStatus httpStatus;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public SummaryfieldsApiController(ObjectMapper objectMapper, HttpServletRequest request) {
+    public SummaryFieldsApiController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.request = request;
     }
 
-    public ResponseEntity<Summaryfields> summaryfields(@ApiParam(value = "Whether to exclude references from the summary fields") @Valid @RequestParam(value = "norefs", required = false) Boolean norefs) {
-        String accept = request.getHeader("Accept");
+    public ResponseEntity<SummaryFields> summaryfields(@ApiParam(value = "Whether to exclude references from the summary fields") @Valid @RequestParam(value = "norefs", required = false) Boolean norefs) {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         SummaryService summaryService = new SummaryService(im);
         summaryService.service(request);
-        Summaryfields summaryfields = summaryService.getSummaryfields();
+        SummaryFields summaryFields = summaryService.getSummaryFields();
         httpHeaders = summaryService.getResponseHeaders();
         httpStatus = summaryService.getHttpStatus();
         summaryService.setFooter();
 
-        return new ResponseEntity<Summaryfields>(summaryfields,httpHeaders,httpStatus);
+        return new ResponseEntity<SummaryFields>(summaryFields,httpHeaders,httpStatus);
     }
 
 }

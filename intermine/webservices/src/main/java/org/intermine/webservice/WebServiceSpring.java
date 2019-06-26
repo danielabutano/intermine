@@ -178,7 +178,8 @@ public class WebServiceSpring {
                 ResponseUtilSpring.setHTMLContentType(responseHeaders);
                 break;
             case XML:
-                makeXMLOutput();
+                filename += ".xml";
+                ResponseUtilSpring.setXMLHeader(responseHeaders, filename);
                 break;
             case TSV:
                 filename += ".tsv";
@@ -226,8 +227,6 @@ public class WebServiceSpring {
         if (!isUncompressed()) {
             ResponseUtilSpring.setGzippedHeader(responseHeaders, filename + getExtension());
         }
-
-
     }
 
     private String lineBreak = null;
@@ -292,16 +291,6 @@ public class WebServiceSpring {
      */
     public boolean formatIsXML() {
         return (getFormat() == Format.XML);
-    }
-
-    /**
-     * Set the XML response headers
-     * @return An Output that produces good XML.
-     */
-    protected void makeXMLOutput() {
-        String filename = getRequestFileName();
-        filename += ".xml";
-        ResponseUtilSpring.setXMLHeader(responseHeaders, filename);
     }
 
     /**
@@ -754,7 +743,6 @@ public class WebServiceSpring {
             if (callback == null) {
                 callback = "makeInterMineResultsTable";
             }
-            responseHeaders.add(JSONResultFormatter.KEY_CALLBACK, callback);
         }
 
     }

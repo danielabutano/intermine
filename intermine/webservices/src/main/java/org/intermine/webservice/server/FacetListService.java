@@ -69,8 +69,6 @@ public class FacetListService extends JSONServiceSpring
         Collection<KeywordSearchFacet> keywordSearchFacets
                 = searchHandler.doFacetSearch(im, "*:*", facetValues);
 
-        setHeadersPostInit();
-
         Map<String, List<String>> ckData = new HashMap<String, List<String>>();
 
         for (KeywordSearchFacet<FacetField.Count> keywordSearchFacet : keywordSearchFacets) {

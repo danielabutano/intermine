@@ -46,16 +46,7 @@ public class VersionService extends JSONServiceSpring
 
     @Override
     protected void execute() throws Exception {
-        setHeadersPostInit();
         version.setVersion(Constants.WEB_SERVICE_VERSION);
-    }
-
-    @Override
-    protected void setHeadersPostInit() {
-        super.setHeadersPostInit();
-        if (Format.HTML == getFormat()) {
-            responseHeaders.add(HTMLTableFormatter.KEY_COLUMN_HEADERS, "API Version");
-        }
     }
 
     @Override

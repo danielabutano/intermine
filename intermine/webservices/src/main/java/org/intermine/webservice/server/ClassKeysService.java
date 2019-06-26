@@ -10,7 +10,6 @@ package org.intermine.webservice.server;
  *
  */
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +19,6 @@ import org.intermine.metadata.ClassDescriptor;
 import org.intermine.metadata.FieldDescriptor;
 import org.intermine.metadata.Model;
 import org.intermine.webservice.server.exceptions.ServiceException;
-import org.json.JSONObject;
 
 /**
  * A service to fetch a JSON representation of class keys for all classes in the model.
@@ -58,7 +56,7 @@ public class ClassKeysService extends SummaryService
                 }
             }
         }
-        summaryfields.setClasses(ckData);
+        summaryFields.setClasses(ckData);
     }
 
 }

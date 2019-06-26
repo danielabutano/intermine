@@ -6,7 +6,7 @@
 package org.intermine.webservice.api;
 
 import io.swagger.annotations.*;
-import org.intermine.webservice.model.Summaryfields;
+import org.intermine.webservice.model.SummaryFields;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,15 +15,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.validation.Valid;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-05-26T23:19:30.817+05:30[Asia/Kolkata]")
-@Api(value = "summaryfields", description = "the summaryfields API")
-public interface SummaryfieldsApi {
+@Api(value = "summaryFields", description = "the summaryFields API")
+public interface SummaryFieldsApi {
 
-    @ApiOperation(value = "Get the fields used to summarise the class.", nickname = "summaryfields", notes = "", response = Summaryfields.class, tags={  })
+    @ApiOperation(value = "Get the fields used to summarise the class.", nickname = "summaryFields", notes = "", response = SummaryFields.class, tags={  })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "OK", response = Summaryfields.class) })
+        @ApiResponse(code = 200, message = "OK", response = SummaryFields.class) })
     @RequestMapping(value = "/summaryfields",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
-    ResponseEntity<Summaryfields> summaryfields(@ApiParam(value = "Whether to exclude references from the summary fields") @Valid @RequestParam(value = "norefs", required = false) Boolean norefs);
+    ResponseEntity<SummaryFields> summaryfields(@ApiParam(value = "Whether to exclude references from the summary fields") @Valid @RequestParam(value = "norefs", required = false) Boolean norefs);
 
 }

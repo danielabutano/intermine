@@ -6,6 +6,7 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.webservice.model.GeneratedCode;
 import org.intermine.webservice.server.query.CodeService;
+import org.intermine.webservice.util.ResponseUtilSpring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -49,6 +50,7 @@ public class QueryApiController implements QueryApi {
         String accept = request.getHeader("Accept");
         GeneratedCode generatedCode = serve();
         if(format.equals("json")) {
+            ResponseUtilSpring.setJSONHeader(httpHeaders, "querycode.json");
             return new ResponseEntity<GeneratedCode>(generatedCode, httpHeaders, httpStatus);
         }
         return new ResponseEntity<Object>(generatedCode.getCode(),httpHeaders,httpStatus);
@@ -58,6 +60,7 @@ public class QueryApiController implements QueryApi {
         String accept = request.getHeader("Accept");
         GeneratedCode generatedCode = serve();
         if(format.equals("json")) {
+            ResponseUtilSpring.setJSONHeader(httpHeaders, "querycode.json");
             return new ResponseEntity<GeneratedCode>(generatedCode, httpHeaders, httpStatus);
         }
         return new ResponseEntity<Object>(generatedCode.getCode(),httpHeaders,httpStatus);

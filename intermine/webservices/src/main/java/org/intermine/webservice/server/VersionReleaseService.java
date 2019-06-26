@@ -46,16 +46,7 @@ public class VersionReleaseService extends JSONServiceSpring
 
     @Override
     protected void execute() throws Exception {
-        setHeadersPostInit();
         versionRelease.setVersion(webProperties.getProperty("project.releaseVersion"));
-    }
-
-    @Override
-    protected void setHeadersPostInit() {
-        super.setHeadersPostInit();
-        if (Format.HTML == getFormat()) {
-            responseHeaders.add(HTMLTableFormatter.KEY_COLUMN_HEADERS, "Release");
-        }
     }
 
     @Override

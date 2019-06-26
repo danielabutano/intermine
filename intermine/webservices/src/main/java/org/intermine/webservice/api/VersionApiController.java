@@ -42,8 +42,6 @@ public class VersionApiController implements VersionApi {
     }
 
     public ResponseEntity<?> version(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format) {
-        String accept = request.getHeader("Accept");
-
         final InterMineAPI interMineAPI = InterMineContext.getInterMineAPI();
 
         VersionService versionService = new VersionService(interMineAPI);
@@ -59,8 +57,6 @@ public class VersionApiController implements VersionApi {
     }
 
     public ResponseEntity<?> versionIntermine(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format) {
-        String accept = request.getHeader("Accept");
-
         final InterMineAPI interMineAPI = InterMineContext.getInterMineAPI();
 
         VersionIntermineService versionIntermineService = new VersionIntermineService(interMineAPI);
@@ -76,8 +72,6 @@ public class VersionApiController implements VersionApi {
     }
 
     public ResponseEntity<?> versionRelease(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format) {
-        String accept = request.getHeader("Accept");
-
         final InterMineAPI interMineAPI = InterMineContext.getInterMineAPI();
 
         VersionReleaseService versionReleaseService = new VersionReleaseService(interMineAPI);
