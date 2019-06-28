@@ -186,21 +186,4 @@ public class SequenceService extends JSONServiceSpring
         PathQueryBuilder bdr = new PathQueryBuilder(im, query, schemaUrl, getListManager());
         return bdr.getQuery();
     }
-
-    @Override
-    public void setFooter(){
-        Date now = Calendar.getInstance().getTime();
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
-        String executionTime = dateFormatter.format(now);
-        sequence.setExecutionTime(executionTime);
-
-
-        if (status >= 400) {
-            sequence.setWasSuccessful(false);
-            sequence.setError(escapeJava(errorMessage));
-        } else {
-            sequence.setWasSuccessful(true);
-        }
-        sequence.setStatusCode(status);
-    }
 }

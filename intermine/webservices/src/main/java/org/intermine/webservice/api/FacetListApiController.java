@@ -27,40 +27,29 @@ import java.util.List;
 import java.util.Map;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-18T03:15:59.349+05:30[Asia/Kolkata]")
 @Controller
-public class FacetListApiController implements FacetListApi {
+public class FacetListApiController extends InterMineController implements FacetListApi {
 
     private static final Logger LOG = Logger.getLogger(FacetListApiController.class);
 
-    private final ObjectMapper objectMapper;
-
-    private final HttpServletRequest request;
-
-    private HttpHeaders httpHeaders;
-
-    private HttpStatus httpStatus;
-
     @Autowired
     public FacetListApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        this.objectMapper = objectMapper;
-        this.request = request;
+        super(objectMapper, request);
     }
 
     public ResponseEntity<FacetList> facetlist() {
-        String accept = request.getHeader("Accept");
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         FacetListService facetListService = new FacetListService(im);
         try {
             facetListService.service(request);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            sendError(throwable);
         }
-        facetListService.setFooter();
         FacetList facetList = facetListService.getFacetList();
+        setFooter(facetList);
         httpHeaders = facetListService.getResponseHeaders();
-        httpStatus = facetListService.getHttpStatus();
 
-        return new ResponseEntity<FacetList>(facetList,httpHeaders,httpStatus);
+        return new ResponseEntity<FacetList>(facetList,httpHeaders,getHttpStatus());
     }
 
 }

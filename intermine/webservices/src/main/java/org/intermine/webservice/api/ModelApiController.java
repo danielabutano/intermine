@@ -22,48 +22,36 @@ import javax.validation.Valid;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-05-26T23:19:30.817+05:30[Asia/Kolkata]")
 @Controller
-public class ModelApiController implements ModelApi {
+public class ModelApiController extends InterMineController implements ModelApi {
 
     private static final Logger LOG = Logger.getLogger(ModelApiController.class);
-
-    private final ObjectMapper objectMapper;
-
-    private final HttpServletRequest request;
-
-    private HttpHeaders httpHeaders;
-
-    private HttpStatus httpStatus;
 
     private static final String FILE_BASE_NAME = "model";
 
 
     @Autowired
     public ModelApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        this.objectMapper = objectMapper;
-        this.request = request;
+        super(objectMapper, request);
     }
 
     public ResponseEntity<?> model(@ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "xml") String format) {
-        String accept = request.getHeader("Accept");
-
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         ModelService modelService = new ModelService(im);
         try {
             modelService.service(request);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            sendError(throwable);
         }
         Model model = modelService.getResponseModel();
         httpHeaders = modelService.getResponseHeaders();
-        httpStatus = modelService.getHttpStatus();
         if(format.equals("json")) {
             ResponseUtilSpring.setJSONHeader(httpHeaders, FILE_BASE_NAME + ".json", false);
-            modelService.setFooter();
-            return new ResponseEntity<Model>(model, httpHeaders, httpStatus);
+            setFooter(model);
+            return new ResponseEntity<Model>(model, httpHeaders, getHttpStatus());
         }
         ResponseUtilSpring.setXMLHeader(httpHeaders, FILE_BASE_NAME + ".xml");
-        return new ResponseEntity<Object>(model.getModel(),httpHeaders,httpStatus);
+        return new ResponseEntity<Object>(model.getModel(),httpHeaders,getHttpStatus());
     }
 
 

@@ -100,20 +100,4 @@ public class SystemTemplatesService extends WebServiceSpring
         }
     }
 
-    @Override
-    public void setFooter(){
-        Date now = Calendar.getInstance().getTime();
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
-        String executionTime = dateFormatter.format(now);
-        templatesSystem.setExecutionTime(executionTime);
-
-
-        if (status >= 400) {
-            templatesSystem.setWasSuccessful(false);
-            templatesSystem.setError(escapeJava(errorMessage));
-        } else {
-            templatesSystem.setWasSuccessful(true);
-        }
-        templatesSystem.setStatusCode(status);
-    }
 }

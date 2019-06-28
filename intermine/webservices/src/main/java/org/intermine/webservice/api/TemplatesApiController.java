@@ -28,25 +28,16 @@ import java.util.List;
 import java.util.Map;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-19T01:19:48.599+05:30[Asia/Kolkata]")
 @Controller
-public class TemplatesApiController implements TemplatesApi {
+public class TemplatesApiController extends InterMineController implements TemplatesApi {
 
     private static final Logger log = LoggerFactory.getLogger(TemplatesApiController.class);
-
-    private final ObjectMapper objectMapper;
-
-    private final HttpServletRequest request;
-
-    private HttpHeaders httpHeaders;
-
-    private HttpStatus httpStatus;
 
     private static final String FILE_BASE_NAME = "templates";
 
 
     @org.springframework.beans.factory.annotation.Autowired
     public TemplatesApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        this.objectMapper = objectMapper;
-        this.request = request;
+        super(objectMapper, request);
     }
 
     public ResponseEntity<?> templatesSystem(@ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "xml") String format) {
@@ -56,17 +47,16 @@ public class TemplatesApiController implements TemplatesApi {
         try {
             systemTemplatesService.service(request);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            sendError(throwable);
         }
         TemplatesSystem templatesSystem = systemTemplatesService.getTemplatesSystem();
         httpHeaders = systemTemplatesService.getResponseHeaders();
-        httpStatus = systemTemplatesService.getHttpStatus();
         if(format.equals("json")) {
-            systemTemplatesService.setFooter();
-            return new ResponseEntity<TemplatesSystem>(templatesSystem, httpHeaders, httpStatus);
+            setFooter(templatesSystem);
+            return new ResponseEntity<TemplatesSystem>(templatesSystem, httpHeaders, getHttpStatus());
         }
         ResponseUtilSpring.setXMLHeader(httpHeaders, FILE_BASE_NAME + ".xml");
-        return new ResponseEntity<Object>(templatesSystem.getTemplates(),httpHeaders,httpStatus);
+        return new ResponseEntity<Object>(templatesSystem.getTemplates(),httpHeaders,getHttpStatus());
     }
 
 }

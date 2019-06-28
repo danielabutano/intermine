@@ -27,40 +27,29 @@ import java.util.List;
 import java.util.Map;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-22T06:09:52.181+05:30[Asia/Kolkata]")
 @Controller
-public class PermanentUrlApiController implements PermanentUrlApi {
+public class PermanentUrlApiController extends InterMineController implements PermanentUrlApi {
 
     private static final Logger log = LoggerFactory.getLogger(PermanentUrlApiController.class);
 
-    private final ObjectMapper objectMapper;
-
-    private final HttpServletRequest request;
-
-    private HttpHeaders httpHeaders;
-
-    private HttpStatus httpStatus;
-
     @org.springframework.beans.factory.annotation.Autowired
     public PermanentUrlApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        this.objectMapper = objectMapper;
-        this.request = request;
+        super(objectMapper, request);
     }
 
     public ResponseEntity<PermanentUrl> permanentUrl(@NotNull @ApiParam(value = "The type of the entity.", required = true) @Valid @RequestParam(value = "type", required = true) String type,@NotNull @ApiParam(value = "The internal intermine ID.", required = true) @Valid @RequestParam(value = "id", required = true) String id) {
-        String accept = request.getHeader("Accept");
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         PermanentURLService permanentURLService = new PermanentURLService(im);
         try {
             permanentURLService.service(request);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            sendError(throwable);
         }
-        permanentURLService.setFooter();
         PermanentUrl permanentUrl = permanentURLService.getPermanentUrl();
+        setFooter(permanentUrl);
         httpHeaders = permanentURLService.getResponseHeaders();
-        httpStatus = permanentURLService.getHttpStatus();
 
-        return new ResponseEntity<PermanentUrl>(permanentUrl,httpHeaders,httpStatus);
+        return new ResponseEntity<PermanentUrl>(permanentUrl,httpHeaders,getHttpStatus());
     }
 
 }

@@ -272,22 +272,5 @@ public class QuickSearchService extends JSONServiceSpring
         }
     }
 
-    @Override
-    public void setFooter(){
-        Date now = Calendar.getInstance().getTime();
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
-        String executionTime = dateFormatter.format(now);
-        quickSearch.setExecutionTime(executionTime);
-
-
-        if (status >= 400) {
-            quickSearch.setWasSuccessful(false);
-            quickSearch.setError(escapeJava(errorMessage));
-        } else {
-            quickSearch.setWasSuccessful(true);
-        }
-        quickSearch.setStatusCode(status);
-    }
-
 
 }

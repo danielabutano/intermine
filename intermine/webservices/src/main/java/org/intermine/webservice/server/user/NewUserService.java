@@ -197,21 +197,5 @@ public class NewUserService extends JSONServiceSpring
         }
     }
 
-    @Override
-    public void setFooter(){
-        Date now = Calendar.getInstance().getTime();
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
-        String executionTime = dateFormatter.format(now);
-        users.setExecutionTime(executionTime);
-
-
-        if (status >= 400) {
-            users.setWasSuccessful(false);
-            users.setError(escapeJava(errorMessage));
-        } else {
-            users.setWasSuccessful(true);
-        }
-        users.setStatusCode(status);
-    }
 
 }

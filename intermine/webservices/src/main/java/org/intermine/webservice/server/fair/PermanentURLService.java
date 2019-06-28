@@ -66,20 +66,4 @@ public class PermanentURLService extends JSONServiceSpring
         }
     }
 
-    @Override
-    public void setFooter(){
-        Date now = Calendar.getInstance().getTime();
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
-        String executionTime = dateFormatter.format(now);
-        permanentUrl.setExecutionTime(executionTime);
-
-
-        if (status >= 400) {
-            permanentUrl.setWasSuccessful(false);
-            permanentUrl.setError(escapeJava(errorMessage));
-        } else {
-            permanentUrl.setWasSuccessful(true);
-        }
-        permanentUrl.setStatusCode(status);
-    }
 }

@@ -69,21 +69,4 @@ public class VersionService extends JSONServiceSpring
             || format == Format.HTML
             || format == Format.TEXT;
     }
-
-    @Override
-    public void setFooter(){
-        Date now = Calendar.getInstance().getTime();
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
-        String executionTime = dateFormatter.format(now);
-        version.setExecutionTime(executionTime);
-
-
-        if (status >= 400) {
-            version.setWasSuccessful(false);
-            version.setError(escapeJava(errorMessage));
-        } else {
-            version.setWasSuccessful(true);
-        }
-        version.setStatusCode(status);
-    }
 }

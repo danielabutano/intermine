@@ -23,22 +23,13 @@ import javax.validation.Valid;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-05-26T23:19:30.817+05:30[Asia/Kolkata]")
 @Controller
-public class VersionApiController implements VersionApi {
+public class VersionApiController extends InterMineController implements VersionApi {
 
     private static final Logger LOG = Logger.getLogger(VersionApiController.class);
 
-    private final ObjectMapper objectMapper;
-
-    private final HttpServletRequest request;
-
-    private HttpHeaders httpHeaders;
-
-    private HttpStatus httpStatus;
-
     @Autowired
     public VersionApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        this.objectMapper = objectMapper;
-        this.request = request;
+        super(objectMapper, request);
     }
 
     public ResponseEntity<?> version(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format) {
@@ -48,16 +39,15 @@ public class VersionApiController implements VersionApi {
         try {
             versionService.service(request);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            sendError(throwable);
         }
         Version version = versionService.getVersion();
         httpHeaders = versionService.getResponseHeaders();
-        httpStatus = versionService.getHttpStatus();
         if(format.equals("json")) {
-            versionService.setFooter();
-            return new ResponseEntity<Version>(version, httpHeaders, httpStatus);
+            setFooter(version);
+            return new ResponseEntity<Version>(version, httpHeaders, getHttpStatus());
         }
-        return new ResponseEntity<Integer>(version.getVersion(),httpHeaders,httpStatus);
+        return new ResponseEntity<Integer>(version.getVersion(),httpHeaders,getHttpStatus());
     }
 
     public ResponseEntity<?> versionIntermine(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format) {
@@ -67,16 +57,15 @@ public class VersionApiController implements VersionApi {
         try {
             versionIntermineService.service(request);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            sendError(throwable);
         }
         VersionRelease versionIntermine = versionIntermineService.getVersionRelease();
         httpHeaders = versionIntermineService.getResponseHeaders();
-        httpStatus = versionIntermineService.getHttpStatus();
         if(format.equals("json")) {
-            versionIntermineService.setFooter();
-            return new ResponseEntity<VersionRelease>(versionIntermine, httpHeaders, httpStatus);
+            setFooter(versionIntermine);
+            return new ResponseEntity<VersionRelease>(versionIntermine, httpHeaders, getHttpStatus());
         }
-        return new ResponseEntity<String>(versionIntermine.getVersion(),httpHeaders,httpStatus);
+        return new ResponseEntity<String>(versionIntermine.getVersion(),httpHeaders,getHttpStatus());
     }
 
     public ResponseEntity<?> versionRelease(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format) {
@@ -86,16 +75,15 @@ public class VersionApiController implements VersionApi {
         try {
             versionReleaseService.service(request);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            sendError(throwable);
         }
         VersionRelease versionRelease = versionReleaseService.getVersionRelease();
         httpHeaders = versionReleaseService.getResponseHeaders();
-        httpStatus = versionReleaseService.getHttpStatus();
         if(format.equals("json")) {
-            versionReleaseService.setFooter();
-            return new ResponseEntity<VersionRelease>(versionRelease, httpHeaders, httpStatus);
+            setFooter(versionRelease);
+            return new ResponseEntity<VersionRelease>(versionRelease, httpHeaders, getHttpStatus());
         }
-        return new ResponseEntity<String>(versionRelease.getVersion(),httpHeaders,httpStatus);
+        return new ResponseEntity<String>(versionRelease.getVersion(),httpHeaders,getHttpStatus());
     }
 
 }

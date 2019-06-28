@@ -29,7 +29,6 @@ import org.intermine.webservice.server.exceptions.UnauthorizedException;
 import org.intermine.webservice.server.output.JSONResultFormatter;
 import org.intermine.webservice.util.ResponseUtilSpring;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,8 +57,6 @@ public class WebServiceSpring {
     private static final String AUTH_TOKEN_PARAM_KEY = "token";
     private static final Profile ANON_PROFILE = new AnonProfile();
 
-    protected String errorMessage = null;
-    protected int status = HttpStatus.OK.value();
 
     /**
      * Constants for property keys in global property configuration.
@@ -76,12 +73,6 @@ public class WebServiceSpring {
     }
 
     protected HttpHeaders responseHeaders;
-
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
-    }
-
-    protected HttpStatus httpStatus;
 
 
     /**
@@ -105,7 +96,6 @@ public class WebServiceSpring {
     public WebServiceSpring(InterMineAPI im) {
         this.im = im;
         responseHeaders = new HttpHeaders();
-        httpStatus = HttpStatus.OK;
     }
 
     /**
@@ -716,14 +706,6 @@ public class WebServiceSpring {
         }
 
         PermissionHandler.setUpPermission(im, permission);
-    }
-
-    /**
-     * Set the executionTime, wasSuccessful, error and statusCode of the respective response model
-     * Standard procedure is to override this method in subclasses for respective model classes
-     */
-    public void setFooter(){
-
     }
 
     /**

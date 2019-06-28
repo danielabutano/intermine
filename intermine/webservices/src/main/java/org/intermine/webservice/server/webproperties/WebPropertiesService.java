@@ -127,21 +127,5 @@ public class WebPropertiesService extends JSONServiceSpring
         }
     }
 
-    @Override
-    public void setFooter(){
-        Date now = Calendar.getInstance().getTime();
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
-        String executionTime = dateFormatter.format(now);
-        webPropertiesModel.setExecutionTime(executionTime);
-
-
-        if (status >= 400) {
-            webPropertiesModel.setWasSuccessful(false);
-            webPropertiesModel.setError(escapeJava(errorMessage));
-        } else {
-            webPropertiesModel.setWasSuccessful(true);
-        }
-        webPropertiesModel.setStatusCode(status);
-    }
 
 }

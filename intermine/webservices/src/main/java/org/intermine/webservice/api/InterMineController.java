@@ -3,6 +3,7 @@ package org.intermine.webservice.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.intermine.web.context.InterMineContext;
 import org.intermine.webservice.model.JSONModel;
 import org.intermine.webservice.server.StatusDictionary;
 import org.intermine.webservice.server.WebServiceConstants;
@@ -50,6 +51,10 @@ public class InterMineController {
         return httpStatus;
     }
 
+    /**
+     * Set the executionTime, wasSuccessful, error and statusCode of the respective response model
+     * Standard procedure is to override this method in subclasses for respective model classes
+     */
     public void setFooter(JSONModel jsonModel){
         Date now = Calendar.getInstance().getTime();
         DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
@@ -68,6 +73,7 @@ public class InterMineController {
 
     protected void sendError(Throwable t) {
 
+        webProperties = InterMineContext.getWebProperties();
         errorMessage = WebServiceConstants.SERVICE_FAILED_MSG;
         boolean showAllMsgs = webProperties.containsKey("i.am.a.dev");
 

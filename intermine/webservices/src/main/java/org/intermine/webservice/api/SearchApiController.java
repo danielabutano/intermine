@@ -29,35 +29,28 @@ import java.util.List;
 import java.util.Map;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-22T06:09:52.181+05:30[Asia/Kolkata]")
 @Controller
-public class SearchApiController implements SearchApi {
+public class SearchApiController extends InterMineController implements SearchApi {
 
     private static final Logger log = LoggerFactory.getLogger(SearchApiController.class);
-
-    private final ObjectMapper objectMapper;
-
-    private final HttpServletRequest request;
-
-    private HttpHeaders httpHeaders;
-
-    private HttpStatus httpStatus;
 
     @Autowired
     private ServletContext servletContext;
 
     @org.springframework.beans.factory.annotation.Autowired
     public SearchApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        this.objectMapper = objectMapper;
-        this.request = request;
+        super(objectMapper, request);
     }
 
     public ResponseEntity<QuickSearch> quickSearchGet(@ApiParam(value = "The query string to search with. If absent, or blank, all results will be returned.") @Valid @RequestParam(value = "q", required = false) String q,@ApiParam(value = "The maximum number of records to return. If no limit is provided, up to 100 results will be returned.") @Valid @RequestParam(value = "size", required = false) Integer size,@ApiParam(value = "The index of the first result to return.") @Valid @RequestParam(value = "start", required = false) Integer start,@ApiParam(value = "A list to search within.") @Valid @RequestParam(value = "list", required = false) String list,@ApiParam(value = "A facet parameter, eg facet_Organism=D.melanogaster") @Valid @RequestParam(value = "facet_?", required = false) List<String> facet) {
         QuickSearch quickSearch = serve();
-        return new ResponseEntity<QuickSearch>(quickSearch,httpHeaders,httpStatus);
+        setFooter(quickSearch);
+        return new ResponseEntity<QuickSearch>(quickSearch,httpHeaders,getHttpStatus());
     }
 
     public ResponseEntity<QuickSearch> quickSearchPost(@ApiParam(value = "The query string to search with. If absent, or blank, all results will be returned.") @Valid @RequestParam(value = "q", required = false) String q,@ApiParam(value = "The maximum number of records to return. If no limit is provided, up to 100 results will be returned.") @Valid @RequestParam(value = "size", required = false) Integer size,@ApiParam(value = "The index of the first result to return.") @Valid @RequestParam(value = "start", required = false) Integer start,@ApiParam(value = "A list to search within.") @Valid @RequestParam(value = "list", required = false) String list,@ApiParam(value = "A facet parameter, eg facet_Organism=D.melanogaster") @Valid @RequestParam(value = "facet_?", required = false) List<String> facet) {
         QuickSearch quickSearch = serve();
-        return new ResponseEntity<QuickSearch>(quickSearch,httpHeaders,httpStatus);
+        setFooter(quickSearch);
+        return new ResponseEntity<QuickSearch>(quickSearch,httpHeaders,getHttpStatus());
     }
 
     private QuickSearch serve(){
@@ -67,11 +60,9 @@ public class SearchApiController implements SearchApi {
         try {
             quickSearchService.service(request);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            sendError(throwable);
         }
-        quickSearchService.setFooter();
         httpHeaders = quickSearchService.getResponseHeaders();
-        httpStatus = quickSearchService.getHttpStatus();
         return quickSearchService.getQuickSearch();
     }
 

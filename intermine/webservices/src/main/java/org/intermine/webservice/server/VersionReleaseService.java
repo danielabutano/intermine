@@ -70,18 +70,4 @@ public class VersionReleaseService extends JSONServiceSpring
                 || format == Format.TEXT;
     }
 
-    @Override
-    public void setFooter(){
-        Date now = Calendar.getInstance().getTime();
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
-        String executionTime = dateFormatter.format(now);
-        versionRelease.setExecutionTime(executionTime);
-        if (status >= 400) {
-            versionRelease.setWasSuccessful(false);
-            versionRelease.setError(escapeJava(errorMessage));
-        } else {
-            versionRelease.setWasSuccessful(true);
-        }
-        versionRelease.setStatusCode(status);
-    }
 }

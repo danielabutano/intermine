@@ -37,7 +37,6 @@ public class BrandingApiController extends InterMineController implements Brandi
     }
 
     public ResponseEntity<Branding> branding() {
-        webProperties = InterMineContext.getWebProperties();
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         BrandingService brandingService = new BrandingService(im);

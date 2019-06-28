@@ -284,20 +284,5 @@ public class ModelService extends WebServiceSpring
         return sb.toString();
     }
 
-    @Override
-    public void setFooter(){
-        Date now = Calendar.getInstance().getTime();
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
-        String executionTime = dateFormatter.format(now);
-        responseModel.setExecutionTime(executionTime);
-
-        if (status >= 400) {
-            responseModel.setWasSuccessful(false);
-            responseModel.setError(escapeJava(errorMessage));
-        } else {
-            responseModel.setWasSuccessful(true);
-        }
-        responseModel.setStatusCode(status);
-    }
 
 }

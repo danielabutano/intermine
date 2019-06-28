@@ -58,20 +58,4 @@ public class DataSetMarkupService extends JSONServiceSpring
         return "properties";
     }
 
-    @Override
-    public void setFooter(){
-        Date now = Calendar.getInstance().getTime();
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
-        String executionTime = dateFormatter.format(now);
-        semanticMarkup.setExecutionTime(executionTime);
-
-
-        if (status >= 400) {
-            semanticMarkup.setWasSuccessful(false);
-            semanticMarkup.setError(escapeJava(errorMessage));
-        } else {
-            semanticMarkup.setWasSuccessful(true);
-        }
-        semanticMarkup.setStatusCode(status);
-    }
 }

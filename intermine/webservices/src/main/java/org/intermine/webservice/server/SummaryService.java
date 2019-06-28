@@ -105,22 +105,6 @@ public class SummaryService extends JSONServiceSpring
         return "summary_fields.json";
     }
 
-    @Override
-    public void setFooter(){
-        Date now = Calendar.getInstance().getTime();
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
-        String executionTime = dateFormatter.format(now);
-        summaryFields.setExecutionTime(executionTime);
-
-
-        if (status >= 400) {
-            summaryFields.setWasSuccessful(false);
-            summaryFields.setError(escapeJava(errorMessage));
-        } else {
-            summaryFields.setWasSuccessful(true);
-        }
-        summaryFields.setStatusCode(status);
-    }
 
 }
 

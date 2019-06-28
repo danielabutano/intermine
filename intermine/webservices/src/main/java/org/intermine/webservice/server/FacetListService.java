@@ -89,21 +89,5 @@ public class FacetListService extends JSONServiceSpring
         return "facet-list";
     }
 
-    @Override
-    public void setFooter(){
-        Date now = Calendar.getInstance().getTime();
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
-        String executionTime = dateFormatter.format(now);
-        facetList.setExecutionTime(executionTime);
-
-
-        if (status >= 400) {
-            facetList.setWasSuccessful(false);
-            facetList.setError(escapeJava(errorMessage));
-        } else {
-            facetList.setWasSuccessful(true);
-        }
-        facetList.setStatusCode(status);
-    }
 
 }

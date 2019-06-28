@@ -68,20 +68,4 @@ public class SchemaListService extends JSONServiceSpring
         return "schemata.json";
     }
 
-    @Override
-    public void setFooter(){
-        Date now = Calendar.getInstance().getTime();
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
-        String executionTime = dateFormatter.format(now);
-        schema.setExecutionTime(executionTime);
-
-
-        if (status >= 400) {
-            schema.setWasSuccessful(false);
-            schema.setError(escapeJava(errorMessage));
-        } else {
-            schema.setWasSuccessful(true);
-        }
-        schema.setStatusCode(status);
-    }
 }

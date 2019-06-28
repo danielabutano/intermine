@@ -18,22 +18,13 @@ import javax.validation.Valid;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-05-26T23:19:30.817+05:30[Asia/Kolkata]")
 @Controller
-public class SummaryFieldsApiController implements SummaryFieldsApi {
+public class SummaryFieldsApiController extends InterMineController implements SummaryFieldsApi {
 
     private static final Logger LOG = Logger.getLogger(ModelApiController.class);
 
-    private final ObjectMapper objectMapper;
-
-    private final HttpServletRequest request;
-
-    private HttpHeaders httpHeaders;
-
-    private HttpStatus httpStatus;
-
     @org.springframework.beans.factory.annotation.Autowired
     public SummaryFieldsApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        this.objectMapper = objectMapper;
-        this.request = request;
+        super(objectMapper, request);
     }
 
     public ResponseEntity<SummaryFields> summaryfields(@ApiParam(value = "Whether to exclude references from the summary fields") @Valid @RequestParam(value = "norefs", required = false) Boolean norefs) {
@@ -43,14 +34,13 @@ public class SummaryFieldsApiController implements SummaryFieldsApi {
         try {
             summaryService.service(request);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            sendError(throwable);
         }
         SummaryFields summaryFields = summaryService.getSummaryFields();
+        setFooter(summaryFields);
         httpHeaders = summaryService.getResponseHeaders();
-        httpStatus = summaryService.getHttpStatus();
-        summaryService.setFooter();
 
-        return new ResponseEntity<SummaryFields>(summaryFields,httpHeaders,httpStatus);
+        return new ResponseEntity<SummaryFields>(summaryFields,httpHeaders,getHttpStatus());
     }
 
 }

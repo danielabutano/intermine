@@ -29,22 +29,13 @@ import java.util.List;
 import java.util.Map;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-19T01:19:48.599+05:30[Asia/Kolkata]")
 @Controller
-public class SemanticMarkupApiController implements SemanticMarkupApi {
+public class SemanticMarkupApiController extends InterMineController implements SemanticMarkupApi {
 
     private static final Logger log = LoggerFactory.getLogger(SemanticMarkupApiController.class);
 
-    private final ObjectMapper objectMapper;
-
-    private final HttpServletRequest request;
-
-    private HttpHeaders httpHeaders;
-
-    private HttpStatus httpStatus;
-
     @org.springframework.beans.factory.annotation.Autowired
     public SemanticMarkupApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        this.objectMapper = objectMapper;
-        this.request = request;
+        super(objectMapper, request);
     }
 
     public ResponseEntity<SemanticMarkup> semanticMarkupDatacatalog() {
@@ -54,33 +45,30 @@ public class SemanticMarkupApiController implements SemanticMarkupApi {
         try {
             dataCatalogMarkupService.service(request);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            sendError(throwable);
         }
-        dataCatalogMarkupService.setFooter();
         SemanticMarkup semanticMarkup = dataCatalogMarkupService.getSemanticMarkup();
+        setFooter(semanticMarkup);
         httpHeaders = dataCatalogMarkupService.getResponseHeaders();
-        httpStatus = dataCatalogMarkupService.getHttpStatus();
 
-        return new ResponseEntity<SemanticMarkup>(semanticMarkup,httpHeaders,httpStatus);
+        return new ResponseEntity<SemanticMarkup>(semanticMarkup,httpHeaders,getHttpStatus());
     }
 
 
     public ResponseEntity<SemanticMarkup> semanticMarkupBioEntity(@NotNull @ApiParam(value = "The type of the bioentity.", required = true) @Valid @RequestParam(value = "type", required = true) String type,@NotNull @ApiParam(value = "The primary identifier of the bioentity.", required = true) @Valid @RequestParam(value = "id", required = true) Integer id) {
-        String accept = request.getHeader("Accept");
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         BioEntityMarkupService bioEntityMarkupService = new BioEntityMarkupService(im);
         try {
             bioEntityMarkupService.service(request);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            sendError(throwable);
         }
-        bioEntityMarkupService.setFooter();
         SemanticMarkup semanticMarkup = bioEntityMarkupService.getSemanticMarkup();
+        setFooter(semanticMarkup);
         httpHeaders = bioEntityMarkupService.getResponseHeaders();
-        httpStatus = bioEntityMarkupService.getHttpStatus();
 
-        return new ResponseEntity<SemanticMarkup>(semanticMarkup,httpHeaders,httpStatus);
+        return new ResponseEntity<SemanticMarkup>(semanticMarkup,httpHeaders,getHttpStatus());
     }
 
     public ResponseEntity<SemanticMarkup> semanticMarkupDataset(@NotNull @ApiParam(value = "The name of the dataset.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@ApiParam(value = "The description of the dataset.") @Valid @RequestParam(value = "description", required = false) String description,@ApiParam(value = "The url of the dataset.") @Valid @RequestParam(value = "url", required = false) String url) {
@@ -90,14 +78,13 @@ public class SemanticMarkupApiController implements SemanticMarkupApi {
         try {
             dataSetMarkupService.service(request);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            sendError(throwable);
         }
-        dataSetMarkupService.setFooter();
         SemanticMarkup semanticMarkup = dataSetMarkupService.getSemanticMarkup();
+        setFooter(semanticMarkup);
         httpHeaders = dataSetMarkupService.getResponseHeaders();
-        httpStatus = dataSetMarkupService.getHttpStatus();
 
-        return new ResponseEntity<SemanticMarkup>(semanticMarkup,httpHeaders,httpStatus);
+        return new ResponseEntity<SemanticMarkup>(semanticMarkup,httpHeaders,getHttpStatus());
     }
 
 

@@ -27,40 +27,29 @@ import java.util.List;
 import java.util.Map;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-22T06:09:52.181+05:30[Asia/Kolkata]")
 @Controller
-public class DataApiController implements DataApi {
+public class DataApiController extends InterMineController implements DataApi {
 
     private static final Logger log = LoggerFactory.getLogger(DataApiController.class);
 
-    private final ObjectMapper objectMapper;
-
-    private final HttpServletRequest request;
-
-    private HttpHeaders httpHeaders;
-
-    private HttpStatus httpStatus;
-
     @org.springframework.beans.factory.annotation.Autowired
     public DataApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        this.objectMapper = objectMapper;
-        this.request = request;
+        super(objectMapper, request);
     }
 
     public ResponseEntity<JBrowseData> jBrowseSimpleData(@ApiParam(value = "The type of the object to find.",required=true) @PathVariable("type") String type,@ApiParam(value = "The range of values requested." ) @RequestHeader(value="Range", required=false) String range,@ApiParam(value = "An optional filter over the objects.") @Valid @RequestParam(value = "filter", required = false) List<String> filter) {
-        String accept = request.getHeader("Accept");
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         DataService dataService = new DataService(im,type);
         try {
             dataService.service(request);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            sendError(throwable);
         }
-        dataService.setFooter();
         JBrowseData jBrowseData = dataService.getjBrowseData();
+        setFooter(jBrowseData);
         httpHeaders = dataService.getResponseHeaders();
-        httpStatus = dataService.getHttpStatus();
 
-        return new ResponseEntity<JBrowseData>(jBrowseData,httpHeaders,httpStatus);
+        return new ResponseEntity<JBrowseData>(jBrowseData,httpHeaders,getHttpStatus());
     }
 
 }

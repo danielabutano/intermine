@@ -242,21 +242,5 @@ public class CodeService extends AbstractQueryServiceSpring
         return query;
     }
 
-    @Override
-    public void setFooter(){
-        Date now = Calendar.getInstance().getTime();
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
-        String executionTime = dateFormatter.format(now);
-        generatedCode.setExecutionTime(executionTime);
-
-
-        if (status >= 400) {
-            generatedCode.setWasSuccessful(false);
-            generatedCode.setError(escapeJava(errorMessage));
-        } else {
-            generatedCode.setWasSuccessful(true);
-        }
-        generatedCode.setStatusCode(status);
-    }
 
 }

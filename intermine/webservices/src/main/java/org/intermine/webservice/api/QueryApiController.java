@@ -28,42 +28,33 @@ import java.util.List;
 import java.util.Map;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-22T06:09:52.181+05:30[Asia/Kolkata]")
 @Controller
-public class QueryApiController implements QueryApi {
+public class QueryApiController extends InterMineController implements QueryApi {
 
     private static final Logger log = LoggerFactory.getLogger(QueryApiController.class);
 
-    private final ObjectMapper objectMapper;
-
-    private final HttpServletRequest request;
-
-    private HttpHeaders httpHeaders;
-
-    private HttpStatus httpStatus;
-
     @org.springframework.beans.factory.annotation.Autowired
     public QueryApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        this.objectMapper = objectMapper;
-        this.request = request;
+        super(objectMapper, request);
     }
 
     public ResponseEntity<?> generatedCodeGet(@NotNull @ApiParam(value = "The language to generate code in.", required = true, allowableValues = "pl, py, rb, js, java") @Valid @RequestParam(value = "lang", required = true, defaultValue = "py") String lang,@NotNull @ApiParam(value = "The query to generate code for, in XML or JSON form.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@ApiParam(value = "", allowableValues = "text, xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format) {
-        String accept = request.getHeader("Accept");
         GeneratedCode generatedCode = serve();
         if(format.equals("json")) {
             ResponseUtilSpring.setJSONHeader(httpHeaders, "querycode.json");
-            return new ResponseEntity<GeneratedCode>(generatedCode, httpHeaders, httpStatus);
+            setFooter(generatedCode);
+            return new ResponseEntity<GeneratedCode>(generatedCode, httpHeaders, getHttpStatus());
         }
-        return new ResponseEntity<Object>(generatedCode.getCode(),httpHeaders,httpStatus);
+        return new ResponseEntity<Object>(generatedCode.getCode(),httpHeaders,getHttpStatus());
     }
 
     public ResponseEntity<?> generatedCodePost(@NotNull @ApiParam(value = "The language to generate code in.", required = true, allowableValues = "pl, py, rb, js, java") @Valid @RequestParam(value = "lang", required = true, defaultValue = "py") String lang,@NotNull @ApiParam(value = "The query to generate code for, in XML or JSON form.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@ApiParam(value = "", allowableValues = "text, xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format) {
-        String accept = request.getHeader("Accept");
         GeneratedCode generatedCode = serve();
         if(format.equals("json")) {
             ResponseUtilSpring.setJSONHeader(httpHeaders, "querycode.json");
-            return new ResponseEntity<GeneratedCode>(generatedCode, httpHeaders, httpStatus);
+            setFooter(generatedCode);
+            return new ResponseEntity<GeneratedCode>(generatedCode, httpHeaders, getHttpStatus());
         }
-        return new ResponseEntity<Object>(generatedCode.getCode(),httpHeaders,httpStatus);
+        return new ResponseEntity<Object>(generatedCode.getCode(),httpHeaders,getHttpStatus());
     }
 
     private GeneratedCode serve(){
@@ -73,11 +64,9 @@ public class QueryApiController implements QueryApi {
         try {
             codeService.service(request);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            sendError(throwable);
         }
-        codeService.setFooter();
         httpHeaders = codeService.getResponseHeaders();
-        httpStatus = codeService.getHttpStatus();
         return codeService.getGeneratedCode();
     }
 

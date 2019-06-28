@@ -27,22 +27,13 @@ import java.util.List;
 import java.util.Map;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-18T03:15:59.349+05:30[Asia/Kolkata]")
 @Controller
-public class SessionApiController implements SessionApi {
+public class SessionApiController extends InterMineController implements SessionApi {
 
     private static final Logger log = LoggerFactory.getLogger(SessionApiController.class);
 
-    private final ObjectMapper objectMapper;
-
-    private final HttpServletRequest request;
-
-    private HttpHeaders httpHeaders;
-
-    private HttpStatus httpStatus;
-
     @org.springframework.beans.factory.annotation.Autowired
     public SessionApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        this.objectMapper = objectMapper;
-        this.request = request;
+        super(objectMapper, request);
     }
 
     public ResponseEntity<Session> session() {
@@ -52,14 +43,13 @@ public class SessionApiController implements SessionApi {
         try {
             sessionService.service(request);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            sendError(throwable);
         }
-        sessionService.setFooter();
         Session session = sessionService.getSession();
+        setFooter(session);
         httpHeaders = sessionService.getResponseHeaders();
-        httpStatus = sessionService.getHttpStatus();
 
-        return new ResponseEntity<Session>(session,httpHeaders,httpStatus);
+        return new ResponseEntity<Session>(session,httpHeaders,getHttpStatus());
     }
 
 }

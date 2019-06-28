@@ -41,25 +41,16 @@ import java.util.Set;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-18T00:14:58.996+05:30[Asia/Kolkata]")
 @Controller
-public class SchemaApiController implements SchemaApi {
+public class SchemaApiController extends InterMineController implements SchemaApi {
 
     private static final Logger LOGGER = Logger.getLogger(SchemaApiController.class);
-
-    private final ObjectMapper objectMapper;
-
-    private final HttpServletRequest request;
-
-    private HttpHeaders httpHeaders;
-
-    private HttpStatus httpStatus;
 
     @Autowired
     ServletContext servletContext;
 
     @Autowired
     public SchemaApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        this.objectMapper = objectMapper;
-        this.request = request;
+        super(objectMapper, request);
     }
 
     public ResponseEntity<Schema> allSchema() {
@@ -69,21 +60,19 @@ public class SchemaApiController implements SchemaApi {
         try {
             schemaListService.service(request);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            sendError(throwable);
         }
-        schemaListService.setFooter();
         Schema schema = schemaListService.getSchema();
+        setFooter(schema);
         httpHeaders = schemaListService.getResponseHeaders();
-        httpStatus = schemaListService.getHttpStatus();
 
-        return new ResponseEntity<Schema>(schema,httpHeaders,httpStatus);
+        return new ResponseEntity<Schema>(schema,httpHeaders,getHttpStatus());
     }
 
     public ResponseEntity<?> oneSchema(@ApiParam(value = "The name of the schema to retrieve",required=true) @PathVariable("name") String name) {
-        httpStatus = HttpStatus.OK;
         httpHeaders = new HttpHeaders();
         String responseObject = serveSpecificSchema(name);
-        return new ResponseEntity<String>(responseObject,httpHeaders,httpStatus);
+        return new ResponseEntity<String>(responseObject,httpHeaders,getHttpStatus());
     }
 
     private String serveSpecificSchema(String fileName) {

@@ -145,20 +145,4 @@ public class FacetService extends JSONServiceSpring
         return facetValues;
     }
 
-    @Override
-    public void setFooter(){
-        Date now = Calendar.getInstance().getTime();
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
-        String executionTime = dateFormatter.format(now);
-        facetSearch.setExecutionTime(executionTime);
-
-
-        if (status >= 400) {
-            facetSearch.setWasSuccessful(false);
-            facetSearch.setError(escapeJava(errorMessage));
-        } else {
-            facetSearch.setWasSuccessful(true);
-        }
-        facetSearch.setStatusCode(status);
-    }
 }

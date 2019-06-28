@@ -27,32 +27,25 @@ import java.util.List;
 import java.util.Map;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-22T06:09:52.181+05:30[Asia/Kolkata]")
 @Controller
-public class SequenceApiController implements SequenceApi {
+public class SequenceApiController extends InterMineController implements SequenceApi {
 
     private static final Logger log = LoggerFactory.getLogger(SequenceApiController.class);
 
-    private final ObjectMapper objectMapper;
-
-    private final HttpServletRequest request;
-
-    private HttpHeaders httpHeaders;
-
-    private HttpStatus httpStatus;
-
     @org.springframework.beans.factory.annotation.Autowired
     public SequenceApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        this.objectMapper = objectMapper;
-        this.request = request;
+        super(objectMapper, request);
     }
 
     public ResponseEntity<Sequence> sequenceGet(@NotNull @ApiParam(value = "The xml OR JSON of the query to run.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@ApiParam(value = "The start index.") @Valid @RequestParam(value = "start", required = false) Integer start,@ApiParam(value = "The end index.") @Valid @RequestParam(value = "end", required = false) Integer end) {
         Sequence sequence = serve();
-        return new ResponseEntity<Sequence>(sequence,httpHeaders,httpStatus);
+        setFooter(sequence);
+        return new ResponseEntity<Sequence>(sequence,httpHeaders,getHttpStatus());
     }
 
     public ResponseEntity<Sequence> sequencePost(@NotNull @ApiParam(value = "The xml OR JSON of the query to run.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@ApiParam(value = "The start index.") @Valid @RequestParam(value = "start", required = false) Integer start,@ApiParam(value = "The end index.") @Valid @RequestParam(value = "end", required = false) Integer end) {
         Sequence sequence = serve();
-        return new ResponseEntity<Sequence>(sequence,httpHeaders,httpStatus);
+        setFooter(sequence);
+        return new ResponseEntity<Sequence>(sequence,httpHeaders,getHttpStatus());
     }
 
     private Sequence serve(){
@@ -62,11 +55,9 @@ public class SequenceApiController implements SequenceApi {
         try {
             sequenceService.service(request);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            sendError(throwable);
         }
-        sequenceService.setFooter();
         httpHeaders = sequenceService.getResponseHeaders();
-        httpStatus = sequenceService.getHttpStatus();
 
         return sequenceService.getSequence();
     }

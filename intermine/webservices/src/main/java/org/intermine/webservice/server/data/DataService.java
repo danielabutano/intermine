@@ -153,7 +153,7 @@ public class DataService extends JSONServiceSpring
                     throw e;
                 }
                 iter = results.range(start, end).iterator();
-                httpStatus = HttpStatus.valueOf(206);
+                //httpStatus = HttpStatus.valueOf(206);
                 //response.setStatus(206); // Partial content.
             } catch (ObjectStoreException e) {
                 throw new ServiceException("Could not retrieve results.", e);
@@ -179,22 +179,4 @@ public class DataService extends JSONServiceSpring
         }
         jBrowseData.setResults(resultList);
     }
-
-    @Override
-    public void setFooter(){
-        Date now = Calendar.getInstance().getTime();
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd HH:mm::ss");
-        String executionTime = dateFormatter.format(now);
-        jBrowseData.setExecutionTime(executionTime);
-
-
-        if (status >= 400) {
-            jBrowseData.setWasSuccessful(false);
-            jBrowseData.setError(escapeJava(errorMessage));
-        } else {
-            jBrowseData.setWasSuccessful(true);
-        }
-        jBrowseData.setStatusCode(status);
-    }
-
 }

@@ -27,22 +27,13 @@ import java.util.List;
 import java.util.Map;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-18T03:15:59.349+05:30[Asia/Kolkata]")
 @Controller
-public class WebPropertiesApiController implements WebPropertiesApi {
+public class WebPropertiesApiController extends InterMineController implements WebPropertiesApi {
 
     private static final Logger log = LoggerFactory.getLogger(WebPropertiesApiController.class);
 
-    private final ObjectMapper objectMapper;
-
-    private final HttpServletRequest request;
-
-    private HttpHeaders httpHeaders;
-
-    private HttpStatus httpStatus;
-
     @org.springframework.beans.factory.annotation.Autowired
     public WebPropertiesApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        this.objectMapper = objectMapper;
-        this.request = request;
+        super(objectMapper, request);
     }
 
     public ResponseEntity<WebProperties> webProperties() {
@@ -52,14 +43,13 @@ public class WebPropertiesApiController implements WebPropertiesApi {
         try {
             webPropertiesService.service(request);
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            sendError(throwable);
         }
-        webPropertiesService.setFooter();
         WebProperties webProperties = webPropertiesService.getWebPropertiesModel();
+        setFooter(webProperties);
         httpHeaders = webPropertiesService.getResponseHeaders();
-        httpStatus = webPropertiesService.getHttpStatus();
 
-        return new ResponseEntity<WebProperties>(webProperties,httpHeaders,httpStatus);
+        return new ResponseEntity<WebProperties>(webProperties,httpHeaders,getHttpStatus());
     }
 
 }
