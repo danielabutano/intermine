@@ -66,7 +66,11 @@ public class SchemaApiController implements SchemaApi {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         SchemaListService schemaListService = new SchemaListService(im);
-        schemaListService.service(request);
+        try {
+            schemaListService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         schemaListService.setFooter();
         Schema schema = schemaListService.getSchema();
         httpHeaders = schemaListService.getResponseHeaders();

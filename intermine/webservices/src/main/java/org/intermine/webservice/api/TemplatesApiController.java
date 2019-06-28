@@ -53,7 +53,11 @@ public class TemplatesApiController implements TemplatesApi {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         SystemTemplatesService systemTemplatesService = new SystemTemplatesService(im);
-        systemTemplatesService.service(request);
+        try {
+            systemTemplatesService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         TemplatesSystem templatesSystem = systemTemplatesService.getTemplatesSystem();
         httpHeaders = systemTemplatesService.getResponseHeaders();
         httpStatus = systemTemplatesService.getHttpStatus();

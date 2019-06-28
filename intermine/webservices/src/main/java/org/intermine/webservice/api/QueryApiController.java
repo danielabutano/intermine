@@ -70,7 +70,11 @@ public class QueryApiController implements QueryApi {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         CodeService codeService = new CodeService(im);
-        codeService.service(request);
+        try {
+            codeService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         codeService.setFooter();
         httpHeaders = codeService.getResponseHeaders();
         httpStatus = codeService.getHttpStatus();

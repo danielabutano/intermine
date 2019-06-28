@@ -50,7 +50,11 @@ public class FacetListApiController implements FacetListApi {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         FacetListService facetListService = new FacetListService(im);
-        facetListService.service(request);
+        try {
+            facetListService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         facetListService.setFooter();
         FacetList facetList = facetListService.getFacetList();
         httpHeaders = facetListService.getResponseHeaders();

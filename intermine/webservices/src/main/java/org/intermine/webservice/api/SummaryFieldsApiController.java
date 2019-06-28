@@ -40,7 +40,11 @@ public class SummaryFieldsApiController implements SummaryFieldsApi {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         SummaryService summaryService = new SummaryService(im);
-        summaryService.service(request);
+        try {
+            summaryService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         SummaryFields summaryFields = summaryService.getSummaryFields();
         httpHeaders = summaryService.getResponseHeaders();
         httpStatus = summaryService.getHttpStatus();

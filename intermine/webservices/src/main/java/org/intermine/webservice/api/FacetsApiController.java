@@ -61,7 +61,11 @@ public class FacetsApiController implements FacetsApi {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         FacetService facetService = new FacetService(im);
-        facetService.service(request);
+        try {
+            facetService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         facetService.setFooter();
         httpHeaders = facetService.getResponseHeaders();
         httpStatus = facetService.getHttpStatus();

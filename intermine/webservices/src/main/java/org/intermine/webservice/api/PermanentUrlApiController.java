@@ -50,7 +50,11 @@ public class PermanentUrlApiController implements PermanentUrlApi {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         PermanentURLService permanentURLService = new PermanentURLService(im);
-        permanentURLService.service(request);
+        try {
+            permanentURLService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         permanentURLService.setFooter();
         PermanentUrl permanentUrl = permanentURLService.getPermanentUrl();
         httpHeaders = permanentURLService.getResponseHeaders();

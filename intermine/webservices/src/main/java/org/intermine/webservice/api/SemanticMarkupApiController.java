@@ -51,7 +51,11 @@ public class SemanticMarkupApiController implements SemanticMarkupApi {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         DataCatalogMarkupService dataCatalogMarkupService = new DataCatalogMarkupService(im);
-        dataCatalogMarkupService.service(request);
+        try {
+            dataCatalogMarkupService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         dataCatalogMarkupService.setFooter();
         SemanticMarkup semanticMarkup = dataCatalogMarkupService.getSemanticMarkup();
         httpHeaders = dataCatalogMarkupService.getResponseHeaders();
@@ -66,7 +70,11 @@ public class SemanticMarkupApiController implements SemanticMarkupApi {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         BioEntityMarkupService bioEntityMarkupService = new BioEntityMarkupService(im);
-        bioEntityMarkupService.service(request);
+        try {
+            bioEntityMarkupService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         bioEntityMarkupService.setFooter();
         SemanticMarkup semanticMarkup = bioEntityMarkupService.getSemanticMarkup();
         httpHeaders = bioEntityMarkupService.getResponseHeaders();
@@ -79,7 +87,11 @@ public class SemanticMarkupApiController implements SemanticMarkupApi {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         DataSetMarkupService dataSetMarkupService = new DataSetMarkupService(im);
-        dataSetMarkupService.service(request);
+        try {
+            dataSetMarkupService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         dataSetMarkupService.setFooter();
         SemanticMarkup semanticMarkup = dataSetMarkupService.getSemanticMarkup();
         httpHeaders = dataSetMarkupService.getResponseHeaders();

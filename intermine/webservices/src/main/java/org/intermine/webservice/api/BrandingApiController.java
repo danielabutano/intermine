@@ -27,36 +27,30 @@ import java.util.List;
 import java.util.Map;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-17T02:38:26.046+05:30[Asia/Kolkata]")
 @Controller
-public class BrandingApiController implements BrandingApi {
+public class BrandingApiController extends InterMineController implements BrandingApi {
 
     private static final Logger log = LoggerFactory.getLogger(BrandingApiController.class);
 
-    private final ObjectMapper objectMapper;
-
-    private final HttpServletRequest request;
-
-    private HttpHeaders httpHeaders;
-
-    private HttpStatus httpStatus;
-
     @org.springframework.beans.factory.annotation.Autowired
     public BrandingApiController(ObjectMapper objectMapper, HttpServletRequest request) {
-        this.objectMapper = objectMapper;
-        this.request = request;
+        super(objectMapper, request);
     }
 
     public ResponseEntity<Branding> branding() {
-        String accept = request.getHeader("Accept");
+        webProperties = InterMineContext.getWebProperties();
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         BrandingService brandingService = new BrandingService(im);
-        brandingService.service(request);
-        brandingService.setFooter();
+        try {
+            brandingService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
         Branding branding = brandingService.getBranding();
+        setFooter(branding);
         httpHeaders = brandingService.getResponseHeaders();
-        httpStatus = brandingService.getHttpStatus();
 
-        return new ResponseEntity<Branding>(branding,httpHeaders,httpStatus);
+        return new ResponseEntity<Branding>(branding,httpHeaders,getHttpStatus());
     }
 
 }

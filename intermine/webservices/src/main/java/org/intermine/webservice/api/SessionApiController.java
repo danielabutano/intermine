@@ -49,7 +49,11 @@ public class SessionApiController implements SessionApi {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         SessionService sessionService = new SessionService(im);
-        sessionService.service(request);
+        try {
+            sessionService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         sessionService.setFooter();
         Session session = sessionService.getSession();
         httpHeaders = sessionService.getResponseHeaders();

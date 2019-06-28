@@ -49,7 +49,11 @@ public class WebPropertiesApiController implements WebPropertiesApi {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         WebPropertiesService webPropertiesService = new WebPropertiesService(im);
-        webPropertiesService.service(request);
+        try {
+            webPropertiesService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         webPropertiesService.setFooter();
         WebProperties webProperties = webPropertiesService.getWebPropertiesModel();
         httpHeaders = webPropertiesService.getResponseHeaders();

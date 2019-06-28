@@ -45,7 +45,11 @@ public class VersionApiController implements VersionApi {
         final InterMineAPI interMineAPI = InterMineContext.getInterMineAPI();
 
         VersionService versionService = new VersionService(interMineAPI);
-        versionService.service(request);
+        try {
+            versionService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         Version version = versionService.getVersion();
         httpHeaders = versionService.getResponseHeaders();
         httpStatus = versionService.getHttpStatus();
@@ -60,7 +64,11 @@ public class VersionApiController implements VersionApi {
         final InterMineAPI interMineAPI = InterMineContext.getInterMineAPI();
 
         VersionIntermineService versionIntermineService = new VersionIntermineService(interMineAPI);
-        versionIntermineService.service(request);
+        try {
+            versionIntermineService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         VersionRelease versionIntermine = versionIntermineService.getVersionRelease();
         httpHeaders = versionIntermineService.getResponseHeaders();
         httpStatus = versionIntermineService.getHttpStatus();
@@ -75,7 +83,11 @@ public class VersionApiController implements VersionApi {
         final InterMineAPI interMineAPI = InterMineContext.getInterMineAPI();
 
         VersionReleaseService versionReleaseService = new VersionReleaseService(interMineAPI);
-        versionReleaseService.service(request);
+        try {
+            versionReleaseService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         VersionRelease versionRelease = versionReleaseService.getVersionRelease();
         httpHeaders = versionReleaseService.getResponseHeaders();
         httpStatus = versionReleaseService.getHttpStatus();

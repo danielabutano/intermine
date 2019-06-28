@@ -50,7 +50,11 @@ public class DataApiController implements DataApi {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         DataService dataService = new DataService(im,type);
-        dataService.service(request);
+        try {
+            dataService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         dataService.setFooter();
         JBrowseData jBrowseData = dataService.getjBrowseData();
         httpHeaders = dataService.getResponseHeaders();

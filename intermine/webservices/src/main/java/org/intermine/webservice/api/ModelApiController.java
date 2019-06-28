@@ -49,7 +49,11 @@ public class ModelApiController implements ModelApi {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         ModelService modelService = new ModelService(im);
-        modelService.service(request);
+        try {
+            modelService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         Model model = modelService.getResponseModel();
         httpHeaders = modelService.getResponseHeaders();
         httpStatus = modelService.getHttpStatus();

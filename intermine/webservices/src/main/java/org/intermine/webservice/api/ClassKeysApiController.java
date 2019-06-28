@@ -39,7 +39,11 @@ public class ClassKeysApiController implements ClassKeysApi {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         ClassKeysService classKeysService = new ClassKeysService(im);
-        classKeysService.service(request);
+        try {
+            classKeysService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         classKeysService.setFooter();
         SummaryFields keyFields = classKeysService.getSummaryFields();
         httpHeaders = classKeysService.getResponseHeaders();

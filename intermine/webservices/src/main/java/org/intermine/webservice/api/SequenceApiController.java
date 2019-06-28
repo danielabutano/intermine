@@ -59,7 +59,11 @@ public class SequenceApiController implements SequenceApi {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         SequenceService sequenceService = new SequenceService(im);
-        sequenceService.service(request);
+        try {
+            sequenceService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         sequenceService.setFooter();
         httpHeaders = sequenceService.getResponseHeaders();
         httpStatus = sequenceService.getHttpStatus();

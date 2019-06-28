@@ -137,7 +137,7 @@ public class WebServiceSpring {
      * @param request
      *            The request, as received by the servlet.
      */
-    public void service(HttpServletRequest request) {
+    public void service(HttpServletRequest request) throws Throwable {
         this.request = request;
         try {
             setHeaders();
@@ -147,7 +147,7 @@ public class WebServiceSpring {
             validateState();
             execute();
         } catch (Throwable t) {
-            sendError(t);
+            throw t;
         }
 
     }
@@ -717,98 +717,6 @@ public class WebServiceSpring {
 
         PermissionHandler.setUpPermission(im, permission);
     }
-
-    private void sendError(Throwable t) {
-
-        errorMessage = WebServiceConstants.SERVICE_FAILED_MSG;
-        boolean showAllMsgs = webProperties.containsKey("i.am.a.dev");
-
-        if (t instanceof ServiceException) {
-            status = ((ServiceException) t).getHttpErrorCode();
-        } else {
-            status = HttpStatus.INTERNAL_SERVER_ERROR.value();
-        }
-        String realMsg = t.getMessage();
-        if ((showAllMsgs || status < 500) && !StringUtils.isBlank(realMsg)) {
-            errorMessage = realMsg;
-        }
-        logError(t, realMsg, status);
-        if (!formatIsJSONP()) {
-            // Don't set errors statuses on jsonp requests, to enable
-            // better error checking in the browser.
-            httpStatus = HttpStatus.valueOf(status);
-        } else {
-            // But do set callbacks
-            String callback = getCallback();
-            if (callback == null) {
-                callback = "makeInterMineResultsTable";
-            }
-        }
-
-    }
-
-    private void logError(Throwable t, String msg, int code) {
-
-        // Stack traces for all!
-        String truncatedStackTrace = getTruncatedStackTrace(t);
-        if (code == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
-            LOG.error("Service failed by internal error. Request parameters: \n"
-                    + requestParametersToString() + t + "\n" + truncatedStackTrace);
-        } else {
-            LOG.debug("Service didn't succeed. It's not an internal error. "
-                    + "Reason: " + getErrorDescription(msg, code) + "\n"
-                    + truncatedStackTrace);
-        }
-    }
-
-    private String getTruncatedStackTrace(Throwable t) {
-        StackTraceElement[] stack = t.getStackTrace();
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(b);
-        boolean tooDeep = false;
-
-        for (int i = 0; !tooDeep && i < stack.length; i++) {
-            StackTraceElement element = stack[i];
-            if (element.getClassName().contains("catalina")) {
-                // We have descended as far as is useful. stop here.
-                tooDeep = true;
-                ps.print("\n ...");
-            } else {
-                ps.print("\n  at ");
-                ps.print(element);
-            }
-        }
-        if (t.getCause() != null) {
-            ps.print("\n caused by: " + t.getCause() + "\n" + getTruncatedStackTrace(t.getCause()));
-        }
-        ps.flush();
-        return b.toString();
-    }
-
-    private String requestParametersToString() {
-        StringBuilder sb = new StringBuilder();
-        @SuppressWarnings("unchecked") // Old pre-generic API.
-                Map<String, String[]> map = request.getParameterMap();
-        for (String name : map.keySet()) {
-            for (String value : map.get(name)) {
-                sb.append(name);
-                sb.append(": ");
-                sb.append(value);
-                sb.append("\n");
-            }
-        }
-        return sb.toString();
-    }
-
-    private String getErrorDescription(String msg, int errorCode) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(StatusDictionary.getDescription(errorCode));
-        sb.append(" ");
-        sb.append(msg);
-        return sb.toString();
-    }
-
-
 
     /**
      * Set the executionTime, wasSuccessful, error and statusCode of the respective response model

@@ -64,7 +64,11 @@ public class SearchApiController implements SearchApi {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         QuickSearchService quickSearchService = new QuickSearchService(im,servletContext);
-        quickSearchService.service(request);
+        try {
+            quickSearchService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         quickSearchService.setFooter();
         httpHeaders = quickSearchService.getResponseHeaders();
         httpStatus = quickSearchService.getHttpStatus();

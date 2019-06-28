@@ -49,7 +49,11 @@ public class UsersApiController implements UsersApi {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         NewUserService newUserService = new NewUserService(im);
-        newUserService.service(request);
+        try {
+            newUserService.service(request);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         newUserService.setFooter();
         Users users = newUserService.getUsers();
         httpHeaders = newUserService.getResponseHeaders();
