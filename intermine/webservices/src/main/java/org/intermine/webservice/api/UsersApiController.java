@@ -5,10 +5,13 @@ import org.intermine.web.context.InterMineContext;
 import org.intermine.webservice.model.Users;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
+import org.intermine.webservice.model.WhoAmI;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.user.NewUserService;
+import org.intermine.webservice.server.user.WhoAmIService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,6 +46,23 @@ public class UsersApiController extends InterMineController implements UsersApi 
 
         return new ResponseEntity<Users>(users,httpHeaders,httpStatus);
     }
+
+    public ResponseEntity<WhoAmI> whoAmI() {
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        WhoAmIService whoAmIService = new WhoAmIService(im, format);
+        try {
+            whoAmIService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        WhoAmI whoAmI = whoAmIService.getWhoAmI();
+        setFooter(whoAmI);
+
+        return new ResponseEntity<WhoAmI>(whoAmI,httpHeaders,httpStatus);
+    }
+
 
     @Override
     protected Format getDefaultFormat() {

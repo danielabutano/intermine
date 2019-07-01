@@ -7,6 +7,7 @@ package org.intermine.webservice.api;
 
 import org.intermine.webservice.model.Users;
 import io.swagger.annotations.*;
+import org.intermine.webservice.model.WhoAmI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,5 +33,13 @@ public interface UsersApi {
     @RequestMapping(value = "/users",
         method = RequestMethod.POST)
     ResponseEntity<Users> users(@NotNull @ApiParam(value = "The user name of the new user. It should be an email address if possible. There must not be any user with the same username.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "A password to associate with the account.", required = true) @Valid @RequestParam(value = "password", required = true) String password,@ApiParam(value = "Whether or not to subscribe to the mine's mailing list, if it has one. The username must be an email address if true.") @Valid @RequestParam(value = "subscribe-to-list", required = false) Boolean subscribeToList);
+
+    @ApiOperation(value = "Get details about the authenticated user.", nickname = "whoAmI", notes = "Retrieve information about the currently authenticated user. This can be used to display the user's name.", response = WhoAmI.class, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = WhoAmI.class) })
+    @RequestMapping(value = "/user/whoami",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<WhoAmI> whoAmI();
 
 }

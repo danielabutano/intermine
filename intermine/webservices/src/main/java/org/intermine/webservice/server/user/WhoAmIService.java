@@ -15,6 +15,9 @@ import java.util.Map;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.Profile;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.WhoAmI;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.JSONService;
 import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
 
@@ -30,17 +33,23 @@ import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
  * @author Alex Kalderimis
  *
  */
-public class WhoAmIService extends JSONService
+public class WhoAmIService extends JSONServiceSpring
 {
 
     private static final String DENIAL_MSG = "All whoami requests must be authenticated.";
 
+    public WhoAmI getWhoAmI() {
+        return whoAmI;
+    }
+
+    private WhoAmI whoAmI;
     /**
      * Constructor
      * @param im The InterMine API object.
      */
-    public WhoAmIService(InterMineAPI im) {
-        super(im);
+    public WhoAmIService(InterMineAPI im, Format format) {
+        super(im, format);
+        whoAmI = new WhoAmI();
     }
 
     @Override
@@ -63,7 +72,7 @@ public class WhoAmIService extends JSONService
         String id = (profile.getUserId() != null) ? profile.getUserId().toString() : null;
         data.put("id", id);
         data.put("preferences", profile.getPreferences());
-        addResultItem(data, false);
+        whoAmI.setUser(data);
     }
 
 
