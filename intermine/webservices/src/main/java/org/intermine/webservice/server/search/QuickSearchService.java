@@ -10,13 +10,8 @@ package org.intermine.webservice.server.search;
  *
  */
 
-import java.io.PrintWriter;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,9 +42,9 @@ import org.intermine.web.search.KeywordSearchResult;
 import org.intermine.web.search.SearchUtils;
 import org.intermine.webservice.JSONServiceSpring;
 import org.intermine.webservice.model.QuickSearch;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.output.XMLFormatter;
-import org.intermine.webservice.util.ResponseUtilSpring;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
@@ -78,9 +73,10 @@ public class QuickSearchService extends JSONServiceSpring
     /**
      * @param im The InterMine state object
      * @param ctx The servlet context so that the index can be located.
+     * @param format
      */
-    public QuickSearchService(InterMineAPI im, ServletContext ctx) {
-        super(im);
+    public QuickSearchService(InterMineAPI im, ServletContext ctx, Format format) {
+        super(im, format);
         this.servletContext = ctx;
         quickSearch = new QuickSearch();
     }

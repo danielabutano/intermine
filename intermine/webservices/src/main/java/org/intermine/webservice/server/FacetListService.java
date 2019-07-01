@@ -18,14 +18,9 @@ import org.intermine.api.searchengine.KeywordSearchHandler;
 import org.intermine.api.searchengine.solr.SolrKeywordSearchHandler;
 import org.intermine.webservice.JSONServiceSpring;
 import org.intermine.webservice.model.FacetList;
-import org.intermine.webservice.server.core.JSONService;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,9 +47,10 @@ public class FacetListService extends JSONServiceSpring
     /**
      * Constructor
      * @param im InterMine settings
+     * @param format
      */
-    public FacetListService(InterMineAPI im) {
-        super(im);
+    public FacetListService(InterMineAPI im, Format format) {
+        super(im, format);
         facetList = new FacetList();
     }
 

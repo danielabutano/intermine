@@ -15,12 +15,6 @@ import org.intermine.api.profile.Profile;
 import org.intermine.api.profile.ProfileManager;
 import org.intermine.webservice.JSONServiceSpring;
 import org.intermine.webservice.model.Session;
-import org.intermine.webservice.server.core.JSONService;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
@@ -44,9 +38,11 @@ public class SessionService extends JSONServiceSpring
 
     private Session session;
 
-    /** @param im The InterMine state object **/
-    public SessionService(InterMineAPI im) {
-        super(im);
+    /**
+     * @param im The InterMine state object
+     * @param format **/
+    public SessionService(InterMineAPI im, Format format) {
+        super(im, format);
         session = new Session();
     }
 

@@ -31,9 +31,10 @@ public class ClassKeysService extends SummaryService
     /**
      * Construct with the InterMineAPI.
      * @param im the InterMineAPI
+     * @param format
      */
-    public ClassKeysService(InterMineAPI im) {
-        super(im);
+    public ClassKeysService(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     @Override

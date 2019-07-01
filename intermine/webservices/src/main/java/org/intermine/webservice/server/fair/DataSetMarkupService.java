@@ -14,12 +14,7 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.web.fair.SemanticMarkupUtil;
 import org.intermine.webservice.JSONServiceSpring;
 import org.intermine.webservice.model.SemanticMarkup;
-import org.intermine.webservice.server.core.JSONService;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import org.intermine.webservice.server.Format;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
@@ -39,9 +34,10 @@ public class DataSetMarkupService extends JSONServiceSpring
     /**
      * Constructor
      * @param im The InterMine state object.
+     * @param format
      **/
-    public DataSetMarkupService(InterMineAPI im) {
-        super(im);
+    public DataSetMarkupService(InterMineAPI im, Format format) {
+        super(im, format);
         semanticMarkup = new SemanticMarkup();
     }
 

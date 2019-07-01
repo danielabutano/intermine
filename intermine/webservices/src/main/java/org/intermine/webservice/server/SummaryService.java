@@ -10,11 +10,7 @@ package org.intermine.webservice.server;
  *
  */
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,9 +49,10 @@ public class SummaryService extends JSONServiceSpring
     /**
      * Constructor
      * @param im InterMine settings
+     * @param format
      */
-    public SummaryService(InterMineAPI im) {
-        super(im);
+    public SummaryService(InterMineAPI im, Format format) {
+        super(im, format);
         summaryFields = new SummaryFields();
     }
 
@@ -99,12 +96,6 @@ public class SummaryService extends JSONServiceSpring
     protected String getResultsKey() {
         return "classes";
     }
-
-    @Override
-    protected String getDefaultFileName() {
-        return "summary_fields.json";
-    }
-
 
 }
 

@@ -4,7 +4,6 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.api.bag.BagManager;
 import org.intermine.metadata.Model;
 import org.intermine.webservice.server.Format;
-import org.intermine.webservice.server.output.JSONFormatter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,9 +18,10 @@ public class JSONServiceSpring extends WebServiceSpring {
     /**
      * Constructor
      * @param im The InterMine configuration object.
+     * @param format
      */
-    public JSONServiceSpring(InterMineAPI im) {
-        super(im);
+    public JSONServiceSpring(InterMineAPI im, Format format) {
+        super(im, format);
         bagManager = im.getBagManager();
         model = im.getObjectStore().getModel();
     }

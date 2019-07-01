@@ -10,17 +10,12 @@ package org.intermine.webservice.server;
  *
  */
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.webservice.JSONServiceSpring;
 import org.intermine.webservice.model.Schema;
-import org.intermine.webservice.server.core.JSONService;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
@@ -41,9 +36,10 @@ public class SchemaListService extends JSONServiceSpring
     /**
      * Constructor
      * @param im InterMine settings
+     * @param format
      */
-    public SchemaListService(InterMineAPI im) {
-        super(im);
+    public SchemaListService(InterMineAPI im, Format format) {
+        super(im, format);
         schema = new Schema();
     }
 
@@ -63,9 +59,5 @@ public class SchemaListService extends JSONServiceSpring
         return "schemata";
     }
 
-    @Override
-    protected String getDefaultFileName() {
-        return "schemata.json";
-    }
 
 }

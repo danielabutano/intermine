@@ -10,13 +10,6 @@ package org.intermine.webservice.server.template;
  *
  */
 
-import java.io.PrintWriter;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -26,18 +19,11 @@ import org.intermine.api.template.ApiTemplate;
 import org.intermine.api.template.TemplateHelper;
 import org.intermine.api.template.TemplateManager;
 import org.intermine.pathquery.PathQuery;
-import org.intermine.web.logic.export.ResponseUtil;
 import org.intermine.webservice.WebServiceSpring;
 import org.intermine.webservice.model.TemplatesSystem;
 import org.intermine.webservice.server.Format;
-import org.intermine.webservice.server.WebService;
 import org.intermine.webservice.server.exceptions.NotAcceptableException;
 import org.intermine.webservice.server.exceptions.ServiceException;
-import org.intermine.webservice.server.output.JSONFormatter;
-import org.intermine.webservice.server.output.Output;
-import org.intermine.webservice.server.output.PlainFormatter;
-import org.intermine.webservice.server.output.StreamedOutput;
-import org.intermine.webservice.util.ResponseUtilSpring;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
@@ -57,20 +43,11 @@ public class SystemTemplatesService extends WebServiceSpring
     /**
      * Constructor.
      * @param im The InterMineAPI for this webservice
+     * @param format
      */
-    public SystemTemplatesService(InterMineAPI im) {
-        super(im);
+    public SystemTemplatesService(InterMineAPI im, Format format) {
+        super(im, format);
         templatesSystem = new TemplatesSystem();
-    }
-
-    @Override
-    protected Format getDefaultFormat() {
-        return Format.XML;
-    }
-
-    @Override
-    protected boolean canServe(Format format) {
-        return Format.BASIC_FORMATS.contains(format);
     }
 
     @Override

@@ -15,12 +15,7 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.web.logic.PermanentURIHelper;
 import org.intermine.webservice.JSONServiceSpring;
 import org.intermine.webservice.model.PermanentUrl;
-import org.intermine.webservice.server.core.JSONService;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import org.intermine.webservice.server.Format;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
@@ -47,9 +42,10 @@ public class PermanentURLService extends JSONServiceSpring
     /**
      * The constructor
      * @param im the intermine api
+     * @param format
      */
-    public PermanentURLService(InterMineAPI im) {
-        super(im);
+    public PermanentURLService(InterMineAPI im, Format format) {
+        super(im, format);
         permanentUrl = new PermanentUrl();
     }
 

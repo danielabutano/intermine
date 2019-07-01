@@ -10,8 +10,6 @@ package org.intermine.webservice.server.model;
  *
  */
 
-import java.util.Date;
-import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -47,8 +43,6 @@ import org.intermine.webservice.WebServiceSpring;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
 import org.intermine.webservice.server.exceptions.ServiceException;
-import org.intermine.webservice.server.output.JSONFormatter;
-import org.intermine.webservice.util.ResponseUtilSpring;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
@@ -75,17 +69,14 @@ public class ModelService extends WebServiceSpring
     /**
      * Constructor.
      * @param im The API settings bundle
+     * @param format
      */
-    public ModelService(InterMineAPI im) {
-        super(im);
+    public ModelService(InterMineAPI im, Format format) {
+        super(im, format);
         config = InterMineContext.getWebConfig();
         responseModel = new org.intermine.webservice.model.Model();
     }
 
-    @Override
-    protected Format getDefaultFormat() {
-        return Format.XML;
-    }
 
     private static final String FORMAT_ENDINGS = "^/?(xml|tsv|csv|json|jsonp)$";
 
@@ -112,11 +103,6 @@ public class ModelService extends WebServiceSpring
         } catch (PathException e) {
             throw new ResourceNotFoundException("Could not find a node with the id: " + pathInfo);
         }
-    }
-
-    @Override
-    protected boolean canServe(Format format) {
-        return format == Format.XML || format == Format.JSON;
     }
 
     /**

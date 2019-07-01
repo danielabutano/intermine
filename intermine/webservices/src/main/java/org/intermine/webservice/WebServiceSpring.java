@@ -7,7 +7,6 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.Profile;
 import org.intermine.api.profile.ProfileManager;
 import org.intermine.api.util.AnonProfile;
-import org.intermine.util.PropertiesUtil;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.web.logic.RequestUtil;
 import org.intermine.web.logic.export.Exporter;
@@ -17,29 +16,19 @@ import org.intermine.web.security.PublicKeySource;
 import org.intermine.webservice.server.ColumnHeaderStyle;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.JWTVerifier;
-import org.intermine.webservice.server.StatusDictionary;
-import org.intermine.webservice.server.WebServiceConstants;
 import org.intermine.webservice.server.WebServiceRequestParser;
 import org.intermine.webservice.server.core.ListManager;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.MissingParameterException;
-import org.intermine.webservice.server.exceptions.NotAcceptableException;
 import org.intermine.webservice.server.exceptions.ServiceException;
 import org.intermine.webservice.server.exceptions.UnauthorizedException;
-import org.intermine.webservice.server.output.JSONResultFormatter;
-import org.intermine.webservice.util.ResponseUtilSpring;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 @Service
@@ -57,23 +46,10 @@ public class WebServiceSpring {
     private static final String AUTH_TOKEN_PARAM_KEY = "token";
     private static final Profile ANON_PROFILE = new AnonProfile();
 
-
-    /**
-     * Constants for property keys in global property configuration.
-     */
-    private static final String WS_HEADERS_PREFIX = "ws.response.header";
-
     /**
      * The servlet request.
      */
     protected HttpServletRequest request;
-
-    public HttpHeaders getResponseHeaders() {
-        return responseHeaders;
-    }
-
-    protected HttpHeaders responseHeaders;
-
 
     /**
      * The configuration object.
@@ -86,16 +62,20 @@ public class WebServiceSpring {
     private boolean initialised = false;
     private String propertyNameSpace = null;
 
+    private Format format;
+    private Boolean isJsonP = null;
+
     /**
      * Construct the web service with the InterMine API object that gives access
      * to the core InterMine functionality.
      *
      * @param im
      *            the InterMine application
+     * @param format
      */
-    public WebServiceSpring(InterMineAPI im) {
+    public WebServiceSpring(InterMineAPI im, Format format) {
         this.im = im;
-        responseHeaders = new HttpHeaders();
+        this.format = format;
     }
 
     /**
@@ -130,7 +110,6 @@ public class WebServiceSpring {
     public void service(HttpServletRequest request) throws Throwable {
         this.request = request;
         try {
-            setHeaders();
             initState();
             authenticate();
             initialised = true;
@@ -140,83 +119,6 @@ public class WebServiceSpring {
             throw t;
         }
 
-    }
-
-    public void setHeaders() {
-        Properties headerProps = PropertiesUtil.getPropertiesStartingWith(
-                WS_HEADERS_PREFIX, webProperties);
-
-
-        for (Object o : headerProps.values()) {
-            String h = o.toString();
-            String[] parts = StringUtils.split(h, ":", 2);
-            if (parts.length != 2) {
-                LOG.warn("Ignoring invalid response header: " + h);
-            } else {
-                responseHeaders.set(parts[0].trim(), parts[1].trim());
-            }
-        }
-
-        String origin = request.getHeader("Origin");
-        if (StringUtils.isNotBlank(origin)) {
-            responseHeaders.setAccessControlAllowOrigin(origin);
-        }
-
-        String filename = getRequestFileName();
-        switch (getFormat()) {
-            case HTML:
-                ResponseUtilSpring.setHTMLContentType(responseHeaders);
-                break;
-            case XML:
-                filename += ".xml";
-                ResponseUtilSpring.setXMLHeader(responseHeaders, filename);
-                break;
-            case TSV:
-                filename += ".tsv";
-                if (isUncompressed()) {
-                    ResponseUtilSpring.setTabHeader(responseHeaders, filename);
-                }
-                break;
-            case CSV:
-                filename += ".csv";
-                if (isUncompressed()) {
-                    ResponseUtilSpring.setCSVHeader(responseHeaders, filename);
-                }
-                break;
-            case TEXT:
-                filename += getExtension();
-                if (isUncompressed()) {
-                    ResponseUtilSpring.setPlainTextHeader(responseHeaders, filename);
-                }
-                break;
-            case JSON:
-                filename += ".json";
-                if (isUncompressed()) {
-                    ResponseUtilSpring.setJSONHeader(responseHeaders, filename, formatIsJSONP());
-                }
-                break;
-            case OBJECTS:
-                filename += ".json";
-                if (isUncompressed()) {
-                    ResponseUtilSpring.setJSONHeader(responseHeaders, filename, formatIsJSONP());
-                }
-                break;
-            case TABLE:
-                filename = "resulttable.json";
-                if (isUncompressed()) {
-                    ResponseUtilSpring.setJSONHeader(responseHeaders, filename, formatIsJSONP());
-                }
-                break;
-            case ROWS:
-                if (isUncompressed()) {
-                    ResponseUtilSpring.setJSONHeader(responseHeaders, "result.json", formatIsJSONP());
-                }
-                break;
-            default:
-        }
-        if (!isUncompressed()) {
-            ResponseUtilSpring.setGzippedHeader(responseHeaders, filename + getExtension());
-        }
     }
 
     private String lineBreak = null;
@@ -322,28 +224,6 @@ public class WebServiceSpring {
     }
 
     /**
-     * @return The default file name for this service. (default = "result.tsv")
-     */
-    protected String getDefaultFileName() {
-        return "result";
-    }
-
-    /**
-     * If the request has a <code>filename</code> parameter then use that
-     * for the fileName, otherwise use the default fileName
-     * @return the fileName to use for the exported file
-     */
-    protected String getRequestFileName() {
-        String param = WebServiceRequestParser.FILENAME_PARAMETER;
-        String fileName = request.getParameter(param);
-        if (StringUtils.isBlank(fileName)) {
-            return getDefaultFileName();
-        } else {
-            return fileName.trim();
-        }
-    }
-
-    /**
      * @return The default format constant for this service.
      */
     protected Format getDefaultFormat() {
@@ -351,8 +231,7 @@ public class WebServiceSpring {
     }
 
 
-    private Format format = null;
-    private Boolean isJsonP = null;
+
 
     /**
      * Returns required output format.
@@ -362,32 +241,6 @@ public class WebServiceSpring {
      * @return format
      */
     public final Format getFormat() {
-        if (format == null) {
-            List<Format> askedFor = WebServiceRequestParser.getAcceptableFormats(request);
-            if (askedFor.isEmpty()) {
-                format = getDefaultFormat();
-            } else {
-                for (Format acceptable: askedFor) {
-                    if (Format.DEFAULT == acceptable) {
-                        format = getDefaultFormat();
-                        break;
-                    }
-                    // Serve the first acceptable format.
-                    if (canServe(acceptable)) {
-                        format = acceptable;
-                        break;
-                    }
-                }
-                // Nothing --> NotAcceptable
-                if (format == null) {
-                    throw new NotAcceptableException();
-                }
-                // But empty --> default
-                if (format == Format.EMPTY) {
-                    format = getDefaultFormat();
-                }
-            }
-        }
 
         return format;
     }
@@ -415,14 +268,6 @@ public class WebServiceSpring {
      */
     protected boolean isZip() {
         return ZIP.equalsIgnoreCase(request.getParameter(COMPRESS));
-    }
-
-
-    /**
-     * @return Whether or not this request wants uncompressed data.
-     */
-    protected boolean isUncompressed() {
-        return StringUtils.isEmpty(request.getParameter(COMPRESS));
     }
 
     /**

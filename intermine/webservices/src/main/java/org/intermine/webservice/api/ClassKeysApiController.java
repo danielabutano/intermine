@@ -5,10 +5,9 @@ import org.intermine.web.context.InterMineContext;
 import org.intermine.webservice.model.SummaryFields;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.intermine.webservice.server.ClassKeysService;
+import org.intermine.webservice.server.Format;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -28,7 +27,8 @@ public class ClassKeysApiController extends InterMineController implements Class
     public ResponseEntity<SummaryFields> classkeys() {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
-        ClassKeysService classKeysService = new ClassKeysService(im);
+        setHeaders();
+        ClassKeysService classKeysService = new ClassKeysService(im, format);
         try {
             classKeysService.service(request);
         } catch (Throwable throwable) {
@@ -36,9 +36,13 @@ public class ClassKeysApiController extends InterMineController implements Class
         }
         SummaryFields keyFields = classKeysService.getSummaryFields();
         setFooter(keyFields);
-        httpHeaders = classKeysService.getResponseHeaders();
 
-        return new ResponseEntity<SummaryFields>(keyFields,httpHeaders,getHttpStatus());
+        return new ResponseEntity<SummaryFields>(keyFields,httpHeaders,httpStatus);
+    }
+
+    @Override
+    protected Format getDefaultFormat() {
+        return Format.JSON;
     }
 
 }

@@ -10,10 +10,6 @@ package org.intermine.webservice.server.clob;
  *
  */
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -32,11 +28,10 @@ import org.intermine.pathquery.PathException;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.webservice.JSONServiceSpring;
 import org.intermine.webservice.model.Sequence;
-import org.intermine.webservice.server.core.JSONService;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.NotImplementedException;
 import org.intermine.webservice.server.exceptions.ServiceException;
-import org.intermine.webservice.server.output.JSONFormatter;
 import org.intermine.webservice.server.query.AbstractQueryServiceSpring;
 import org.intermine.webservice.server.query.QueryRequestParser;
 import org.intermine.webservice.server.query.result.PathQueryBuilder;
@@ -72,9 +67,11 @@ public class SequenceService extends JSONServiceSpring
 
     private Sequence sequence;
 
-    /** @param im The InterMine state object. **/
-    public SequenceService(InterMineAPI im) {
-        super(im);
+    /**
+     * @param im The InterMine state object.
+     * @param format **/
+    public SequenceService(InterMineAPI im, Format format) {
+        super(im, format);
         sequence = new Sequence();
     }
 

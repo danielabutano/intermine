@@ -6,9 +6,8 @@ import org.apache.log4j.Logger;
 import org.intermine.api.InterMineAPI;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.webservice.model.SummaryFields;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.SummaryService;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,7 +29,8 @@ public class SummaryFieldsApiController extends InterMineController implements S
     public ResponseEntity<SummaryFields> summaryfields(@ApiParam(value = "Whether to exclude references from the summary fields") @Valid @RequestParam(value = "norefs", required = false) Boolean norefs) {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
-        SummaryService summaryService = new SummaryService(im);
+        setHeaders();
+        SummaryService summaryService = new SummaryService(im, format);
         try {
             summaryService.service(request);
         } catch (Throwable throwable) {
@@ -38,9 +38,17 @@ public class SummaryFieldsApiController extends InterMineController implements S
         }
         SummaryFields summaryFields = summaryService.getSummaryFields();
         setFooter(summaryFields);
-        httpHeaders = summaryService.getResponseHeaders();
 
-        return new ResponseEntity<SummaryFields>(summaryFields,httpHeaders,getHttpStatus());
+        return new ResponseEntity<SummaryFields>(summaryFields,httpHeaders,httpStatus);
     }
 
+    @Override
+    protected String getDefaultFileName() {
+        return "summary_fields.json";
+    }
+
+    @Override
+    protected Format getDefaultFormat() {
+        return Format.JSON;
+    }
 }

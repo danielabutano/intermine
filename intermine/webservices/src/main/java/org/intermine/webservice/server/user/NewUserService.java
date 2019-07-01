@@ -13,11 +13,6 @@ package org.intermine.webservice.server.user;
 import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -31,13 +26,11 @@ import org.intermine.web.context.InterMineContext;
 import org.intermine.web.context.MailAction;
 import org.intermine.webservice.JSONServiceSpring;
 import org.intermine.webservice.model.Users;
-import org.intermine.webservice.server.core.JSONService;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.RateLimitHistory;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.ServiceException;
 import org.intermine.webservice.server.exceptions.RateLimitException;
-import org.intermine.webservice.server.output.JSONFormatter;
-import org.json.JSONObject;
 
 /**
  * Service for creating a new user. Requires a new, unique username, and a non-blank
@@ -63,9 +56,10 @@ public class NewUserService extends JSONServiceSpring
     /**
      * Constructor.
      * @param im The InterMine API object.
+     * @param format
      */
-    public NewUserService(InterMineAPI im) {
-        super(im);
+    public NewUserService(InterMineAPI im, Format format) {
+        super(im, format);
         users = new Users();
         if (requestHistory == null) {
             Properties webProperties = InterMineContext.getWebProperties();

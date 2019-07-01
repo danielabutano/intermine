@@ -10,10 +10,6 @@ package org.intermine.webservice.server.branding;
  *
  */
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -25,6 +21,7 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.util.PropertiesUtil;
 import org.intermine.webservice.JSONServiceSpring;
 import org.intermine.webservice.model.Branding;
+import org.intermine.webservice.server.Format;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
@@ -48,9 +45,11 @@ public class BrandingService extends JSONServiceSpring
 
     private Branding branding;
 
-    /** @param im The InterMine state object. **/
-    public BrandingService(InterMineAPI im) {
-        super(im);
+    /**
+     * @param im The InterMine state object.
+     * @param format **/
+    public BrandingService(InterMineAPI im, Format format) {
+        super(im, format);
         branding = new Branding();
     }
 

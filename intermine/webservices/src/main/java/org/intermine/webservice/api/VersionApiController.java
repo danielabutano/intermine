@@ -7,18 +7,16 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.webservice.model.Version;
 import org.intermine.webservice.model.VersionRelease;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.VersionIntermineService;
 import org.intermine.webservice.server.VersionReleaseService;
 import org.intermine.webservice.server.VersionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-05-26T23:19:30.817+05:30[Asia/Kolkata]")
@@ -35,55 +33,66 @@ public class VersionApiController extends InterMineController implements Version
     public ResponseEntity<?> version(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format) {
         final InterMineAPI interMineAPI = InterMineContext.getInterMineAPI();
 
-        VersionService versionService = new VersionService(interMineAPI);
+        setHeaders();
+        VersionService versionService = new VersionService(interMineAPI, getFormat());
         try {
             versionService.service(request);
         } catch (Throwable throwable) {
             sendError(throwable);
         }
         Version version = versionService.getVersion();
-        httpHeaders = versionService.getResponseHeaders();
         if(format.equals("json")) {
             setFooter(version);
-            return new ResponseEntity<Version>(version, httpHeaders, getHttpStatus());
+            return new ResponseEntity<Version>(version, httpHeaders,httpStatus);
         }
-        return new ResponseEntity<Integer>(version.getVersion(),httpHeaders,getHttpStatus());
+        return new ResponseEntity<Integer>(version.getVersion(),httpHeaders,httpStatus);
     }
 
     public ResponseEntity<?> versionIntermine(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format) {
         final InterMineAPI interMineAPI = InterMineContext.getInterMineAPI();
 
-        VersionIntermineService versionIntermineService = new VersionIntermineService(interMineAPI);
+        setHeaders();
+        VersionIntermineService versionIntermineService = new VersionIntermineService(interMineAPI, getFormat());
         try {
             versionIntermineService.service(request);
         } catch (Throwable throwable) {
             sendError(throwable);
         }
         VersionRelease versionIntermine = versionIntermineService.getVersionRelease();
-        httpHeaders = versionIntermineService.getResponseHeaders();
         if(format.equals("json")) {
             setFooter(versionIntermine);
-            return new ResponseEntity<VersionRelease>(versionIntermine, httpHeaders, getHttpStatus());
+            return new ResponseEntity<VersionRelease>(versionIntermine, httpHeaders,httpStatus);
         }
-        return new ResponseEntity<String>(versionIntermine.getVersion(),httpHeaders,getHttpStatus());
+        return new ResponseEntity<String>(versionIntermine.getVersion(),httpHeaders,httpStatus);
     }
 
     public ResponseEntity<?> versionRelease(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format) {
         final InterMineAPI interMineAPI = InterMineContext.getInterMineAPI();
 
-        VersionReleaseService versionReleaseService = new VersionReleaseService(interMineAPI);
+        setHeaders();
+        VersionReleaseService versionReleaseService = new VersionReleaseService(interMineAPI, getFormat());
         try {
             versionReleaseService.service(request);
         } catch (Throwable throwable) {
             sendError(throwable);
         }
         VersionRelease versionRelease = versionReleaseService.getVersionRelease();
-        httpHeaders = versionReleaseService.getResponseHeaders();
         if(format.equals("json")) {
             setFooter(versionRelease);
-            return new ResponseEntity<VersionRelease>(versionRelease, httpHeaders, getHttpStatus());
+            return new ResponseEntity<VersionRelease>(versionRelease, httpHeaders,httpStatus);
         }
-        return new ResponseEntity<String>(versionRelease.getVersion(),httpHeaders,getHttpStatus());
+        return new ResponseEntity<String>(versionRelease.getVersion(),httpHeaders,httpStatus);
     }
 
+    @Override
+    protected Format getDefaultFormat() {
+        return Format.TEXT;
+    }
+
+    @Override
+    protected boolean canServe(Format format) {
+        return format == Format.JSON
+                || format == Format.HTML
+                || format == Format.TEXT;
+    }
 }

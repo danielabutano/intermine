@@ -10,11 +10,7 @@ package org.intermine.webservice.server.webproperties;
  *
  */
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -25,6 +21,7 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.util.PropertiesUtil;
 import org.intermine.webservice.JSONServiceSpring;
 import org.intermine.webservice.model.WebProperties;
+import org.intermine.webservice.server.Format;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
@@ -46,9 +43,11 @@ public class WebPropertiesService extends JSONServiceSpring
 
     private WebProperties webPropertiesModel;
 
-    /** @param im The InterMine state object. **/
-    public WebPropertiesService(InterMineAPI im) {
-        super(im);
+    /**
+     * @param im The InterMine state object.
+     * @param format **/
+    public WebPropertiesService(InterMineAPI im, Format format) {
+        super(im, format);
         webPropertiesModel = new WebProperties();
     }
 

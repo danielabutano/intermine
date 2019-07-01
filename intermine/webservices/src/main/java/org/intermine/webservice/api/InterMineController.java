@@ -3,11 +3,16 @@ package org.intermine.webservice.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.intermine.util.PropertiesUtil;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.webservice.model.JSONModel;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.StatusDictionary;
 import org.intermine.webservice.server.WebServiceConstants;
+import org.intermine.webservice.server.WebServiceRequestParser;
+import org.intermine.webservice.server.exceptions.NotAcceptableException;
 import org.intermine.webservice.server.exceptions.ServiceException;
+import org.intermine.webservice.util.ResponseUtilSpring;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
@@ -18,6 +23,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -35,20 +41,241 @@ public class InterMineController {
 
     private static final Logger LOG = Logger.getLogger(InterMineController.class);
 
+    private static final String COMPRESS = "compress";
+    private static final String GZIP = "gzip";
+    private static final String ZIP = "zip";
+
+
+    /**
+     * Constants for property keys in global property configuration.
+     */
+    private static final String WS_HEADERS_PREFIX = "ws.response.header";
+
     protected Properties webProperties;
 
-    protected String errorMessage = null;
-    protected int status = HttpStatus.OK.value();
+    protected String errorMessage;
+    protected int status;
+
+    protected Format format = null;
+    private Boolean isJsonP = null;
 
     public InterMineController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.request = request;
-        //httpHeaders = new HttpHeaders();
+        httpHeaders = new HttpHeaders();
         httpStatus = HttpStatus.OK;
+        status = HttpStatus.OK.value();
+        errorMessage = null;
     }
 
     public HttpStatus getHttpStatus() {
         return httpStatus;
+    }
+
+    public HttpHeaders getHttpHeaders() {
+        return httpHeaders;
+    }
+
+    public void setHeaders() {
+        webProperties = InterMineContext.getWebProperties();
+        Properties headerProps = PropertiesUtil.getPropertiesStartingWith(
+                WS_HEADERS_PREFIX, webProperties);
+
+
+        for (Object o : headerProps.values()) {
+            String h = o.toString();
+            String[] parts = StringUtils.split(h, ":", 2);
+            if (parts.length != 2) {
+                LOG.warn("Ignoring invalid response header: " + h);
+            } else {
+                httpHeaders.set(parts[0].trim(), parts[1].trim());
+            }
+        }
+
+        String origin = request.getHeader("Origin");
+        if (StringUtils.isNotBlank(origin)) {
+            httpHeaders.setAccessControlAllowOrigin(origin);
+        }
+
+        String filename = getRequestFileName();
+        switch (getFormat()) {
+            case HTML:
+                ResponseUtilSpring.setHTMLContentType(httpHeaders);
+                break;
+            case XML:
+                filename += ".xml";
+                ResponseUtilSpring.setXMLHeader(httpHeaders, filename);
+                break;
+            case TSV:
+                filename += ".tsv";
+                if (isUncompressed()) {
+                    ResponseUtilSpring.setTabHeader(httpHeaders, filename);
+                }
+                break;
+            case CSV:
+                filename += ".csv";
+                if (isUncompressed()) {
+                    ResponseUtilSpring.setCSVHeader(httpHeaders, filename);
+                }
+                break;
+            case TEXT:
+                filename += getExtension();
+                if (isUncompressed()) {
+                    ResponseUtilSpring.setPlainTextHeader(httpHeaders, filename);
+                }
+                break;
+            case JSON:
+                filename += ".json";
+                if (isUncompressed()) {
+                    ResponseUtilSpring.setJSONHeader(httpHeaders, filename, formatIsJSONP());
+                }
+                break;
+            case OBJECTS:
+                filename += ".json";
+                if (isUncompressed()) {
+                    ResponseUtilSpring.setJSONHeader(httpHeaders, filename, formatIsJSONP());
+                }
+                break;
+            case TABLE:
+                filename = "resulttable.json";
+                if (isUncompressed()) {
+                    ResponseUtilSpring.setJSONHeader(httpHeaders, filename, formatIsJSONP());
+                }
+                break;
+            case ROWS:
+                if (isUncompressed()) {
+                    ResponseUtilSpring.setJSONHeader(httpHeaders, "result.json", formatIsJSONP());
+                }
+                break;
+            default:
+        }
+        if (!isUncompressed()) {
+            ResponseUtilSpring.setGzippedHeader(httpHeaders, filename + getExtension());
+        }
+    }
+    /**
+     * If the request has a <code>filename</code> parameter then use that
+     * for the fileName, otherwise use the default fileName
+     * @return the fileName to use for the exported file
+     */
+    protected String getRequestFileName() {
+        String param = WebServiceRequestParser.FILENAME_PARAMETER;
+        String fileName = request.getParameter(param);
+        if (StringUtils.isBlank(fileName)) {
+            return getDefaultFileName();
+        } else {
+            return fileName.trim();
+        }
+    }
+
+    /**
+     * @return The default file name for this service. (default = "result.tsv")
+     */
+    protected String getDefaultFileName() {
+        return "result";
+    }
+
+
+    /**
+     * @return The default format constant for this service.
+     */
+    protected Format getDefaultFormat() {
+        return Format.EMPTY;
+    }
+
+    /**
+     * Returns required output format.
+     *
+     * Cannot be overridden.
+     *
+     * @return format
+     */
+    public final Format getFormat() {
+        if (format == null) {
+            List<Format> askedFor = WebServiceRequestParser.getAcceptableFormats(request);
+            if (askedFor.isEmpty()) {
+                format = getDefaultFormat();
+            } else {
+                for (Format acceptable: askedFor) {
+                    if (Format.DEFAULT == acceptable) {
+                        format = getDefaultFormat();
+                        break;
+                    }
+                    // Serve the first acceptable format.
+                    if (canServe(acceptable)) {
+                        format = acceptable;
+                        break;
+                    }
+                }
+                // Nothing --> NotAcceptable
+                if (format == null) {
+                    throw new NotAcceptableException();
+                }
+                // But empty --> default
+                if (format == Format.EMPTY) {
+                    format = getDefaultFormat();
+                }
+            }
+        }
+
+        return format;
+    }
+
+    /**
+     * Check whether the format is acceptable.
+     *
+     * By default returns true. Services with a particular set of accepted
+     * formats should override this and check.
+     * @param format The format to check.
+     * @return whether or not this format is acceptable.
+     */
+    protected boolean canServe(Format format) {
+        return format == getDefaultFormat();
+    }
+
+
+    /**
+     * @return Whether or not this request wants uncompressed data.
+     */
+    protected boolean isUncompressed() {
+        return StringUtils.isEmpty(request.getParameter(COMPRESS));
+    }
+
+    /**
+     * @return the file-name extension for the result-set.
+     */
+    protected String getExtension() {
+        if (isGzip()) {
+            return ".gz";
+        } else if (isZip()) {
+            return ".zip";
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     * @return Whether or not this request wants gzipped data.
+     */
+    protected boolean isGzip() {
+        return GZIP.equalsIgnoreCase(request.getParameter(COMPRESS));
+    }
+
+    /**
+     * @return Whether or not this request wants zipped data.
+     */
+    protected boolean isZip() {
+        return ZIP.equalsIgnoreCase(request.getParameter(COMPRESS));
+    }
+
+    /**
+     * @return Whether or not the format is a JSON-P format
+     */
+    protected final boolean formatIsJSONP() {
+        if (isJsonP == null) {
+            isJsonP = WebServiceRequestParser.isJsonP(request);
+        }
+        return isJsonP;
     }
 
     /**

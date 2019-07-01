@@ -11,16 +11,11 @@ package org.intermine.webservice.server;
  */
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.web.logic.Constants;
 import org.intermine.webservice.JSONServiceSpring;
 import org.intermine.webservice.model.Version;
-import org.intermine.webservice.server.output.HTMLTableFormatter;
 
 /**
  * Service for returning the version of this service.
@@ -38,9 +33,10 @@ public class VersionService extends JSONServiceSpring
     /**
      * Constructor
      * @param im The InterMine configuration object.
+     * @param format
      */
-    public VersionService(InterMineAPI im) {
-        super(im);
+    public VersionService(InterMineAPI im, Format format) {
+        super(im, format);
         version = new Version();
     }
 
@@ -50,23 +46,8 @@ public class VersionService extends JSONServiceSpring
     }
 
     @Override
-    protected Format getDefaultFormat() {
-        if (hasCallback()) {
-            return Format.JSON;
-        } else {
-            return Format.TEXT;
-        }
-    }
-
-    @Override
     protected String getResultsKey() {
         return "version";
     }
 
-    @Override
-    protected boolean canServe(Format format) {
-        return format == Format.JSON
-            || format == Format.HTML
-            || format == Format.TEXT;
-    }
 }

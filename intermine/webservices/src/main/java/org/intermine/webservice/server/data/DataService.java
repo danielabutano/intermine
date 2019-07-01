@@ -10,11 +10,7 @@ package org.intermine.webservice.server.data;
  *
  */
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,11 +36,10 @@ import org.intermine.pathquery.Path;
 import org.intermine.pathquery.PathException;
 import org.intermine.webservice.JSONServiceSpring;
 import org.intermine.webservice.model.JBrowseData;
-import org.intermine.webservice.server.core.JSONService;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
 import org.intermine.webservice.server.exceptions.ServiceException;
-import org.springframework.http.HttpStatus;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
@@ -60,9 +55,11 @@ public class DataService extends JSONServiceSpring
 
     private String pathInfo;
 
-    /** @param im The InterMine state object **/
-    public DataService(InterMineAPI im, String type) {
-        super(im);
+    /**
+     * @param im The InterMine state object
+     * @param format **/
+    public DataService(InterMineAPI im, String type, Format format) {
+        super(im, format);
         jBrowseData = new JBrowseData();
         pathInfo = type;
     }

@@ -15,13 +15,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -41,15 +34,13 @@ import org.intermine.api.tag.TagNames;
 import org.intermine.api.tag.TagTypes;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.web.logic.Constants;
-import org.intermine.web.logic.export.ResponseUtil;
 import org.intermine.web.util.URLGenerator;
 import org.intermine.webservice.model.GeneratedCode;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
-import org.intermine.webservice.server.output.JSONFormatter;
 import org.intermine.webservice.server.query.result.PathQueryBuilder;
-import org.intermine.webservice.util.ResponseUtilSpring;
 import org.json.JSONObject;
+import org.springframework.http.HttpHeaders;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
@@ -71,36 +62,19 @@ public class CodeService extends AbstractQueryServiceSpring
 
     private GeneratedCode generatedCode;
 
+    protected HttpHeaders httpHeaders;
+
     /**
      * Constructor.
      * @param im The InterMine application object.
+     * @param format
      */
-    public CodeService(InterMineAPI im) {
-        super(im);
+    public CodeService(InterMineAPI im, HttpHeaders httpHeaders, Format format) {
+        super(im, format);
         generatedCode = new GeneratedCode();
+        this.httpHeaders = httpHeaders;
     }
 
-    @Override
-    protected Format getDefaultFormat() {
-        return Format.TEXT;
-    }
-
-    @Override
-    protected boolean canServe(Format format) {
-        switch (format) {
-            case JSON:
-                return true;
-            case TEXT:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    @Override
-    protected String getDefaultFileName() {
-        return "query";
-    }
 
     @Override
     protected String getExtension() {
@@ -156,7 +130,7 @@ public class CodeService extends AbstractQueryServiceSpring
         String name = pq.getTitle() != null ? pq.getTitle() : "query";
         String fileName = name.replaceAll("[^a-zA-Z0-9_,.()-]", "_") + getExtension();
 
-        responseHeaders.setContentDispositionFormData("attachment",fileName);
+        httpHeaders.setContentDispositionFormData("attachment",fileName);
 
         WebserviceCodeGenInfo info = new WebserviceCodeGenInfo(
                         pq,

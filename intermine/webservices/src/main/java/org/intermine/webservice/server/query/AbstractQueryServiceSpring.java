@@ -20,7 +20,6 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.webservice.WebServiceSpring;
 import org.intermine.webservice.server.Format;
-import org.intermine.webservice.server.WebService;
 import org.intermine.webservice.server.core.ListManager;
 import org.intermine.webservice.server.exceptions.ServiceException;
 import org.intermine.webservice.server.query.result.PathQueryBuilder;
@@ -40,9 +39,10 @@ public abstract class AbstractQueryServiceSpring extends WebServiceSpring
     /**
      * Constructor.
      * @param im The InterMine application object.
+     * @param format
      */
-    public AbstractQueryServiceSpring(InterMineAPI im) {
-        super(im);
+    public AbstractQueryServiceSpring(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     /**
