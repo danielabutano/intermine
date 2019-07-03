@@ -2,12 +2,14 @@ package org.intermine.webservice.api;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.web.context.InterMineContext;
+import org.intermine.webservice.model.Token;
 import org.intermine.webservice.model.Users;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 import org.intermine.webservice.model.WhoAmI;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.user.NewUserService;
+import org.intermine.webservice.server.user.TokenService;
 import org.intermine.webservice.server.user.WhoAmIService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +63,22 @@ public class UsersApiController extends InterMineController implements UsersApi 
         setFooter(whoAmI);
 
         return new ResponseEntity<WhoAmI>(whoAmI,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<Token> token() {
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        TokenService tokenService = new TokenService(im, format);
+        try {
+            tokenService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        Token token = tokenService.getToken();
+        setFooter(token);
+
+        return new ResponseEntity<Token>(token,httpHeaders,httpStatus);
     }
 
 

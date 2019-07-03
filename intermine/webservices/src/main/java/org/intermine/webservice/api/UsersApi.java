@@ -5,6 +5,7 @@
  */
 package org.intermine.webservice.api;
 
+import org.intermine.webservice.model.Token;
 import org.intermine.webservice.model.Users;
 import io.swagger.annotations.*;
 import org.intermine.webservice.model.WhoAmI;
@@ -41,5 +42,14 @@ public interface UsersApi {
             produces = { "application/json" },
             method = RequestMethod.GET)
     ResponseEntity<WhoAmI> whoAmI();
+
+    @ApiOperation(value = "Get a new API key.", nickname = "token", notes = "This service allows a user to retrieve an API token which is valid for up to 24 hours of unlimited use. The primary use case is to get an API key where the user has only username/password credentials, since the use of API keys is more secure.", response = Token.class, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = Token.class) })
+    @RequestMapping(value = "/user/token",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<Token> token();
+
 
 }
