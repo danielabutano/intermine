@@ -25,6 +25,7 @@ public class FacetListApiController extends InterMineController implements Facet
     }
 
     public ResponseEntity<FacetList> facetlist() {
+        initController();
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         setHeaders();

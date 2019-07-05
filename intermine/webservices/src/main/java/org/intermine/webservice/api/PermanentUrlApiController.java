@@ -29,6 +29,7 @@ public class PermanentUrlApiController extends InterMineController implements Pe
     }
 
     public ResponseEntity<PermanentUrl> permanentUrl(@NotNull @ApiParam(value = "The type of the entity.", required = true) @Valid @RequestParam(value = "type", required = true) String type,@NotNull @ApiParam(value = "The internal intermine ID.", required = true) @Valid @RequestParam(value = "id", required = true) String id) {
+        initController();
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         setHeaders();

@@ -27,6 +27,7 @@ public class SummaryFieldsApiController extends InterMineController implements S
     }
 
     public ResponseEntity<SummaryFields> summaryfields(@ApiParam(value = "Whether to exclude references from the summary fields") @Valid @RequestParam(value = "norefs", required = false) Boolean norefs) {
+        initController();
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         setHeaders();

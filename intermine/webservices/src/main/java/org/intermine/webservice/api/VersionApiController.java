@@ -31,6 +31,7 @@ public class VersionApiController extends InterMineController implements Version
     }
 
     public ResponseEntity<?> version(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format) {
+        initController();
         final InterMineAPI interMineAPI = InterMineContext.getInterMineAPI();
 
         setHeaders();
@@ -49,6 +50,7 @@ public class VersionApiController extends InterMineController implements Version
     }
 
     public ResponseEntity<?> versionIntermine(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format) {
+        initController();
         final InterMineAPI interMineAPI = InterMineContext.getInterMineAPI();
 
         setHeaders();
@@ -67,6 +69,7 @@ public class VersionApiController extends InterMineController implements Version
     }
 
     public ResponseEntity<?> versionRelease(@ApiParam(value = "", allowableValues = "text, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format) {
+        initController();
         final InterMineAPI interMineAPI = InterMineContext.getInterMineAPI();
 
         setHeaders();

@@ -40,6 +40,7 @@ public class SchemaApiController extends InterMineController implements SchemaAp
     }
 
     public ResponseEntity<Schema> allSchema() {
+        initController();
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         setHeaders();
@@ -56,6 +57,7 @@ public class SchemaApiController extends InterMineController implements SchemaAp
     }
 
     public ResponseEntity<?> oneSchema(@ApiParam(value = "The name of the schema to retrieve",required=true) @PathVariable("name") String name) {
+        initController();
         httpHeaders = new HttpHeaders();
         String responseObject = serveSpecificSchema(name);
         return new ResponseEntity<String>(responseObject,httpHeaders,httpStatus);

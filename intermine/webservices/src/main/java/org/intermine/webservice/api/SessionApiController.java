@@ -25,6 +25,7 @@ public class SessionApiController extends InterMineController implements Session
     }
 
     public ResponseEntity<Session> session() {
+        initController();
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         setHeaders();

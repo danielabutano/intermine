@@ -25,6 +25,7 @@ public class BrandingApiController extends InterMineController implements Brandi
     }
 
     public ResponseEntity<Branding> branding() {
+        initController();
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         setHeaders();

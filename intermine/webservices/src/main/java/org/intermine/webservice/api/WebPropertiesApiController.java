@@ -25,6 +25,7 @@ public class WebPropertiesApiController extends InterMineController implements W
     }
 
     public ResponseEntity<WebProperties> webProperties() {
+        initController();
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         setHeaders();

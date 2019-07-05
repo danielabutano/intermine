@@ -31,6 +31,7 @@ public class DataApiController extends InterMineController implements DataApi {
     }
 
     public ResponseEntity<JBrowseData> jBrowseSimpleData(@ApiParam(value = "The type of the object to find.",required=true) @PathVariable("type") String type,@ApiParam(value = "The range of values requested." ) @RequestHeader(value="Range", required=false) String range,@ApiParam(value = "An optional filter over the objects.") @Valid @RequestParam(value = "filter", required = false) List<String> filter) {
+        initController();
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         setHeaders();

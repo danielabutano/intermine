@@ -31,6 +31,7 @@ public class SemanticMarkupApiController extends InterMineController implements 
     }
 
     public ResponseEntity<SemanticMarkup> semanticMarkupDatacatalog() {
+        initController();
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         setHeaders();
@@ -48,6 +49,7 @@ public class SemanticMarkupApiController extends InterMineController implements 
 
 
     public ResponseEntity<SemanticMarkup> semanticMarkupBioEntity(@NotNull @ApiParam(value = "The type of the bioentity.", required = true) @Valid @RequestParam(value = "type", required = true) String type,@NotNull @ApiParam(value = "The primary identifier of the bioentity.", required = true) @Valid @RequestParam(value = "id", required = true) Integer id) {
+        initController();
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         setHeaders();
@@ -64,6 +66,7 @@ public class SemanticMarkupApiController extends InterMineController implements 
     }
 
     public ResponseEntity<SemanticMarkup> semanticMarkupDataset(@NotNull @ApiParam(value = "The name of the dataset.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@ApiParam(value = "The description of the dataset.") @Valid @RequestParam(value = "description", required = false) String description,@ApiParam(value = "The url of the dataset.") @Valid @RequestParam(value = "url", required = false) String url) {
+        initController();
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         setHeaders();

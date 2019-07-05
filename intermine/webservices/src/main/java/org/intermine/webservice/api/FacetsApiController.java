@@ -29,12 +29,14 @@ public class FacetsApiController extends InterMineController implements FacetsAp
     }
 
     public ResponseEntity<FacetSearch> facetSearchGet(@ApiParam(value = "The query string to search with. If absent, or blank, all results will be returned.") @Valid @RequestParam(value = "q", required = false) String q,@ApiParam(value = "A list to search within.") @Valid @RequestParam(value = "list", required = false) String list,@ApiParam(value = "A facet parameter, eg facet_Organism=D.melanogaster") @Valid @RequestParam(value = "facet_?", required = false) List<String> facet) {
+        initController();
         FacetSearch facetSearch = serve();
         setFooter(facetSearch);
         return new ResponseEntity<FacetSearch>(facetSearch,httpHeaders,httpStatus);
     }
 
     public ResponseEntity<FacetSearch> facetSearchPost(@ApiParam(value = "The query string to search with. If absent, or blank, all results will be returned.") @Valid @RequestParam(value = "q", required = false) String q,@ApiParam(value = "A list to search within.") @Valid @RequestParam(value = "list", required = false) String list,@ApiParam(value = "A facet parameter, eg facet_Organism=D.melanogaster") @Valid @RequestParam(value = "facet_?", required = false) List<String> facet) {
+        initController();
         FacetSearch facetSearch = serve();
         setFooter(facetSearch);
         return new ResponseEntity<FacetSearch>(facetSearch,httpHeaders,httpStatus);

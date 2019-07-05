@@ -30,6 +30,7 @@ public class QueryApiController extends InterMineController implements QueryApi 
     }
 
     public ResponseEntity<?> generatedCodeGet(@NotNull @ApiParam(value = "The language to generate code in.", required = true, allowableValues = "pl, py, rb, js, java") @Valid @RequestParam(value = "lang", required = true, defaultValue = "py") String lang,@NotNull @ApiParam(value = "The query to generate code for, in XML or JSON form.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@ApiParam(value = "", allowableValues = "text, xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format) {
+        initController();
         GeneratedCode generatedCode = serve();
         if(format.equals("json")) {
             ResponseUtilSpring.setJSONHeader(httpHeaders, "querycode.json");
@@ -40,6 +41,7 @@ public class QueryApiController extends InterMineController implements QueryApi 
     }
 
     public ResponseEntity<?> generatedCodePost(@NotNull @ApiParam(value = "The language to generate code in.", required = true, allowableValues = "pl, py, rb, js, java") @Valid @RequestParam(value = "lang", required = true, defaultValue = "py") String lang,@NotNull @ApiParam(value = "The query to generate code for, in XML or JSON form.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@ApiParam(value = "", allowableValues = "text, xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format) {
+        initController();
         GeneratedCode generatedCode = serve();
         if(format.equals("json")) {
             ResponseUtilSpring.setJSONHeader(httpHeaders, "querycode.json");

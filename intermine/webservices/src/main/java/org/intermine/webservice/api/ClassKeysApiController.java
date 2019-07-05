@@ -25,6 +25,7 @@ public class ClassKeysApiController extends InterMineController implements Class
     }
 
     public ResponseEntity<SummaryFields> classkeys() {
+        initController();
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         setHeaders();

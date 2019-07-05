@@ -34,6 +34,7 @@ public class UsersApiController extends InterMineController implements UsersApi 
     }
 
     public ResponseEntity<Users> users(@NotNull @ApiParam(value = "The user name of the new user. It should be an email address if possible. There must not be any user with the same username.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "A password to associate with the account.", required = true) @Valid @RequestParam(value = "password", required = true) String password,@ApiParam(value = "Whether or not to subscribe to the mine's mailing list, if it has one. The username must be an email address if true.") @Valid @RequestParam(value = "subscribe-to-list", required = false) Boolean subscribeToList) {
+        initController();
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         setHeaders();
@@ -50,6 +51,7 @@ public class UsersApiController extends InterMineController implements UsersApi 
     }
 
     public ResponseEntity<WhoAmI> whoAmI() {
+        initController();
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         setHeaders();
@@ -66,6 +68,7 @@ public class UsersApiController extends InterMineController implements UsersApi 
     }
 
     public ResponseEntity<Token> token() {
+        initController();
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         setHeaders();

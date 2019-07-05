@@ -62,6 +62,9 @@ public class InterMineController {
     public InterMineController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.request = request;
+    }
+
+    public void initController(){
         httpHeaders = new HttpHeaders();
         httpStatus = HttpStatus.OK;
         status = HttpStatus.OK.value();
