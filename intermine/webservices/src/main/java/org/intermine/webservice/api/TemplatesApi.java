@@ -5,6 +5,8 @@
  */
 package org.intermine.webservice.api;
 
+import org.intermine.webservice.model.SimpleJsonModel;
+import org.intermine.webservice.model.Templates;
 import org.intermine.webservice.model.TemplatesSystem;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
@@ -32,5 +34,24 @@ public interface TemplatesApi {
     @RequestMapping(value = "/templates/system",
         method = RequestMethod.GET)
     ResponseEntity<?> templatesSystem(@ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "xml") String format);
+
+    @ApiOperation(value = "Get the list of available templates.", nickname = "templatesGet", notes = "Get a listing of the templates configured in an InterMine instance. Each template contains a description of its properties, defining the parameters that must be provided to run it, as well as a definition of the output format for its results. If the request is authenticated to a user, then the templates that that has access to will also be returned.", response = Templates.class, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = Templates.class) })
+    @RequestMapping(value = "/templates",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<?> templatesGet(@ApiParam(value = "Whether or not to include invalid templates. Invalid templates cannot be run.") @Valid @RequestParam(value = "includeBroken", required = false) Boolean includeBroken, @ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "xml") String format);
+
+
+    @ApiOperation(value = "Upload one or more templates.", nickname = "templatesPost", notes = "Upload a set of templates to the current user profile.", response = SimpleJsonModel.class,  authorizations = {
+            @Authorization(value = "BasicAuth")    },  tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = SimpleJsonModel.class) })
+    @RequestMapping(value = "/templates",
+            produces = { "application/json" },
+            consumes = { "application/xml" },
+            method = RequestMethod.POST)
+    ResponseEntity<?> templatesPost(@ApiParam(value = "The templates to upload. If using body content."  )  @Valid @RequestBody String body,@ApiParam(value = "The xml or JSON to load, if using form parameters.") @Valid @RequestParam(value = "xml", required = false) String xml,@ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "xml") String format);
 
 }

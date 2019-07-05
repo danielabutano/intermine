@@ -56,8 +56,8 @@ public class InterMineController {
     protected String errorMessage;
     protected int status;
 
-    protected Format format = null;
-    private Boolean isJsonP = null;
+    protected Format format;
+    private Boolean isJsonP;
 
     public InterMineController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
@@ -69,6 +69,8 @@ public class InterMineController {
         httpStatus = HttpStatus.OK;
         status = HttpStatus.OK.value();
         errorMessage = null;
+        format = null;
+        isJsonP = null;
     }
 
     public HttpStatus getHttpStatus() {

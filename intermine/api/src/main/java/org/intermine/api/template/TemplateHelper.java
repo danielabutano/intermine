@@ -182,6 +182,40 @@ public final class TemplateHelper
     }
 
     /**
+     * Routine for serialising map of templates to JSON.
+     * @param im intermine API
+     * @param templates The templates to serialise.
+     * @return A JSON string.
+     */
+    private static Map<String, Object> templateMapToJsonSpring(InterMineAPI im, Map<String, ApiTemplate> templates,
+                                                                    Profile profile) {
+        Map<String, Object> resultMap = new HashMap<>();
+        Iterator<String> keys = templates.keySet().iterator();
+        while (keys.hasNext()) {
+            String name = keys.next();
+            ApiTemplate template = templates.get(name);
+            template.setAPI(im);
+            if (profile != null) {
+                template.setProfile(profile);
+            }
+            resultMap.put(name,template.toJsonSpring());
+        }
+        return resultMap;
+    }
+
+    /**
+     * Helper routine for serialising a map of templates to JSON.
+     * @param templates The map of templates to serialise.
+     * @param im intermine API
+     * @param profile user that owns these templates. Could be NULL
+     * @return A JSON string.
+     */
+    public static Map<String, Object> apiTemplateMapToJsonSpring(InterMineAPI im,
+                                              Map<String, ApiTemplate> templates, Profile profile) {
+        return templateMapToJsonSpring(im, templates, profile);
+    }
+
+    /**
      * Parse templates in XML format and return a map from template name to
      * TemplateQuery.
      *

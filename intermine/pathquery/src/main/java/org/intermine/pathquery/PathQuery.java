@@ -2411,6 +2411,73 @@ public class PathQuery implements Cloneable
     }
 
     /**
+     * Convert this PathQuery to a JSON serialisation.
+     *
+     * The returned version should be trimmed to represent only the current state
+     * of the query, not all possible states.
+     *
+     * @return This query as json.
+     */
+    public Map<String, Object> toJsonSpring() {
+        return toJsonSpring(true);
+    }
+
+    /**
+     * Convert this PathQuery to a JSON serialisation.
+     * @param onlyRelevant  whether to only return relevant, active constraints.
+     * @return This query as json.
+     */
+    public synchronized Map<String, Object> toJsonSpring(boolean onlyRelevant) {
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("model", new HashMap<String, String>().put("name",model.getName()));
+
+        for (Entry<String, Object> attr: getHeadAttributes().entrySet()) {
+            if(attr.getValue() != null){
+                resultMap.put(attr.getKey(),attr.getValue());
+            }
+        }
+
+
+        // SORT ORDER
+        List<OrderElement> order = getOrderBy();
+        if(!order.isEmpty()){
+            resultMap.put("orderBy", order);
+        }
+
+        // JOINS
+        Map<String, OuterJoinStatus> ojs = getOuterJoinStatus();
+        if (!ojs.isEmpty()) {
+            List<String> joinList = new ArrayList<>();
+            for (Iterator<Entry<String, OuterJoinStatus>> it = ojs.entrySet().iterator();
+                 it.hasNext();) {
+                Entry<String, OuterJoinStatus> pair = it.next();
+                if (pair.getValue() == OuterJoinStatus.OUTER) {
+                    joinList.add(pair.getKey());
+                }
+            }
+            if (joinList.size() != 0) {
+                resultMap.put("joins", joinList);
+            }
+        }
+
+        // CONSTRAINTS
+        Map<PathConstraint, String> cons =
+                onlyRelevant ? getRelevantConstraints() : getConstraints();
+        if (!cons.isEmpty()) {
+            List< Map<String, Object> > constraintList = new ArrayList<>();
+            Iterator<Entry<PathConstraint, String>> it = cons.entrySet().iterator();
+            while (it.hasNext()) {
+                Entry<PathConstraint, String> pair = it.next();
+                constraintList.add(constraintToJsonSpring(pair.getKey(), pair.getValue()));
+            }
+            resultMap.put("where",constraintList);
+        }
+
+        return resultMap;
+    }
+
+    /**
      * format a type constraint to a JSON representation.
      * @param constraint the constraint to format.
      * @return The JSONification.
@@ -2419,6 +2486,20 @@ public class PathQuery implements Cloneable
         String path = constraint.getPath();
         String type = PathConstraint.getType(constraint);
         return String.format("{\"path\":\"%s\",\"type\":\"%s\"}", path, type);
+    }
+
+    /**
+     * format a type constraint to a JSON representation.
+     * @param constraint the constraint to format.
+     * @return The JSONification.
+     */
+    protected Map<String, Object> typeConstraintToJsonSpring(final PathConstraint constraint) {
+        Map<String, Object> constraintMap = new HashMap<>();
+        String path = constraint.getPath();
+        String type = PathConstraint.getType(constraint);
+        constraintMap.put("path", path);
+        constraintMap.put("type", type);
+        return constraintMap;
     }
 
     /**
@@ -2490,6 +2571,42 @@ public class PathQuery implements Cloneable
     }
 
     /**
+     * Format a value constraint to a JSON representation.
+     * @param code The constraint code.
+     * @param constraint constraint.
+     * @return The stringification.
+     */
+    protected Map<String, Object> valueConstraintToJsonSpring(final String code, final PathConstraint constraint) {
+
+        String commonPrefix = getCommonJsonConstraintPrefix(code, constraint);
+        Map<String, Object> constraintMap = new HashMap<>();
+
+        // Serialise the Multi-Value list
+        Collection<String> values = PathConstraint.getValues(constraint);
+        // Serialise the ID list.
+        Collection<Integer> ids = PathConstraint.getIds(constraint);
+        if (ids != null) {
+            constraintMap.put("ids",ids);
+        } else if (values != null) {
+            constraintMap.put("values", values);
+        } else {
+            String value = PathConstraint.getValue(constraint);
+            String extraValue = PathConstraint.getExtraValue(constraint);
+            if (value != null) {
+                if (constraint instanceof PathConstraintLoop) {
+                    constraintMap.put("loopPath", value);
+                } else {
+                    constraintMap.put("value", value);
+                }
+            }
+            if (extraValue != null) {
+                constraintMap.put("extraValue", extraValue);
+            }
+        }
+        return constraintMap;
+    }
+
+    /**
      * @param constraint constraint to convert
      * @param code code for constraint, e.g. A
      * @return constraint in JSON format
@@ -2499,6 +2616,19 @@ public class PathQuery implements Cloneable
             return typeConstraintToJson(constraint);
         } else {
             return valueConstraintToJson(code, constraint);
+        }
+    }
+
+    /**
+     * @param constraint constraint to convert
+     * @param code code for constraint, e.g. A
+     * @return constraint in JSON format
+     */
+    protected Map<String, Object> constraintToJsonSpring(PathConstraint constraint, String code) {
+        if (PathConstraint.getType(constraint) != null) { // Would be nice to test code instead...
+            return typeConstraintToJsonSpring(constraint);
+        } else {
+            return valueConstraintToJsonSpring(code, constraint);
         }
     }
 

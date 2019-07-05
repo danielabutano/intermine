@@ -25,7 +25,7 @@ public class TemplateUploadServlet extends WebServiceServlet
 
     @Override
     protected WebService getService(Method method) throws NoServiceException {
-        switch (method) {
+        /*switch (method) {
             case GET:
                 return new TemplateUploadService(api);
             case POST:
@@ -34,6 +34,8 @@ public class TemplateUploadServlet extends WebServiceServlet
                 return new TemplateUploadService(api);
             default:
                 throw new NoServiceException();
-        }
+        }*/
+        throw new NoServiceException();
+
     }
 }
