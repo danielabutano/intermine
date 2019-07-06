@@ -54,4 +54,23 @@ public interface TemplatesApi {
             method = RequestMethod.POST)
     ResponseEntity<?> templatesPost(@ApiParam(value = "The templates to upload. If using body content."  )  @Valid @RequestBody String body,@ApiParam(value = "The xml or JSON to load, if using form parameters.") @Valid @RequestParam(value = "xml", required = false) String xml,@ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "xml") String format);
 
+    @ApiOperation(value = "Save a Template, or Overwrite an Existing One.", nickname = "templateUploadGet", notes = "This service allows users to save templates they have authored on the server, associated with their account. The templates once saved can be used as any other template query.", response = SimpleJsonModel.class, authorizations = {
+            @Authorization(value = "BasicAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = SimpleJsonModel.class) })
+    @RequestMapping(value = "/template/upload",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<?> templateUploadGet(@NotNull @ApiParam(value = "One or more templates, serialised in XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@ApiParam(value = "The version of the XML format.") @Valid @RequestParam(value = "version", required = false) Integer version,@ApiParam(value = "", allowableValues = "text, json, html, xml") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format);
+
+
+    @ApiOperation(value = "Save a Template, or Overwrite an Existing One.", nickname = "templateUploadPost", notes = "This service allows users to save templates they have authored on the server, associated with their account. The templates once saved can be used as any other template query.", response = SimpleJsonModel.class, authorizations = {
+            @Authorization(value = "BasicAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = SimpleJsonModel.class) })
+    @RequestMapping(value = "/template/upload",
+            produces = { "application/json" },
+            method = RequestMethod.POST)
+    ResponseEntity<?> templateUploadPost(@NotNull @ApiParam(value = "One or more templates, serialised in XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@ApiParam(value = "The version of the XML format.") @Valid @RequestParam(value = "version", required = false) Integer version,@ApiParam(value = "", allowableValues = "text, json, html, xml") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format);
+
 }

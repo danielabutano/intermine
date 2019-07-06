@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-19T01:19:48.599+05:30[Asia/Kolkata]")
 @Controller
@@ -96,6 +97,40 @@ public class TemplatesApiController extends InterMineController implements Templ
         ResponseUtilSpring.setXMLHeader(httpHeaders, FILE_BASE_NAME + ".xml");
         return new ResponseEntity<Object>("",httpHeaders,httpStatus);
     }
+
+    public ResponseEntity<?> templateUploadGet(@NotNull @ApiParam(value = "One or more templates, serialised in XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query, @ApiParam(value = "The version of the XML format.") @Valid @RequestParam(value = "version", required = false) Integer version, @ApiParam(value = "", allowableValues = "text, json, html, xml") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format) {
+        initController();
+        SimpleJsonModel simpleJsonModel = serveTemplateUpload();
+        if(format.equals("json")) {
+            setFooter(simpleJsonModel);
+            return new ResponseEntity<SimpleJsonModel>(simpleJsonModel, httpHeaders,httpStatus);
+        }
+        return new ResponseEntity<Object>("",httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<?> templateUploadPost(@NotNull @ApiParam(value = "One or more templates, serialised in XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@ApiParam(value = "The version of the XML format.") @Valid @RequestParam(value = "version", required = false) Integer version,@ApiParam(value = "", allowableValues = "text, json, html, xml") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format) {
+        initController();
+        SimpleJsonModel simpleJsonModel = serveTemplateUpload();
+        if(format.equals("json")) {
+            setFooter(simpleJsonModel);
+            return new ResponseEntity<SimpleJsonModel>(simpleJsonModel, httpHeaders,httpStatus);
+        }
+        return new ResponseEntity<Object>("",httpHeaders,httpStatus);
+    }
+
+    private SimpleJsonModel serveTemplateUpload(){
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        TemplateUploadService templateUploadService = new TemplateUploadService(im, getFormat());
+        try {
+            templateUploadService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        return templateUploadService.getSimpleJsonModel();
+    }
+
 
 
     @Override

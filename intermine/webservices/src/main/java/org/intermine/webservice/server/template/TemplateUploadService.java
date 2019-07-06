@@ -53,6 +53,8 @@ public class TemplateUploadService extends WebServiceSpring
 
     private SimpleJsonModel simpleJsonModel;
 
+    private Boolean templateInQuery;
+
     /**
      * Constructor.
      * @param im A reference to the API configuration and settings bundle.
@@ -61,6 +63,18 @@ public class TemplateUploadService extends WebServiceSpring
         super(im, format);
         simpleJsonModel = new SimpleJsonModel();
         this.body = body;
+        templateInQuery = false;
+    }
+
+    /**
+     * Constructor.
+     * @param im A reference to the API configuration and settings bundle.
+     */
+    public TemplateUploadService(InterMineAPI im, Format format) {
+        super(im, format);
+        simpleJsonModel = new SimpleJsonModel();
+        this.body = "";
+        templateInQuery = true;
     }
 
     @Override
@@ -82,7 +96,12 @@ public class TemplateUploadService extends WebServiceSpring
                 || "GET".equalsIgnoreCase(request.getMethod())) {
             templatesXML = getRequiredParameter(TEMPLATES_PARAMETER);
         } else {
-            templatesXML = body;
+            if(templateInQuery){
+                templatesXML = getRequiredParameter(TEMPLATES_PARAMETER);
+            }
+            else{
+                templatesXML = body;
+            }
         }
         Profile profile = getPermission().getProfile();
 
