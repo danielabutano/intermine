@@ -5,6 +5,7 @@
  */
 package org.intermine.webservice.api;
 
+import org.intermine.webservice.model.DeregistrationToken;
 import org.intermine.webservice.model.Token;
 import org.intermine.webservice.model.Users;
 import io.swagger.annotations.*;
@@ -50,6 +51,42 @@ public interface UsersApi {
             produces = { "application/json" },
             method = RequestMethod.GET)
     ResponseEntity<Token> token();
+
+    @ApiOperation(value = "Delete a deregistration token.", nickname = "deregistrationTokenDelete", notes = "This service deletes a deregistration token that a user has access to, thus cancelling the request to de-register the user.", response = DeregistrationToken.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = DeregistrationToken.class) })
+    @RequestMapping(value = "/user/deregistration/{uid}",
+            produces = { "application/json" },
+            method = RequestMethod.DELETE)
+    ResponseEntity<DeregistrationToken> deregistrationTokenDelete(@ApiParam(value = "The identifier of the token.",required=true) @PathVariable("uid") String uid);
+
+
+    @ApiOperation(value = "Get information about a deregistration token.", nickname = "deregistrationTokenGet", notes = "This service returns a representation of a deregistration token that a user has access to.", response = DeregistrationToken.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = DeregistrationToken.class) })
+    @RequestMapping(value = "/user/deregistration/{uid}",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<DeregistrationToken> deregistrationTokenGet(@ApiParam(value = "The identifier of the token.",required=true) @PathVariable("uid") String uid);
+
+
+    @ApiOperation(value = "Create a deregistration token.", nickname = "deregistrationTokenPost", notes = "This service creates a deregistration token, thus starting the process of de-registerin a user.", response = DeregistrationToken.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = DeregistrationToken.class) })
+    @RequestMapping(value = "/user/deregistration",
+            produces = { "application/json" },
+            method = RequestMethod.POST)
+    ResponseEntity<DeregistrationToken> deregistrationTokenPost();
+
 
 
 }

@@ -15,8 +15,12 @@ import java.util.Map;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.Profile;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.DeregistrationToken;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.ISO8601DateFormat;
 import org.intermine.webservice.server.core.ReadWriteJSONService;
+import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
 
 /**
  * A service that issues a deletion token to a user who intends to
@@ -24,17 +28,25 @@ import org.intermine.webservice.server.core.ReadWriteJSONService;
  * @author Alex Kalderimis
  *
  */
-public class NewDeletionTokenService extends ReadWriteJSONService
+public class NewDeletionTokenService extends JSONServiceSpring
 {
+    private static final String DENIAL_MSG = "Access denied.";
 
     protected final DeletionTokens tokenFactory;
+
+    public DeregistrationToken getDeregistrationToken() {
+        return deregistrationToken;
+    }
+
+    private DeregistrationToken deregistrationToken;
 
     /**
      * @param im The InterMine state object.
      */
-    public NewDeletionTokenService(InterMineAPI im) {
-        super(im);
+    public NewDeletionTokenService(InterMineAPI im, Format format) {
+        super(im, format);
         this.tokenFactory = DeletionTokens.getInstance();
+        deregistrationToken = new DeregistrationToken();
     }
 
     @Override
@@ -50,6 +62,13 @@ public class NewDeletionTokenService extends ReadWriteJSONService
         serveToken(token);
     }
 
+    @Override
+    protected void validateState() {
+        if (!isAuthenticated() || getPermission().isRO()) {
+            throw new ServiceForbiddenException(DENIAL_MSG);
+        }
+    }
+
     /**
      * Serve a token to the outside world.
      * @param token The token to return.
@@ -62,7 +81,7 @@ public class NewDeletionTokenService extends ReadWriteJSONService
         info.put("secondsRemaining",
                 (token.getExpiry().getTime() - System.currentTimeMillis()) / 1000);
 
-        this.addResultItem(info, false);
+        deregistrationToken.setToken(info);
     }
 
 }

@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.Profile;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
 import org.intermine.webservice.server.user.DeletionTokens.TokenExpired;
@@ -32,8 +33,8 @@ public class DeletionTokenInfoService extends NewDeletionTokenService
      * @param im The InterMine state object.
      * @param uid The identifier of the token.
      */
-    public DeletionTokenInfoService(InterMineAPI im, String uid) {
-        super(im);
+    public DeletionTokenInfoService(InterMineAPI im, Format format, String uid) {
+        super(im, format);
         this.uuid = uid;
     }
 

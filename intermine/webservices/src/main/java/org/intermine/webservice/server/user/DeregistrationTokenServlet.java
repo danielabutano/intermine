@@ -41,9 +41,9 @@ public class DeregistrationTokenServlet  extends WebServiceServlet
         String uid = getUid(request);
         WebService service = null;
         if (Method.GET == method && uid != null) {
-            service = getGetter(uid);
+            //service = getGetter(uid);
         } else if (Method.DELETE == method && uid != null) {
-            service = getDeleter(uid);
+            //service = getDeleter(uid);
         }
         if (service != null) {
             service.service(request, response);
@@ -60,19 +60,19 @@ public class DeregistrationTokenServlet  extends WebServiceServlet
         return null;
     }
 
-    private WebService getGetter(String uid) {
+    /*private WebService getGetter(String uid) {
         return new DeletionTokenInfoService(api, uid);
     }
 
     private WebService getDeleter(String uid) {
         return new DeletionTokenCancellationService(api, uid);
     }
-
+    */
     @Override
     protected WebService getService(Method method) throws NoServiceException {
         switch (method) {
             case POST:
-                return new NewDeletionTokenService(api);
+                //return new NewDeletionTokenService(api);
             default:
                 throw new NoServiceException();
         }

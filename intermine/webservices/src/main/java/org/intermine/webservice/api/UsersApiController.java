@@ -2,12 +2,16 @@ package org.intermine.webservice.api;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.web.context.InterMineContext;
+import org.intermine.webservice.model.DeregistrationToken;
 import org.intermine.webservice.model.Token;
 import org.intermine.webservice.model.Users;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 import org.intermine.webservice.model.WhoAmI;
 import org.intermine.webservice.server.Format;
+import org.intermine.webservice.server.user.DeletionTokenCancellationService;
+import org.intermine.webservice.server.user.DeletionTokenInfoService;
+import org.intermine.webservice.server.user.NewDeletionTokenService;
 import org.intermine.webservice.server.user.NewUserService;
 import org.intermine.webservice.server.user.TokenService;
 import org.intermine.webservice.server.user.WhoAmIService;
@@ -16,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.constraints.*;
@@ -82,6 +87,57 @@ public class UsersApiController extends InterMineController implements UsersApi 
         setFooter(token);
 
         return new ResponseEntity<Token>(token,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<DeregistrationToken> deregistrationTokenDelete(@ApiParam(value = "The identifier of the token.",required=true) @PathVariable("uid") String uid) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        DeletionTokenCancellationService deletionTokenCancellationService = new DeletionTokenCancellationService(im, format, uid);
+        try {
+            deletionTokenCancellationService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        DeregistrationToken deregistrationToken = deletionTokenCancellationService.getDeregistrationToken();
+        setFooter(deregistrationToken);
+
+        return new ResponseEntity<DeregistrationToken>(deregistrationToken,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<DeregistrationToken> deregistrationTokenGet(@ApiParam(value = "The identifier of the token.",required=true) @PathVariable("uid") String uid) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        DeletionTokenInfoService deletionTokenInfoService = new DeletionTokenInfoService(im, format, uid);
+        try {
+            deletionTokenInfoService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        DeregistrationToken deregistrationToken = deletionTokenInfoService.getDeregistrationToken();
+        setFooter(deregistrationToken);
+
+        return new ResponseEntity<DeregistrationToken>(deregistrationToken,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<DeregistrationToken> deregistrationTokenPost() {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        NewDeletionTokenService newDeletionTokenService = new NewDeletionTokenService(im, format);
+        try {
+            newDeletionTokenService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        DeregistrationToken deregistrationToken = newDeletionTokenService.getDeregistrationToken();
+        setFooter(deregistrationToken);
+
+        return new ResponseEntity<DeregistrationToken>(deregistrationToken,httpHeaders,httpStatus);
     }
 
 

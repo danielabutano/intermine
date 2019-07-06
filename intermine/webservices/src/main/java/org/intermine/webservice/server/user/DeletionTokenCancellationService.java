@@ -11,6 +11,7 @@ package org.intermine.webservice.server.user;
  */
 
 import org.intermine.api.InterMineAPI;
+import org.intermine.webservice.server.Format;
 
 /**
  * A service that cancels the profile deletion process by deleting the
@@ -25,8 +26,8 @@ public class DeletionTokenCancellationService extends DeletionTokenInfoService
      * @param im The InterMine state object
      * @param uuid The identifier of the token
      */
-    public DeletionTokenCancellationService(InterMineAPI im, String uuid) {
-        super(im, uuid);
+    public DeletionTokenCancellationService(InterMineAPI im, Format format, String uuid) {
+        super(im, format, uuid);
     }
 
     @Override
