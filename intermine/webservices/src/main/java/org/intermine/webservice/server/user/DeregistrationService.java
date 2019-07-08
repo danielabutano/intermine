@@ -28,6 +28,8 @@ import org.intermine.util.Emailer;
 import org.intermine.web.logic.export.ResponseUtil;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.web.context.MailAction;
+import org.intermine.webservice.WebServiceSpring;
+import org.intermine.webservice.model.Users;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.WebService;
 import org.intermine.webservice.server.exceptions.BadRequestException;
@@ -38,15 +40,24 @@ import org.intermine.webservice.server.output.StreamedOutput;
 import org.intermine.webservice.server.user.DeletionTokens.TokenExpired;
 
 /** @author Alex Kalderimis **/
-public class DeregistrationService extends WebService
+public class DeregistrationService extends WebServiceSpring
 {
 
     private DeletionTokens tokens;
 
+    String uuid;
+
+    public Object getUser() {
+        return user;
+    }
+
+    private Object user;
+
     /** @param im The InterMine state object. **/
-    public DeregistrationService(InterMineAPI im) {
-        super(im);
+    public DeregistrationService(InterMineAPI im, Format format, String uuid) {
+        super(im, format);
         this.tokens = DeletionTokens.getInstance();
+        this.uuid = uuid;
     }
 
     @Override
@@ -62,14 +73,7 @@ public class DeregistrationService extends WebService
     }
 
     @Override
-    protected Output makeXMLOutput(PrintWriter out, String separator) {
-        ResponseUtil.setXMLHeader(response, "data.xml");
-        return new StreamedOutput(out, new UserDataFormatter(), separator);
-    }
-
-    @Override
     protected void execute() {
-        String uuid = getRequiredParameter("deregistrationToken");
         DeletionToken token;
         Profile profile = getPermission().getProfile();
         try {
@@ -114,7 +118,7 @@ public class DeregistrationService extends WebService
         } catch (ObjectStoreException e) {
             throw new ServiceException("Could not delete your profile.", e);
         }
-        output.addResultItem(Arrays.asList(userData));
+        user = userData;
     }
 
     private class GoodbyeAction implements MailAction

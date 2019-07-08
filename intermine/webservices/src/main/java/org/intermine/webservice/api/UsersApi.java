@@ -87,6 +87,28 @@ public interface UsersApi {
             method = RequestMethod.POST)
     ResponseEntity<DeregistrationToken> deregistrationTokenPost();
 
+    @ApiOperation(value = "Delete the Current User.", nickname = "userDelete", notes = "This service deletes the current User and all their data. To ensure that you really mean to deregister a user programmatically, this service requires a deregistration token to be obtained before sending the delete request. As output it returns all of the user data it had before it was deleted.", response = Users.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = Users.class) })
+    @RequestMapping(value = "/user",
+            produces = { "application/xml" },
+            method = RequestMethod.DELETE)
+    ResponseEntity<Object> userDelete(@NotNull @ApiParam(value = "A token to ensure this is not a mistake.", required = true) @Valid @RequestParam(value = "deregistrationToken", required = true) String deregistrationToken);
+
+
+    @ApiOperation(value = "Get information about the Current User.", nickname = "userGet", notes = "This service provides information about the current user, including their user name and preferences.", response = Users.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = Users.class) })
+    @RequestMapping(value = "/user",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<WhoAmI> userGet();
 
 
 }

@@ -11,10 +11,12 @@ import org.intermine.webservice.model.WhoAmI;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.user.DeletionTokenCancellationService;
 import org.intermine.webservice.server.user.DeletionTokenInfoService;
+import org.intermine.webservice.server.user.DeregistrationService;
 import org.intermine.webservice.server.user.NewDeletionTokenService;
 import org.intermine.webservice.server.user.NewUserService;
 import org.intermine.webservice.server.user.TokenService;
 import org.intermine.webservice.server.user.WhoAmIService;
+import org.intermine.webservice.util.ResponseUtilSpring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -32,6 +34,8 @@ import javax.servlet.http.HttpServletRequest;
 public class UsersApiController extends InterMineController implements UsersApi {
 
     private static final Logger log = LoggerFactory.getLogger(UsersApiController.class);
+
+    private static final String FILE_BASE_NAME = "data";
 
     @org.springframework.beans.factory.annotation.Autowired
     public UsersApiController(ObjectMapper objectMapper, HttpServletRequest request) {
@@ -138,6 +142,40 @@ public class UsersApiController extends InterMineController implements UsersApi 
         setFooter(deregistrationToken);
 
         return new ResponseEntity<DeregistrationToken>(deregistrationToken,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<Object> userDelete(@NotNull @ApiParam(value = "A token to ensure this is not a mistake.", required = true) @Valid @RequestParam(value = "deregistrationToken", required = true) String deregistrationToken) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        DeregistrationService deregistrationService = new DeregistrationService(im, format, deregistrationToken);
+        try {
+            deregistrationService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        Object user = deregistrationService.getUser();
+
+        ResponseUtilSpring.setXMLHeader(httpHeaders, FILE_BASE_NAME + ".xml");
+        return new ResponseEntity<Object>(user,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<WhoAmI> userGet() {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        WhoAmIService whoAmIService = new WhoAmIService(im, format);
+        try {
+            whoAmIService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        WhoAmI whoAmI = whoAmIService.getWhoAmI();
+        setFooter(whoAmI);
+
+        return new ResponseEntity<WhoAmI>(whoAmI,httpHeaders,httpStatus);
     }
 
 
