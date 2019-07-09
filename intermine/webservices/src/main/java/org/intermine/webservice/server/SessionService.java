@@ -50,6 +50,7 @@ public class SessionService extends JSONService
             p.disableSaving();
         }
         String token = pm.generate24hrKey(p);
+        p.setDayToken(token);
         addResultValue(token, false);
     }
 
