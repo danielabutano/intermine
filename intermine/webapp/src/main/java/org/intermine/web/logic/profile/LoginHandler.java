@@ -15,6 +15,13 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -31,6 +38,7 @@ import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.web.logic.Constants;
 import org.intermine.web.logic.session.SessionMethods;
 import org.intermine.web.struts.InterMineAction;
+import org.json.JSONObject;
 
 /**
  * @author Xavier Watkins
@@ -146,15 +154,36 @@ public abstract class LoginHandler extends InterMineAction
         // Merge current history into loaded profile
 
         Profile currentProfile = SessionMethods.getProfile(request.getSession());
-        HttpSession session = request.getSession();
-        Profile profile = setUpProfile(session, username, password);
-        ProfileMergeIssues issues = new ProfileMergeIssues();
 
+        ProfileMergeIssues issues = new ProfileMergeIssues();
+/*
         if (currentProfile != null && StringUtils.isEmpty(currentProfile.getUsername())) {
             // The current profile was for an anonymous guest.
             issues = mergeProfiles(currentProfile, profile);
-        }
+        }*/
 
+        //call login webservice so same profile will be created in pm.limitatedaccesstoken
+        Client client = ClientBuilder.newClient();
+        try {
+            WebTarget target = client.target(
+                    "http://localhost:8080/biotestmine/service/login");
+            Form form = new Form();
+            form.param("username", username);
+            form.param("password", password);
+            String authToken = "Token " + currentProfile.getDayToken();
+            Response response = target.request(MediaType.APPLICATION_JSON)
+                    .header("Authorization", authToken).post(Entity.form(form));
+            if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+                JSONObject result = new JSONObject(response.readEntity(String.class));
+                String token = result.getString("token");
+                //setUp in the session the new profile (loaded from db)
+                Profile profile = setUpProfile(request.getSession(), username, password);
+                profile.getProfileManager().addTokenForProfile(profile, token);
+                profile.setDayToken(token);
+            }
+        } catch (RuntimeException ex) {
+            LOG.error("Problems connecting to login web service");
+        }
         return issues;
     }
 
@@ -171,6 +200,7 @@ public abstract class LoginHandler extends InterMineAction
         Profile profile;
         ProfileManager pm = SessionMethods.getInterMineAPI(session).getProfileManager();
         if (pm.hasProfile(username)) {
+            pm.updateCache(username, im.getClassKeys());
             profile = pm.getProfile(username, password, im.getClassKeys());
         } else {
             throw new LoginException("There is no profile for " + username);

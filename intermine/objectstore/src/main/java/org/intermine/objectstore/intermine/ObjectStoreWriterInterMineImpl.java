@@ -65,6 +65,7 @@ import org.intermine.sql.precompute.QueryOptimiserContext;
 import org.intermine.sql.writebatch.Batch;
 import org.intermine.sql.writebatch.BatchWriter;
 import org.intermine.sql.writebatch.BatchWriterPostgresCopyImpl;
+import org.intermine.util.CacheMap;
 import org.intermine.util.DynamicUtil;
 import org.intermine.util.PropertiesUtil;
 import org.intermine.util.ShutdownHook;
@@ -214,6 +215,15 @@ public class ObjectStoreWriterInterMineImpl extends ObjectStoreInterMineImpl
             retval.setImmutable();
             //LOG.error("Results cache not used for " + q);
             return retval;
+        }
+    }
+
+    public void flushCache() {
+        synchronized (resultsCache) {
+            synchronized (batchesCache) {
+                batchesCache = new CacheMap<>();
+                resultsCache = new CacheMap<>();
+            }
         }
     }
 
