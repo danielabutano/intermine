@@ -317,6 +317,8 @@
     <action path="/bagUpgrade" type="org.intermine.web.struts.BagUpgradeAction">
       <forward name="bagUploadConfirm" path="bagUploadConfirm.page"/>
     </action>
+    <action path="/updateProfileWithBag" type="org.intermine.web.struts.UpdateProfileWithBagAction">
+    </action>
     <action path="/accept" name="invitationForm" type="org.intermine.web.struts.InvitationAction" input="mymine">
       <forward name="bagDetails" redirect="true" path="/bagDetails.do"/>
       <forward name="mymine" redirect="true" path="/mymine.do"/>
