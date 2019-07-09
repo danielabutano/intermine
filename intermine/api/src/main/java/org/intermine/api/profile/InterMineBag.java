@@ -140,6 +140,28 @@ public class InterMineBag extends StorableBag implements Cloneable
     }
 
     /**
+     * Constructs a new InterMineBag scaffold, WITHOUT saving into db
+     *
+     * @param name the name of the bag
+     * @param type the class of objects stored in the bag
+     * @param savedBagId the ID of the bag in the userprofile database
+     * @param os the production ObjectStore
+     * @param osId the ID of the bag in the production database
+     *
+     * @throws UnknownBagTypeException if the type bag is unknown
+     */
+    public InterMineBag(String name, String type, Integer savedBagId,  ObjectStore os,
+                        Integer osId) throws UnknownBagTypeException {
+        checkAndSetName(name);
+        this.type = type;
+        this.state = BagState.CURRENT;
+        this.savedBagId = savedBagId;
+        this.os = os;
+        this.osb = new ObjectStoreBag(osId);
+        setClassDescriptors();
+    }
+
+    /**
      * Loads an InterMineBag from the UserProfile database.
      *
      * @param os the production ObjectStore
