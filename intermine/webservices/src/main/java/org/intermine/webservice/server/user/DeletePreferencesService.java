@@ -13,6 +13,8 @@ package org.intermine.webservice.server.user;
 import java.util.Map;
 
 import org.intermine.api.InterMineAPI;
+import org.intermine.webservice.server.Format;
+
 /**
  * A service that deletes a user's preferences.
  * @author Alex Kalderimis
@@ -21,14 +23,16 @@ import org.intermine.api.InterMineAPI;
 public class DeletePreferencesService extends ReadPreferencesService
 {
 
+    private String key;
+
     /** @param im The InterMine state object. **/
-    public DeletePreferencesService(InterMineAPI im) {
-        super(im);
+    public DeletePreferencesService(InterMineAPI im, Format format, String key) {
+        super(im, format);
+        this.key = key;
     }
 
     @Override
     protected void execute() {
-        String key = getOptionalParameter("key");
         Map<String, String> preferences = getPermission().getProfile().getPreferences();
         if (key == null) {
             preferences.clear();

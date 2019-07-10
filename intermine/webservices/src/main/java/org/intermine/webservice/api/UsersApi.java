@@ -6,6 +6,7 @@
 package org.intermine.webservice.api;
 
 import org.intermine.webservice.model.DeregistrationToken;
+import org.intermine.webservice.model.Preferences;
 import org.intermine.webservice.model.Token;
 import org.intermine.webservice.model.Users;
 import io.swagger.annotations.*;
@@ -109,6 +110,53 @@ public interface UsersApi {
             produces = { "application/json" },
             method = RequestMethod.GET)
     ResponseEntity<WhoAmI> userGet();
+
+    @ApiOperation(value = "Remove one or all preferences.", nickname = "userPreferencesDelete", notes = "Delete either a single preference from a user's set of stored preferences, or deletes all stored preference values.", response = Preferences.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = Preferences.class) })
+    @RequestMapping(value = "/user/preferences",
+            produces = { "application/json" },
+            method = RequestMethod.DELETE)
+    ResponseEntity<Preferences> userPreferencesDelete(@ApiParam(value = "The preference to delete. If not provided, ALL will be cleared") @Valid @RequestParam(value = "key", required = false) String key);
+
+
+    @ApiOperation(value = "Get a user's preferences.", nickname = "userPreferencesGet", notes = "Get a complete listing of a user's preferences. This is presented as a mapping from string key to string value.", response = Preferences.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = Preferences.class) })
+    @RequestMapping(value = "/user/preferences",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<Preferences> userPreferencesGet();
+
+
+    @ApiOperation(value = "Set the value of one or more preferences.", nickname = "userPreferencesPost", notes = "This service allows a user to store or change a key value pair associated with their account. The keys may have a particular meaning. All values will be stored and retrieved as strings.", response = Preferences.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = Preferences.class) })
+    @RequestMapping(value = "/user/preferences",
+            produces = { "application/json" },
+            method = RequestMethod.POST)
+    ResponseEntity<Preferences> userPreferencesPost(@ApiParam(value = "The preference to set.") @Valid @RequestParam(value = "preferences", required = false) Map<String, String> preferences);
+
+
+    @ApiOperation(value = "Set the value of one or more preferences.", nickname = "userPreferencesPut", notes = "This service allows a user to store or change a key value pair associated with their account. The keys may have a particular meaning. All values will be stored and retrieved as strings.", response = Preferences.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = Preferences.class) })
+    @RequestMapping(value = "/user/preferences",
+            produces = { "application/json" },
+            method = RequestMethod.PUT)
+    ResponseEntity<Preferences> userPreferencesPut(@ApiParam(value = "The preference to set.") @Valid @RequestParam(value = "preferences", required = false) Map<String, String> preferences);
 
 
 }

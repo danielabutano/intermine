@@ -3,17 +3,21 @@ package org.intermine.webservice.api;
 import org.intermine.api.InterMineAPI;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.webservice.model.DeregistrationToken;
+import org.intermine.webservice.model.Preferences;
 import org.intermine.webservice.model.Token;
 import org.intermine.webservice.model.Users;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 import org.intermine.webservice.model.WhoAmI;
 import org.intermine.webservice.server.Format;
+import org.intermine.webservice.server.user.DeletePreferencesService;
 import org.intermine.webservice.server.user.DeletionTokenCancellationService;
 import org.intermine.webservice.server.user.DeletionTokenInfoService;
 import org.intermine.webservice.server.user.DeregistrationService;
 import org.intermine.webservice.server.user.NewDeletionTokenService;
 import org.intermine.webservice.server.user.NewUserService;
+import org.intermine.webservice.server.user.ReadPreferencesService;
+import org.intermine.webservice.server.user.SetPreferencesService;
 import org.intermine.webservice.server.user.TokenService;
 import org.intermine.webservice.server.user.WhoAmIService;
 import org.intermine.webservice.util.ResponseUtilSpring;
@@ -28,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-19T19:35:11.443+05:30[Asia/Kolkata]")
 @Controller
@@ -176,6 +181,74 @@ public class UsersApiController extends InterMineController implements UsersApi 
         setFooter(whoAmI);
 
         return new ResponseEntity<WhoAmI>(whoAmI,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<Preferences> userPreferencesDelete(@ApiParam(value = "The preference to delete. If not provided, ALL will be cleared") @Valid @RequestParam(value = "key", required = false) String key) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        DeletePreferencesService deletePreferencesService = new DeletePreferencesService(im, format, key);
+        try {
+            deletePreferencesService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        Preferences preferencesModel = deletePreferencesService.getPreferencesModel();
+        setFooter(preferencesModel);
+
+        return new ResponseEntity<Preferences>(preferencesModel,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<Preferences> userPreferencesGet() {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        ReadPreferencesService readPreferencesService = new ReadPreferencesService(im, format);
+        try {
+            readPreferencesService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        Preferences preferencesModel = readPreferencesService.getPreferencesModel();
+        setFooter(preferencesModel);
+
+        return new ResponseEntity<Preferences>(preferencesModel,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<Preferences> userPreferencesPost(@ApiParam(value = "The preference to set.") @Valid @RequestParam(value = "preferences", required = false) Map<String, String> preferences) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        SetPreferencesService setPreferencesService = new SetPreferencesService(im, format);
+        try {
+            setPreferencesService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        Preferences preferencesModel = setPreferencesService.getPreferencesModel();
+        setFooter(preferencesModel);
+
+        return new ResponseEntity<Preferences>(preferencesModel,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<Preferences> userPreferencesPut(@ApiParam(value = "The preference to set.") @Valid @RequestParam(value = "preferences", required = false) Map<String, String> preferences) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        SetPreferencesService setPreferencesService = new SetPreferencesService(im, format);
+        try {
+            setPreferencesService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        Preferences preferencesModel = setPreferencesService.getPreferencesModel();
+        setFooter(preferencesModel);
+
+        return new ResponseEntity<Preferences>(preferencesModel,httpHeaders,httpStatus);
     }
 
 
