@@ -15,7 +15,9 @@ import org.intermine.api.profile.Profile;
 import org.intermine.api.profile.TagManager;
 import org.intermine.api.template.ApiTemplate;
 import org.intermine.api.userprofile.Tag;
+import org.intermine.webservice.server.Format;
 
+import java.text.Normalizer;
 import java.util.Set;
 
 /**
@@ -30,8 +32,8 @@ public class TemplateTagRemovalService extends TemplateTagAddingService
      * Constructor.
      * @param im The InterMine application object.
      */
-    public TemplateTagRemovalService(InterMineAPI im) {
-        super(im);
+    public TemplateTagRemovalService(InterMineAPI im, Format format, String name) {
+        super(im, format, name);
     }
 
     @Override

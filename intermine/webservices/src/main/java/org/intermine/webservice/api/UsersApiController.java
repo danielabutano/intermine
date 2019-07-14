@@ -3,22 +3,29 @@ package org.intermine.webservice.api;
 import org.intermine.api.InterMineAPI;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.webservice.model.DeregistrationToken;
+import org.intermine.webservice.model.PermanentToken;
 import org.intermine.webservice.model.Preferences;
+import org.intermine.webservice.model.SimpleJsonModel;
 import org.intermine.webservice.model.Token;
+import org.intermine.webservice.model.Tokens;
 import org.intermine.webservice.model.Users;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 import org.intermine.webservice.model.WhoAmI;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.user.DeletePreferencesService;
+import org.intermine.webservice.server.user.DeleteTokensService;
 import org.intermine.webservice.server.user.DeletionTokenCancellationService;
 import org.intermine.webservice.server.user.DeletionTokenInfoService;
 import org.intermine.webservice.server.user.DeregistrationService;
 import org.intermine.webservice.server.user.NewDeletionTokenService;
 import org.intermine.webservice.server.user.NewUserService;
+import org.intermine.webservice.server.user.PermaTokenDeletionService;
+import org.intermine.webservice.server.user.PermaTokenInfoService;
 import org.intermine.webservice.server.user.ReadPreferencesService;
 import org.intermine.webservice.server.user.SetPreferencesService;
 import org.intermine.webservice.server.user.TokenService;
+import org.intermine.webservice.server.user.TokensService;
 import org.intermine.webservice.server.user.WhoAmIService;
 import org.intermine.webservice.util.ResponseUtilSpring;
 import org.slf4j.Logger;
@@ -86,7 +93,7 @@ public class UsersApiController extends InterMineController implements UsersApi 
         final InterMineAPI im = InterMineContext.getInterMineAPI();
 
         setHeaders();
-        TokenService tokenService = new TokenService(im, format);
+        TokenService tokenService = new TokenService(im, format, "day", null);
         try {
             tokenService.service(request);
         } catch (Throwable throwable) {
@@ -249,6 +256,91 @@ public class UsersApiController extends InterMineController implements UsersApi 
         setFooter(preferencesModel);
 
         return new ResponseEntity<Preferences>(preferencesModel,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<SimpleJsonModel> permanentTokenDelete(@ApiParam(value = "The identifier of one of your tokens.",required=true) @PathVariable("uid") String uid) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        PermaTokenDeletionService permaTokenDeletionService = new PermaTokenDeletionService(im, format, uid);
+        try {
+            permaTokenDeletionService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        SimpleJsonModel simpleJsonModel = new SimpleJsonModel();
+        setFooter(simpleJsonModel);
+
+        return new ResponseEntity<SimpleJsonModel>(simpleJsonModel,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<PermanentToken> permanentTokensGet(@ApiParam(value = "The identifier of one of your tokens.",required=true) @PathVariable("uid") String uid) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        PermaTokenInfoService permaTokenInfoService = new PermaTokenInfoService(im, format, uid);
+        try {
+            permaTokenInfoService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        PermanentToken permanentToken = permaTokenInfoService.getPermanentTokenModel();
+        setFooter(permanentToken);
+
+        return new ResponseEntity<PermanentToken>(permanentToken,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<SimpleJsonModel> userTokensDelete() {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        DeleteTokensService deleteTokensService = new DeleteTokensService(im, format);
+        try {
+            deleteTokensService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        SimpleJsonModel simpleJsonModel = new SimpleJsonModel();
+        setFooter(simpleJsonModel);
+
+        return new ResponseEntity<SimpleJsonModel>(simpleJsonModel,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<Tokens> userTokensGet() {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        TokensService tokensService = new TokensService(im, format);
+        try {
+            tokensService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        Tokens tokensModel = tokensService.getTokensModel();
+        setFooter(tokensModel);
+
+        return new ResponseEntity<Tokens>(tokensModel,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<Token> userTokensPost(@ApiParam(value = "The type of token to issue.", allowableValues = "day, once, api, perm") @Valid @RequestParam(value = "type", required = false, defaultValue = "day") String type,@ApiParam(value = "An optional message to associate with a token.") @Valid @RequestParam(value = "message", required = false) String message) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        TokenService tokenService = new TokenService(im, format, type, message);
+        try {
+            tokenService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        Token token = tokenService.getToken();
+        setFooter(token);
+
+        return new ResponseEntity<Token>(token,httpHeaders,httpStatus);
     }
 
 

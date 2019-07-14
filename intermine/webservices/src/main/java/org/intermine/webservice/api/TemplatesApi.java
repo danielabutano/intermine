@@ -5,7 +5,9 @@
  */
 package org.intermine.webservice.api;
 
+import org.intermine.webservice.model.SavedTemplate;
 import org.intermine.webservice.model.SimpleJsonModel;
+import org.intermine.webservice.model.TemplateTags;
 import org.intermine.webservice.model.Templates;
 import org.intermine.webservice.model.TemplatesSystem;
 import io.swagger.annotations.*;
@@ -72,5 +74,57 @@ public interface TemplatesApi {
             produces = { "application/json" },
             method = RequestMethod.POST)
     ResponseEntity<?> templateUploadPost(@NotNull @ApiParam(value = "One or more templates, serialised in XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@ApiParam(value = "The version of the XML format.") @Valid @RequestParam(value = "version", required = false) Integer version,@ApiParam(value = "", allowableValues = "text, json, html, xml") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format);
+
+    @ApiOperation(value = "Delete a template by name.", nickname = "savedTemplateDelete", notes = "This resource exposes the ability to delete specific templates, identified         by name.         <br/><br/>         A user can only delete templates that they own, and must be executed         with `Read/Write` permission.", response = SimpleJsonModel.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = SimpleJsonModel.class) })
+    @RequestMapping(value = "/templates/{name}",
+            produces = { "application/json" },
+            method = RequestMethod.DELETE)
+    ResponseEntity<?> savedTemplateDelete(@ApiParam(value = "The name of the template to delete.",required=true) @PathVariable("name") String name,@ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
+
+
+    @ApiOperation(value = "Retrieve a template by name.", nickname = "savedTemplateGet", notes = "This resource retrieves a representation of a named template, returning         404 if the template cannot be found.         <br/><br/>         If the request is authenticated, then the templates visible to that user (created by         or shared with them) will be included along with publically accessible templates.", response = SavedTemplate.class, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = SavedTemplate.class) })
+    @RequestMapping(value = "/templates/{name}",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<?> savedTemplateGet(@ApiParam(value = "The name of the template to fetch.",required=true) @PathVariable("name") String name,@ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
+
+    @ApiOperation(value = "Delete one or more tags from a list.", nickname = "templateTagsDelete", notes = "", response = TemplateTags.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = TemplateTags.class) })
+    @RequestMapping(value = "/template/tags",
+            produces = { "application/json" },
+            method = RequestMethod.DELETE)
+    ResponseEntity<?> templateTagsDelete(@NotNull @ApiParam(value = "The name of a template to add the tag(s) to.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "The name of the tags to remove. It should take to from of a semi-colon delimited concatenation of the tag names.", required = true) @Valid @RequestParam(value = "tags", required = true) String tags,@ApiParam(value = "", allowableValues = "xml, json, tab, csv") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
+
+
+    @ApiOperation(value = "Get the tags for a template, or all the tags for a given user.", nickname = "templateTagsGet", notes = "Fetch an up-to-date list of all tags associated with a template, or all templates.", response = TemplateTags.class, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = TemplateTags.class) })
+    @RequestMapping(value = "/template/tags",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<?> templateTagsGet(@ApiParam(value = "The name of a template whose tags to retrieve. If no template is provided, then all the tags associated with the authenticating user will be returned.") @Valid @RequestParam(value = "name", required = false) String name,@ApiParam(value = "", allowableValues = "xml, json, tab, csv") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
+
+
+    @ApiOperation(value = "Add one or more tags to a list.", nickname = "templateTagsPost", notes = "", response = TemplateTags.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = TemplateTags.class) })
+    @RequestMapping(value = "/template/tags",
+            produces = { "application/json" },
+            method = RequestMethod.POST)
+    ResponseEntity<?> templateTagsPost(@NotNull @ApiParam(value = "The name of a template to add the tag(s) to.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "The name of the tags to add. It should take to from of a semi-colon delimited concatenation of the tag names.", required = true) @Valid @RequestParam(value = "tags", required = true) String tags,@ApiParam(value = "", allowableValues = "xml, json, tab, csv") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
 
 }

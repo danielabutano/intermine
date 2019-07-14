@@ -6,8 +6,11 @@
 package org.intermine.webservice.api;
 
 import org.intermine.webservice.model.DeregistrationToken;
+import org.intermine.webservice.model.PermanentToken;
 import org.intermine.webservice.model.Preferences;
+import org.intermine.webservice.model.SimpleJsonModel;
 import org.intermine.webservice.model.Token;
+import org.intermine.webservice.model.Tokens;
 import org.intermine.webservice.model.Users;
 import io.swagger.annotations.*;
 import org.intermine.webservice.model.WhoAmI;
@@ -157,6 +160,65 @@ public interface UsersApi {
             produces = { "application/json" },
             method = RequestMethod.PUT)
     ResponseEntity<Preferences> userPreferencesPut(@ApiParam(value = "The preference to set.") @Valid @RequestParam(value = "preferences", required = false) Map<String, String> preferences);
+
+    @ApiOperation(value = "Delete a Token.", nickname = "permanentTokenDelete", notes = "Delete a specific permanent token. <br/><br/>          Permanent tokens are issued so that users may provide access          to their private data to third parties in a more secure manner.          This service lets users delete permanent tokens they have          issued.", response = SimpleJsonModel.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = SimpleJsonModel.class) })
+    @RequestMapping(value = "/user/tokens/{uid}",
+            produces = { "application/json" },
+            method = RequestMethod.DELETE)
+    ResponseEntity<SimpleJsonModel> permanentTokenDelete(@ApiParam(value = "The identifier of one of your tokens.",required=true) @PathVariable("uid") String uid);
+
+
+    @ApiOperation(value = "Get Token Information.", nickname = "permanentTokensGet", notes = "Retrieve information about a specific permanent token. <br/><br/>          Permanent tokens are issued so that users may provide access          to their private data to third parties in a more secure manner.          This service lets users inspect a specific permanent tokens they have          issued.", response = PermanentToken.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = PermanentToken.class) })
+    @RequestMapping(value = "/user/tokens/{uid}",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<PermanentToken> permanentTokensGet(@ApiParam(value = "The identifier of one of your tokens.",required=true) @PathVariable("uid") String uid);
+
+
+    @ApiOperation(value = "Delete all Tokens.", nickname = "userTokensDelete", notes = "Delete all permanent tokens. <br/><br/>  Permanent tokens are issued so that users may provide access to their private data to third parties in a more secure manner. This service lets users all the delete permanent tokens they have issued.", response = SimpleJsonModel.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = SimpleJsonModel.class) })
+    @RequestMapping(value = "/user/tokens",
+            produces = { "application/json" },
+            method = RequestMethod.DELETE)
+    ResponseEntity<SimpleJsonModel> userTokensDelete();
+
+
+    @ApiOperation(value = "Get List of Permanent Tokens.", nickname = "userTokensGet", notes = "Tokens are issued so that users may provide access to their private data to third parties in a more secure manner. This service lets users inspect the permanent tokens they have issued. <br/><br/> No access is provide here to other tokens (24hrs, api, day), for security and other reasons. Please look at the `Session` service for issuing new temporary tokens.", response = Tokens.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = Tokens.class) })
+    @RequestMapping(value = "/user/tokens",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<Tokens> userTokensGet();
+
+
+    @ApiOperation(value = "Create a New Token.", nickname = "userTokensPost", notes = "Tokens are issued so that users may provide access to their private data to third parties in a more secure manner. This service lets users create a new token they can provide to others. <br/><br/> The different token types are: <br/><br/> `day` : A token that will be valid for up to 24 hrs. <br/><br/> `once` : A token that can only be used for a single request. <br/><br/> `api` : The main Read-Write API key of the user. Generating one of these replaces the currrent key. <br/><br/> `perm` : A permanent Read-Only token that others can use.", response = Token.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = Token.class) })
+    @RequestMapping(value = "/user/tokens",
+            produces = { "application/json" },
+            method = RequestMethod.POST)
+    ResponseEntity<Token> userTokensPost(@ApiParam(value = "The type of token to issue.", allowableValues = "day, once, api, perm") @Valid @RequestParam(value = "type", required = false, defaultValue = "day") String type,@ApiParam(value = "An optional message to associate with a token.") @Valid @RequestParam(value = "message", required = false) String message);
 
 
 }

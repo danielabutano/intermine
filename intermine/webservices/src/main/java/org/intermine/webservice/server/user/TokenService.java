@@ -37,18 +37,22 @@ public class TokenService extends JSONServiceSpring
 
     private Token token;
 
+    private String tokenType;
+
+    private String message;
+
     /** @param im The InterMine state object **/
-    public TokenService(InterMineAPI im, Format format) {
+    public TokenService(InterMineAPI im, Format format, String tokenType, String message) {
         super(im, format);
         token = new Token();
+        this.tokenType = tokenType;
+        this.message = message;
     }
 
     @Override
     protected void execute() throws Exception {
         final ProfileManager pm = im.getProfileManager();
         Profile profile = getPermission().getProfile();
-        String tokenType = getOptionalParameter("type", "day").toLowerCase();
-        String message = getOptionalParameter("message");
         String responseToken = getToken(pm, profile, tokenType, message);
         token.setToken(responseToken);
     }

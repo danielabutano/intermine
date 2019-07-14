@@ -560,6 +560,10 @@ public class TemplateQuery extends PathQuery
         return this.toJson();
     }
 
+    public synchronized Map<String, Object> toJSONSpring() {
+        return this.toJsonSpring();
+    }
+
     /**
      * Returns true if the TemplateQuery has been edited by the user and is therefore saved only in
      * the query history.

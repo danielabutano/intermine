@@ -3,20 +3,29 @@ package org.intermine.webservice.api;
 import org.apache.log4j.Logger;
 import org.intermine.api.InterMineAPI;
 import org.intermine.web.context.InterMineContext;
+import org.intermine.webservice.model.SavedTemplate;
 import org.intermine.webservice.model.SimpleJsonModel;
+import org.intermine.webservice.model.TemplateTags;
 import org.intermine.webservice.model.Templates;
 import org.intermine.webservice.model.TemplatesSystem;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 import org.intermine.webservice.server.Format;
+import org.intermine.webservice.server.WebServiceRequestParser;
 import org.intermine.webservice.server.template.AvailableTemplatesService;
+import org.intermine.webservice.server.template.SingleTemplateService;
 import org.intermine.webservice.server.template.SystemTemplatesService;
+import org.intermine.webservice.server.template.TemplateRemovalService;
+import org.intermine.webservice.server.template.TemplateTagAddingService;
+import org.intermine.webservice.server.template.TemplateTagRemovalService;
+import org.intermine.webservice.server.template.TemplateTagService;
 import org.intermine.webservice.server.template.TemplateUploadService;
 import org.intermine.webservice.util.ResponseUtilSpring;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -131,7 +140,109 @@ public class TemplatesApiController extends InterMineController implements Templ
         return templateUploadService.getSimpleJsonModel();
     }
 
+    public ResponseEntity<?> savedTemplateDelete(@ApiParam(value = "The name of the template to delete.",required=true) @PathVariable("name") String name, @ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
 
+        setHeaders();
+        TemplateRemovalService templateRemovalService = new TemplateRemovalService(im, WebServiceRequestParser.interpretFormat(format), name);
+        try {
+            templateRemovalService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        if(format.equals("json")) {
+            SimpleJsonModel simpleJsonModel = new SimpleJsonModel();
+            ResponseUtilSpring.setJSONHeader(httpHeaders, FILE_BASE_NAME + ".json", false);
+            setFooter(simpleJsonModel);
+            return new ResponseEntity<SimpleJsonModel>(simpleJsonModel, httpHeaders,httpStatus);
+        }
+        return new ResponseEntity<Object>("",httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<?> savedTemplateGet(@ApiParam(value = "The name of the template to fetch.",required=true) @PathVariable("name") String name, @ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        SingleTemplateService singleTemplateService = new SingleTemplateService(im, WebServiceRequestParser.interpretFormat(format), name);
+        try {
+            singleTemplateService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        SavedTemplate savedTemplate = singleTemplateService.getSavedTemplate();
+        if(format.equals("json")) {
+            ResponseUtilSpring.setJSONHeader(httpHeaders, FILE_BASE_NAME + ".json", false);
+            setFooter(savedTemplate);
+            return new ResponseEntity<SavedTemplate>(savedTemplate, httpHeaders,httpStatus);
+        }
+        ResponseUtilSpring.setXMLHeader(httpHeaders, name + ".xml");
+        return new ResponseEntity<Object>(savedTemplate.getTemplate(),httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<?> templateTagsDelete(@NotNull @ApiParam(value = "The name of a template to add the tag(s) to.", required = true) @Valid @RequestParam(value = "name", required = true) String name, @NotNull @ApiParam(value = "The name of the tags to remove. It should take to from of a semi-colon delimited concatenation of the tag names.", required = true) @Valid @RequestParam(value = "tags", required = true) String tags, @ApiParam(value = "", allowableValues = "xml, json, tab, csv") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        TemplateTagRemovalService templateTagRemovalService = new TemplateTagRemovalService(im, WebServiceRequestParser.interpretFormat(format), name);
+        try {
+            templateTagRemovalService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        TemplateTags templateTags = templateTagRemovalService.getTemplateTags();
+        if(format.equals("json")) {
+            ResponseUtilSpring.setJSONHeader(httpHeaders, "tags" + ".json", false);
+            setFooter(templateTags);
+            return new ResponseEntity<TemplateTags>(templateTags, httpHeaders,httpStatus);
+        }
+        return new ResponseEntity<Object>(templateTags.getTags(),httpHeaders,httpStatus);
+
+    }
+
+    public ResponseEntity<?> templateTagsGet(@ApiParam(value = "The name of a template whose tags to retrieve. If no template is provided, then all the tags associated with the authenticating user will be returned.") @Valid @RequestParam(value = "name", required = false) String name,@ApiParam(value = "", allowableValues = "xml, json, tab, csv") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        TemplateTagService templateTagService = new TemplateTagService(im, WebServiceRequestParser.interpretFormat(format), name);
+        try {
+            templateTagService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        TemplateTags templateTags = templateTagService.getTemplateTags();
+        if(format.equals("json")) {
+            ResponseUtilSpring.setJSONHeader(httpHeaders, "tags" + ".json", false);
+            setFooter(templateTags);
+            return new ResponseEntity<TemplateTags>(templateTags, httpHeaders,httpStatus);
+        }
+        return new ResponseEntity<Object>(templateTags.getTags(),httpHeaders,httpStatus);
+
+    }
+
+    public ResponseEntity<?> templateTagsPost(@NotNull @ApiParam(value = "The name of a template to add the tag(s) to.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "The name of the tags to add. It should take to from of a semi-colon delimited concatenation of the tag names.", required = true) @Valid @RequestParam(value = "tags", required = true) String tags,@ApiParam(value = "", allowableValues = "xml, json, tab, csv") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        TemplateTagAddingService templateTagAddingService = new TemplateTagAddingService(im, WebServiceRequestParser.interpretFormat(format), name);
+        try {
+            templateTagAddingService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        TemplateTags templateTags = templateTagAddingService.getTemplateTags();
+        if(format.equals("json")) {
+            ResponseUtilSpring.setJSONHeader(httpHeaders, "tags" + ".json", false);
+            setFooter(templateTags);
+            return new ResponseEntity<TemplateTags>(templateTags, httpHeaders,httpStatus);
+        }
+        return new ResponseEntity<Object>(templateTags.getTags(),httpHeaders,httpStatus);
+
+    }
 
     @Override
     protected Format getDefaultFormat() {

@@ -19,17 +19,29 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.Profile;
 import org.intermine.api.userprofile.PermanentToken;
 import org.intermine.api.userprofile.UserProfile;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.Tokens;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.ReadWriteJSONService;
+import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
 
 /** Service that lets a user inspect their currently active tokens
  * @author Alex Kalderimis
  **/
-public class TokensService extends ReadWriteJSONService
-{
+public class TokensService extends JSONServiceSpring {
+
+    private static final String DENIAL_MSG = "Access denied.";
+
+    public Tokens getTokensModel() {
+        return tokensModel;
+    }
+
+    private Tokens tokensModel;
 
     /** @param im The InterMine state object **/
-    public TokensService(InterMineAPI im) {
-        super(im);
+    public TokensService(InterMineAPI im, Format format) {
+        super(im, format);
+        tokensModel = new Tokens();
     }
 
     @Override
@@ -59,11 +71,18 @@ public class TokensService extends ReadWriteJSONService
                 }
             }
         }
-        addResultItem(tokens, false);
+        tokensModel.setTokens(tokens);
     }
 
     @Override
     protected String getResultsKey() {
         return "tokens";
+    }
+
+    @Override
+    protected void validateState() {
+        if (!isAuthenticated() || getPermission().isRO()) {
+            throw new ServiceForbiddenException(DENIAL_MSG);
+        }
     }
 }
