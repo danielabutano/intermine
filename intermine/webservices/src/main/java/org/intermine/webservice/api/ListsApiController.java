@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.intermine.api.InterMineAPI;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.webservice.model.ListAppend;
+import org.intermine.webservice.model.ListOperations;
 import org.intermine.webservice.model.ListRename;
 import org.intermine.webservice.model.ListsDelete;
 import org.intermine.webservice.model.ListsGet;
@@ -16,10 +17,15 @@ import org.intermine.webservice.server.WebServiceRequestParser;
 import org.intermine.webservice.server.lists.AvailableListsService;
 import org.intermine.webservice.server.lists.ListAppendService;
 import org.intermine.webservice.server.lists.ListDeletionService;
+import org.intermine.webservice.server.lists.ListDifferenceService;
+import org.intermine.webservice.server.lists.ListIntersectionService;
+import org.intermine.webservice.server.lists.ListOperationService;
 import org.intermine.webservice.server.lists.ListRenameService;
+import org.intermine.webservice.server.lists.ListSubtractionService;
 import org.intermine.webservice.server.lists.ListTagAddingService;
 import org.intermine.webservice.server.lists.ListTagRemovalService;
 import org.intermine.webservice.server.lists.ListTagService;
+import org.intermine.webservice.server.lists.ListUnionService;
 import org.intermine.webservice.server.lists.ListUploadService;
 import org.intermine.webservice.util.ResponseUtilSpring;
 import org.slf4j.LoggerFactory;
@@ -216,6 +222,62 @@ public class ListsApiController extends InterMineController implements ListsApi 
         return new ResponseEntity<Object>(listTags.getTags(),httpHeaders,httpStatus);
     }
 
+    public ResponseEntity<?> listsDifferencePost(@NotNull @ApiParam(value = "The name of the list to create.", required = true) @Valid @RequestParam(value = "name", required = true) String name, @NotNull @ApiParam(value = "The name of a source list, or multiple list names concatenated with a ';' separator.", required = true) @Valid @RequestParam(value = "lists", required = true) List<String> lists, @ApiParam(value = "A description of this new list.") @Valid @RequestParam(value = "description", required = false) String description, @ApiParam(value = "A set of tags to apply to the new list.") @Valid @RequestParam(value = "tags", required = false) List<String> tags, @ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+        setHeaders();
+        return serveListOperations(new ListDifferenceService(im, WebServiceRequestParser.interpretFormat(format)), format);
+    }
+
+    public ResponseEntity<?> listsIntersectPost(@NotNull @ApiParam(value = "The name of the list to create.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "The name of a source list, or multiple list names concatenated with a ';' separator.", required = true) @Valid @RequestParam(value = "lists", required = true) List<String> lists,@ApiParam(value = "A description of this new list.") @Valid @RequestParam(value = "description", required = false) String description,@ApiParam(value = "A set of tags to apply to the new list.") @Valid @RequestParam(value = "tags", required = false) List<String> tags,@ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+        setHeaders();
+        return serveListOperations(new ListIntersectionService(im, WebServiceRequestParser.interpretFormat(format)), format);
+    }
+
+    public ResponseEntity<?> listsSubtractGet(@NotNull @ApiParam(value = "The name of the list to create.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "The name of a source list, or multiple list names concatenated with a ';' separator.", required = true) @Valid @RequestParam(value = "references", required = true) List<String> references,@NotNull @ApiParam(value = "The name of a list to exclude.", required = true) @Valid @RequestParam(value = "subtract", required = true) List<String> subtract,@ApiParam(value = "A description of this new list.") @Valid @RequestParam(value = "description", required = false) String description,@ApiParam(value = "A set of tags to apply to the new list.") @Valid @RequestParam(value = "tags", required = false) List<String> tags,@ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+        setHeaders();
+        return serveListOperations(new ListSubtractionService(im, WebServiceRequestParser.interpretFormat(format)), format);
+    }
+
+    public ResponseEntity<?> listsSubtractPost(@NotNull @ApiParam(value = "The name of the list to create.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "The name of a source list, or multiple list names concatenated with a ';' separator.", required = true) @Valid @RequestParam(value = "references", required = true) List<String> references,@NotNull @ApiParam(value = "The name of a list to exclude.", required = true) @Valid @RequestParam(value = "subtract", required = true) List<String> subtract,@ApiParam(value = "A description of this new list.") @Valid @RequestParam(value = "description", required = false) String description,@ApiParam(value = "A set of tags to apply to the new list.") @Valid @RequestParam(value = "tags", required = false) List<String> tags,@ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+        setHeaders();
+        return serveListOperations(new ListSubtractionService(im, WebServiceRequestParser.interpretFormat(format)), format);
+    }
+
+    public ResponseEntity<?> listsUnionGet(@NotNull @ApiParam(value = "The name of the list to create.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "The name of a source list, or multiple list names concatenated with a ';' separator.", required = true) @Valid @RequestParam(value = "lists", required = true) List<String> lists,@ApiParam(value = "A description of this new list.") @Valid @RequestParam(value = "description", required = false) String description,@ApiParam(value = "A set of tags to apply to the new list.") @Valid @RequestParam(value = "tags", required = false) List<String> tags,@ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+        setHeaders();
+        return serveListOperations(new ListUnionService(im, WebServiceRequestParser.interpretFormat(format)), format);
+    }
+
+    public ResponseEntity<?> listsUnionPost(@NotNull @ApiParam(value = "The name of the list to create.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "The name of a source list, or multiple list names concatenated with a ';' separator.", required = true) @Valid @RequestParam(value = "lists", required = true) List<String> lists,@ApiParam(value = "A description of this new list.") @Valid @RequestParam(value = "description", required = false) String description,@ApiParam(value = "A set of tags to apply to the new list.") @Valid @RequestParam(value = "tags", required = false) List<String> tags,@ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+        setHeaders();
+        return serveListOperations(new ListUnionService(im, WebServiceRequestParser.interpretFormat(format)), format);
+    }
+
+    private ResponseEntity<?> serveListOperations(ListOperationService listOperationService, String format){
+        try {
+            listOperationService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        ListOperations listOperations = listOperationService.getListOperations();
+        if(format.equals("json")) {
+            setFooter(listOperations);
+            return new ResponseEntity<ListOperations>(listOperations, httpHeaders,httpStatus);
+        }
+        return new ResponseEntity<Object>("",httpHeaders,httpStatus);
+    }
+
     @Override
     protected Format getDefaultFormat() {
         return Format.JSON;
@@ -223,18 +285,11 @@ public class ListsApiController extends InterMineController implements ListsApi 
 
     @Override
     protected boolean canServe(Format format) {
-        return format == Format.JSON || format == Format.TEXT;
-    }
-
-
-    /*
-    @Override
-    protected boolean canServe(Format format) {
         return format == Format.JSON
                 || format == Format.HTML
                 || format == Format.TEXT
                 || Format.FLAT_FILES.contains(format);
     }
-    */
+
 
 }

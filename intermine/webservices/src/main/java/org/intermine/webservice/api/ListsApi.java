@@ -6,6 +6,7 @@
 package org.intermine.webservice.api;
 
 import org.intermine.webservice.model.ListAppend;
+import org.intermine.webservice.model.ListOperations;
 import org.intermine.webservice.model.ListRename;
 import org.intermine.webservice.model.ListsDelete;
 import org.intermine.webservice.model.ListsGet;
@@ -123,5 +124,76 @@ public interface ListsApi {
             produces = {"application/json"},
             method = RequestMethod.DELETE)
     ResponseEntity<?> listTagsDelete(@NotNull @ApiParam(value = "The name of a list to add the tag(s) to.", required = true) @Valid @RequestParam(value = "name", required = true) String name, @NotNull @ApiParam(value = "The name of the tags to remove. It should take to from of a semi-colon delimited concatenation of the tag names.", required = true) @Valid @RequestParam(value = "tags", required = true) String tags, @ApiParam(value = "", allowableValues = "xml, json, tab, csv") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
+
+    @ApiOperation(value = "Combine Two or More Lists through Difference.", nickname = "listsDifferencePost", notes = "This service allows users to create new lists which only contain members which are not shared by an even number of lists (see: http://en.wikipedia.org/wiki/Symmetric_difference). The user must have access to all the input lists, but need not be the owner of any of them.", response = ListOperations.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ListOperations.class) })
+    @RequestMapping(value = "/lists/difference",
+            produces = { "application/json" },
+            method = RequestMethod.POST)
+    ResponseEntity<?> listsDifferencePost(@NotNull @ApiParam(value = "The name of the list to create.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "The name of a source list, or multiple list names concatenated with a ';' separator.", required = true) @Valid @RequestParam(value = "lists", required = true) List<String> lists,@ApiParam(value = "A description of this new list.") @Valid @RequestParam(value = "description", required = false) String description,@ApiParam(value = "A set of tags to apply to the new list.") @Valid @RequestParam(value = "tags", required = false) List<String> tags,@ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
+
+
+    @ApiOperation(value = "Combine Two or More Lists through Intersection.", nickname = "listsIntersectPost", notes = "This service allows users to create new lists which contain only those items     which are members of all the source lists. The user must have access to all the input     lists, but need not be the owner of any of them. An intersection of a single list     may be considered a copy.", response = ListOperations.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ListOperations.class) })
+    @RequestMapping(value = "/lists/intersect",
+            produces = { "application/json" },
+            method = RequestMethod.POST)
+    ResponseEntity<?> listsIntersectPost(@NotNull @ApiParam(value = "The name of the list to create.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "The name of a source list, or multiple list names concatenated with a ';' separator.", required = true) @Valid @RequestParam(value = "lists", required = true) List<String> lists,@ApiParam(value = "A description of this new list.") @Valid @RequestParam(value = "description", required = false) String description,@ApiParam(value = "A set of tags to apply to the new list.") @Valid @RequestParam(value = "tags", required = false) List<String> tags,@ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
+
+
+    @ApiOperation(value = "Subtract one List From Another.", nickname = "listsSubtractGet", notes = "This service allows users to create new lists which contain only those elements     which are present in one set of lists, and none of those elements which are present     in another set of lists. This is what is typically thought of as subtraction, or more     technically, the asymmetric difference of two sets. The user must supply the names of     the lists to be used as either the source lists or the subtraction lists, as well as     details for the new list to be created. The user must have access to all the named lists,     but need not be the owner of any of them.", response = ListOperations.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ListOperations.class) })
+    @RequestMapping(value = "/lists/subtract",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<?> listsSubtractGet(@NotNull @ApiParam(value = "The name of the list to create.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "The name of a source list, or multiple list names concatenated with a ';' separator.", required = true) @Valid @RequestParam(value = "references", required = true) List<String> references,@NotNull @ApiParam(value = "The name of a list to exclude.", required = true) @Valid @RequestParam(value = "subtract", required = true) List<String> subtract,@ApiParam(value = "A description of this new list.") @Valid @RequestParam(value = "description", required = false) String description,@ApiParam(value = "A set of tags to apply to the new list.") @Valid @RequestParam(value = "tags", required = false) List<String> tags,@ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
+
+
+    @ApiOperation(value = "Subtract one List From Another.", nickname = "listsSubtractPost", notes = "This service allows users to create new lists which contain only those elements     which are present in one set of lists, and none of those elements which are present     in another set of lists. This is what is typically thought of as subtraction, or more     technically, the asymmetric difference of two sets. The user must supply the names of     the lists to be used as either the source lists or the subtraction lists, as well as     details for the new list to be created. The user must have access to all the named lists,     but need not be the owner of any of them.", response = ListOperations.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ListOperations.class) })
+    @RequestMapping(value = "/lists/subtract",
+            produces = { "application/json" },
+            method = RequestMethod.POST)
+    ResponseEntity<?> listsSubtractPost(@NotNull @ApiParam(value = "The name of the list to create.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "The name of a source list, or multiple list names concatenated with a ';' separator.", required = true) @Valid @RequestParam(value = "references", required = true) List<String> references,@NotNull @ApiParam(value = "The name of a list to exclude.", required = true) @Valid @RequestParam(value = "subtract", required = true) List<String> subtract,@ApiParam(value = "A description of this new list.") @Valid @RequestParam(value = "description", required = false) String description,@ApiParam(value = "A set of tags to apply to the new list.") @Valid @RequestParam(value = "tags", required = false) List<String> tags,@ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
+
+
+    @ApiOperation(value = "Combine Two or More Lists through Union.", nickname = "listsUnionGet", notes = "This service allows users to create new lists which contain all the members     contained in the set of input lists. The user must have access to all the input     lists, but need not be the owner of any of them. A union of a single list with     itself may be considered a copy.", response = ListOperations.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ListOperations.class) })
+    @RequestMapping(value = "/lists/union",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<?> listsUnionGet(@NotNull @ApiParam(value = "The name of the list to create.", required = true) @Valid @RequestParam(value = "name", required = true) String name, @NotNull @ApiParam(value = "The name of a source list, or multiple list names concatenated with a ';' separator.", required = true) @Valid @RequestParam(value = "lists", required = true) List<String> lists, @ApiParam(value = "A description of this new list.") @Valid @RequestParam(value = "description", required = false) String description, @ApiParam(value = "A set of tags to apply to the new list.") @Valid @RequestParam(value = "tags", required = false) List<String> tags, @ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
+
+
+    @ApiOperation(value = "Combine Two or More Lists through Union.", nickname = "listsUnionPost", notes = "This service allows users to create new lists which contain all the members     contained in the set of input lists. The user must have access to all the input     lists, but need not be the owner of any of them. A union of a single list with     itself may be considered a copy.", response = ListOperations.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ListOperations.class) })
+    @RequestMapping(value = "/lists/union",
+            produces = { "application/json" },
+            method = RequestMethod.POST)
+    ResponseEntity<?> listsUnionPost(@NotNull @ApiParam(value = "The name of the list to create.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "The name of a source list, or multiple list names concatenated with a ';' separator.", required = true) @Valid @RequestParam(value = "lists", required = true) List<String> lists,@ApiParam(value = "A description of this new list.") @Valid @RequestParam(value = "description", required = false) String description,@ApiParam(value = "A set of tags to apply to the new list.") @Valid @RequestParam(value = "tags", required = false) List<String> tags,@ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
 
 }

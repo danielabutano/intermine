@@ -20,6 +20,7 @@ import org.intermine.api.bag.operations.IncompatibleTypes;
 import org.intermine.api.bag.operations.NoContent;
 import org.intermine.api.profile.InterMineBag;
 import org.intermine.api.profile.Profile;
+import org.intermine.webservice.model.ListOperations;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 
@@ -31,12 +32,19 @@ import org.intermine.webservice.server.exceptions.BadRequestException;
 public abstract class ListOperationService extends ListMakerService
 {
 
+    public ListOperations getListOperations() {
+        return listOperations;
+    }
+
+    private ListOperations listOperations;
+
     /**
      * Constructor.
      * @param api The InterMine application object.
      */
     public ListOperationService(InterMineAPI api, Format format) {
         super(api, format);
+        listOperations = new ListOperations();
     }
 
     @Override
@@ -73,7 +81,7 @@ public abstract class ListOperationService extends ListMakerService
 
         try {
             if (type == null) {
-                //addOutputInfo(ListMakerService.LIST_TYPE_KEY, operation.getNewBagType());
+                listOperations.setType(operation.getNewBagType());
             }
             newBag = operation.operate();
             size = newBag.getSize();
@@ -86,7 +94,7 @@ public abstract class ListOperationService extends ListMakerService
                 input.getDescription(),
                 im.getClassKeys());
         }
-        //addOutputInfo(LIST_ID_KEY, newBag.getSavedBagId().toString());
+        listOperations.setListId(newBag.getSavedBagId());
 
         if (input.getDescription() != null) {
             newBag.setDescription(input.getDescription());
@@ -95,7 +103,7 @@ public abstract class ListOperationService extends ListMakerService
             bagManager.addTagsToBag(input.getTags(), newBag, profile);
         }
 
-        //output.addResultItem(Arrays.asList("" + size));
+        listOperations.setListSize(size);
 
         if (input.doReplace()) {
             ListServiceUtils.ensureBagIsDeleted(profile, input.getListName());
@@ -110,11 +118,11 @@ public abstract class ListOperationService extends ListMakerService
         final Profile profile = getPermission().getProfile();
         final ListInput input = getInput();
 
-        //listsPost.setListName(input.getListName());
+        listOperations.setListName(input.getListName());
 
         final String type = getNewListType(input);
         if (type != null) {
-            //listsPost.setType(type);
+            listOperations.setType(type);
         }
 
         final Set<String> rubbishbin = new HashSet<String>();
