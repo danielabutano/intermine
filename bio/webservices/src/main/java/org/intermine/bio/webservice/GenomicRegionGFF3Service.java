@@ -19,6 +19,7 @@ import org.intermine.bio.web.export.GFF3Exporter;
 import org.intermine.bio.web.logic.SequenceFeatureExportUtil;
 import org.intermine.bio.web.logic.SequenceFeatureExportUtil.InvalidQueryException;
 import org.intermine.pathquery.PathQuery;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 
 /**
@@ -32,8 +33,8 @@ public class GenomicRegionGFF3Service extends AbstractRegionExportService
      * Constructor.
      * @param im A reference to an InterMine API settings bundle.
      */
-    public GenomicRegionGFF3Service(InterMineAPI im) {
-        super(im);
+    public GenomicRegionGFF3Service(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     /**

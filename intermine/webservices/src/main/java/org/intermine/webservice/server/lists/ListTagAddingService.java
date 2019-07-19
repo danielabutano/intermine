@@ -26,6 +26,7 @@ import org.intermine.api.profile.InterMineBag;
 import org.intermine.api.profile.Profile;
 import org.intermine.api.profile.TagManager;
 import org.intermine.api.userprofile.Tag;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
 import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
@@ -44,13 +45,12 @@ public class ListTagAddingService extends ListTagService
      * Constructor.
      * @param im The InterMine API settings.
      */
-    public ListTagAddingService(InterMineAPI im) {
-        super(im);
+    public ListTagAddingService(InterMineAPI im, Format format, String listName) {
+        super(im, format, listName);
     }
 
     @Override
     protected void execute() throws Exception {
-        String listName = getRequiredParameter("name");
         Set<String> tags = getTags();
 
         BagManager bagManager = im.getBagManager();
@@ -67,7 +67,7 @@ public class ListTagAddingService extends ListTagService
         List<Tag> allTags = bagManager.getTagsForBag(list, getPermission().getProfile());
         @SuppressWarnings("unchecked")
         List<String> tagNames = (List<String>) collect(allTags, invokerTransformer("getTagName"));
-        output.addResultItem(tagNames);
+        tagsModel.setTags(tagNames);
     }
 
     /**

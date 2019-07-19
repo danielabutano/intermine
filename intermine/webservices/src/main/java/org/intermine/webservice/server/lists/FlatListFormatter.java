@@ -12,6 +12,7 @@ package org.intermine.webservice.server.lists;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.intermine.api.profile.InterMineBag;
 
@@ -26,6 +27,11 @@ public class FlatListFormatter implements ListFormatter
     @Override
     public List<String> format(InterMineBag list) {
         return Arrays.asList(list.getName());
+    }
+
+    @Override
+    public Map<String, Object> formatSpring(InterMineBag list) {
+        return null;
     }
 
     @Override

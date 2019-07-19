@@ -10,10 +10,12 @@ package org.intermine.webservice.server.lists;
  *
  */
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,6 +23,8 @@ import org.apache.commons.lang.StringUtils;
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.InterMineBag;
 import org.intermine.api.profile.Profile;
+import org.intermine.webservice.WebServiceSpring;
+import org.intermine.webservice.model.ListsGet;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.WebService;
 import org.intermine.webservice.server.core.ListManager;
@@ -35,15 +39,22 @@ import org.intermine.webservice.server.output.JSONFormatter;
  * @author Alexis Kalderimis.
  *
  */
-public class AvailableListsService extends WebService
+public class AvailableListsService extends WebServiceSpring
 {
+
+    public ListsGet getListsGet() {
+        return listsGet;
+    }
+
+    private ListsGet listsGet;
 
     /**
      * Constructor
      * @param im A reference to the InterMine API settings bundle
      */
-    public AvailableListsService(InterMineAPI im) {
-        super(im);
+    public AvailableListsService(InterMineAPI im, Format format) {
+        super(im, format);
+        listsGet = new ListsGet();
     }
 
     @Override
@@ -51,13 +62,23 @@ public class AvailableListsService extends WebService
         Collection<InterMineBag> lists = getLists();
         ListFormatter formatter = getFormatter();
         formatter.setSize(lists.size());
-        output.setHeaderAttributes(getHeaderAttributes());
-        for (InterMineBag list: lists) {
-            if (list == null) {
-                continue;
+        List<Object> resultList = new ArrayList<>();
+        if (formatIsJSON()) {
+            for (InterMineBag list: lists) {
+                if (list == null) {
+                    continue;
+                }
+                resultList.add(formatter.formatSpring(list));
             }
-            output.addResultItem(formatter.format(list));
+        } else {
+            for (InterMineBag list: lists) {
+                if (list == null) {
+                    continue;
+                }
+                resultList.add(formatter.format(list));
+            }
         }
+        listsGet.setLists(resultList);
     }
 
     private enum Filter { PREFIX, SUFFIX, CONTAINS, EXACT };
@@ -137,34 +158,6 @@ public class AvailableListsService extends WebService
             throw new ResourceNotFoundException("No lists matched " + nameFilter);
         }
         return ret;
-    }
-
-    @Override
-    protected Format getDefaultFormat() {
-        return Format.JSON;
-    }
-
-    @Override
-    protected boolean canServe(Format format) {
-        return format == Format.JSON
-                || format == Format.HTML
-                || format == Format.TEXT
-                || Format.FLAT_FILES.contains(format);
-    }
-
-    private Map<String, Object> getHeaderAttributes() {
-        Map<String, Object> attributes = new HashMap<String, Object>();
-        if (formatIsJSON()) {
-            attributes.put(JSONFormatter.KEY_INTRO, "\"lists\":[");
-            attributes.put(JSONFormatter.KEY_OUTRO, "]");
-        }
-        if (formatIsJSONP()) {
-            attributes.put(JSONFormatter.KEY_CALLBACK, this.getCallback());
-        } else if (getFormat() == Format.HTML) {
-            attributes.put(HTMLTableFormatter.KEY_COLUMN_HEADERS,
-                Arrays.asList("Id", "Name", "Type", "Description", "Size"));
-        }
-        return attributes;
     }
 
     private ListFormatter getFormatter() {

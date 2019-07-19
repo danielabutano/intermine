@@ -27,6 +27,8 @@ import org.intermine.api.profile.Profile;
 import org.intermine.api.tag.TagTypes;
 import org.intermine.api.util.AnonProfile;
 import org.intermine.api.userprofile.Tag;
+import org.intermine.webservice.model.Tags;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
 import org.intermine.webservice.server.output.JSONFormatter;
 
@@ -38,28 +40,28 @@ import org.intermine.webservice.server.output.JSONFormatter;
 public class ListTagService extends AbstractListService
 {
 
+    public Tags getTagsModel() {
+        return tagsModel;
+    }
+
+    protected Tags tagsModel;
+
+    protected String listName;
+
     /**
      * Constructor.
      * @param im The InterMine application object.
      */
-    public ListTagService(InterMineAPI im) {
-        super(im);
+    public ListTagService(InterMineAPI im, Format format, String listName) {
+        super(im, format);
+        tagsModel = new Tags();
+        this.listName = listName;
     }
 
-    @Override
-    protected Map<String, Object> getHeaderAttributes() {
-        Map<String, Object> attributes = super.getHeaderAttributes();
-        attributes.put(JSONFormatter.KEY_INTRO, "\"tags\":[");
-        attributes.put(JSONFormatter.KEY_OUTRO, "]");
-        attributes.put(JSONFormatter.KEY_QUOTE, true);
-        return attributes;
-    }
 
     @Override
     protected void execute() throws Exception {
         Profile profile = getPermission().getProfile();
-        String listName = getOptionalParameter("name", null);
-
 
         Set<String> tags = new HashSet<String>();
         // if not logged in, return empty. See #1222
@@ -70,8 +72,7 @@ public class ListTagService extends AbstractListService
                 tags = getTagsForSingleList(listName, profile);
             }
         }
-
-        output.addResultItem(new ArrayList<String>(tags));
+        tagsModel.setTags(new ArrayList<>(tags));
     }
 
     private Set<String> getTagsForSingleList(String name, Profile profile) {

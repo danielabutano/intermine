@@ -12,6 +12,7 @@ package org.intermine.webservice.server.lists;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.bag.operations.Intersection;
+import org.intermine.webservice.server.Format;
 
 /**
  * A service that intersects one or more lists.
@@ -22,8 +23,8 @@ public class ListIntersectionService extends ListOperationService
 {
 
     /** @param im The InterMine state object **/
-    public ListIntersectionService(InterMineAPI im) {
-        super(im);
+    public ListIntersectionService(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     @Override

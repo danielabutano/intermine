@@ -21,16 +21,48 @@ import java.util.Set;
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.InterMineBag;
 import org.intermine.api.profile.Profile;
+import org.intermine.webservice.model.ListAppend;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
 
 /** @author Alex Kalderimis **/
 public class ListAppendService extends ListUploadService
 {
 
-    /** @param im The InterMine state object **/
-    public ListAppendService(InterMineAPI im) {
-        super(im);
+    public ListAppend getListAppend() {
+        return listAppend;
     }
+
+    private ListAppend listAppend;
+
+    /** @param im The InterMine state object **/
+    public ListAppendService(InterMineAPI im, Format format, String body) {
+        super(im, format, body);
+        listAppend = new ListAppend();
+    }
+
+
+    @Override
+    protected void execute() throws Exception {
+        final Profile profile = getPermission().getProfile();
+        final ListInput input = getInput();
+
+        listAppend.setListName(input.getListName());
+
+        final String type = getNewListType(input);
+
+        final Set<String> rubbishbin = new HashSet<String>();
+        initialiseDelendumAccumulator(rubbishbin, input);
+        try {
+            makeList(input, type, profile, rubbishbin);
+        } finally {
+            for (final String delendum: rubbishbin) {
+                ListServiceUtils.ensureBagIsDeleted(profile, delendum);
+            }
+        }
+    }
+
+
 
     @Override
     protected void makeList(
@@ -55,12 +87,13 @@ public class ListAppendService extends ListUploadService
         setListSize(bag.size());
         setListId(bag.getSavedBagId());
 
-        for (Iterator<String> i = unmatchedIds.iterator(); i.hasNext();) {
+        listAppend.setUnmatchedIdentifiers(new ArrayList<>(unmatchedIds));
+        /*for (Iterator<String> i = unmatchedIds.iterator(); i.hasNext();) {
             List<String> row = new ArrayList<String>(Arrays.asList(i.next()));
             if (i.hasNext()) {
                 row.add("");
             }
             output.addResultItem(row);
-        }
+        }*/
     }
 }

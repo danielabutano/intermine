@@ -12,6 +12,10 @@ package org.intermine.webservice.server.lists;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.Profile;
+import org.intermine.webservice.model.ListsDelete;
+import org.intermine.webservice.server.Format;
+
+import java.text.Normalizer;
 
 /**
  * A service for deleting lists from the user-profile database.
@@ -21,30 +25,26 @@ import org.intermine.api.profile.Profile;
 public class ListDeletionService extends AuthenticatedListService
 {
 
-    /**
-     * Usage information to help users who provide incorrect input.
-     */
-    public static final String USAGE =
-          "List Deletion Service\n"
-        + "=====================\n"
-        + "Delete a list\n"
-        + "Parameters:\n"
-        + "name: the name of the list to delete\n"
-        + "NOTE: All requests to this service must authenticate to a valid user account\n";
+    public ListsDelete getListsDelete() {
+        return listsDelete;
+    }
+
+    private ListsDelete listsDelete;
 
     /**
      * Constructor.
      * @param im The InterMine application object.
      */
-    public ListDeletionService(InterMineAPI im) {
-        super(im);
+    public ListDeletionService(InterMineAPI im, Format format) {
+        super(im, format);
+        listsDelete = new ListsDelete();
     }
 
     @Override
     protected void execute() throws Exception {
         Profile profile = getPermission().getProfile();
         ListInput input = getInput();
-        addOutputInfo(LIST_NAME_KEY, input.getListName());
+        listsDelete.setListName(input.getListName());
         ListServiceUtils.ensureBagIsDeleted(profile, input.getListName());
     }
 }

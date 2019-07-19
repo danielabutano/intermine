@@ -17,11 +17,9 @@ import org.intermine.api.template.ApiTemplate;
 import org.intermine.api.userprofile.Tag;
 import org.intermine.api.util.AnonProfile;
 import org.intermine.webservice.JSONServiceSpring;
-import org.intermine.webservice.model.TemplateTags;
+import org.intermine.webservice.model.Tags;
 import org.intermine.webservice.server.Format;
-import org.intermine.webservice.server.core.JSONService;
 import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
-import org.intermine.webservice.server.output.JSONFormatter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,11 +39,11 @@ import static org.apache.commons.collections.TransformerUtils.invokerTransformer
  */
 public class TemplateTagService extends JSONServiceSpring {
 
-    public TemplateTags getTemplateTags() {
+    public Tags getTemplateTags() {
         return templateTags;
     }
 
-    protected TemplateTags templateTags;
+    protected Tags templateTags;
 
     protected String templateName;
 
@@ -55,7 +53,7 @@ public class TemplateTagService extends JSONServiceSpring {
      */
     public TemplateTagService(InterMineAPI im, Format format, String templateName) {
         super(im, format);
-        templateTags = new TemplateTags();
+        templateTags = new Tags();
         this.templateName = templateName;
     }
 

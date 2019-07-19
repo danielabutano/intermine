@@ -55,8 +55,8 @@ public abstract class AbstractRegionExportService extends GenomicRegionSearchSer
      * Constructor.
      * @param im The InterMine API settings object.
      */
-    public AbstractRegionExportService(InterMineAPI im) {
-        super(im);
+    public AbstractRegionExportService(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     @Override
@@ -154,10 +154,10 @@ public abstract class AbstractRegionExportService extends GenomicRegionSearchSer
      */
     protected abstract String getSuffix();
 
-    @Override
+    /*@Override
     protected String getDefaultFileName() {
         return "results" + StringUtil.uniqueString() + getSuffix();
-    }
+    }*/
 
     private PrintWriter pw;
     private OutputStream os;
@@ -188,7 +188,7 @@ public abstract class AbstractRegionExportService extends GenomicRegionSearchSer
         return new PlainFormatter();
     }
 
-    @Override
+    /*@Override
     protected Output getDefaultOutput(PrintWriter out, OutputStream outputstream,
             String separator) {
         this.pw = out;
@@ -198,7 +198,7 @@ public abstract class AbstractRegionExportService extends GenomicRegionSearchSer
             ResponseUtil.setCustomTypeHeader(response, getDefaultFileName(), getContentType());
         }
         return output;
-    }
+    }*/
 
     @Override
     public Format getDefaultFormat() {

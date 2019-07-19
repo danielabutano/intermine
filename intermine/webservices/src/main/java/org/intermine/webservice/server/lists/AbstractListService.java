@@ -17,6 +17,8 @@ import java.util.Set;
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.InterMineBag;
 import org.intermine.metadata.ClassDescriptor;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.JSONService;
 
 /**
@@ -24,16 +26,12 @@ import org.intermine.webservice.server.core.JSONService;
  * @author Alex Kalderimis
  *
  */
-public abstract class AbstractListService extends JSONService
+public abstract class AbstractListService extends JSONServiceSpring
 {
 
-    protected static final String LIST_NAME_KEY = "listName";
-    protected static final String LIST_SIZE_KEY = "listSize";
-    protected static final String LIST_ID_KEY = "listId";
-
     /** @param im The InterMine state object **/
-    public AbstractListService(InterMineAPI im) {
-        super(im);
+    public AbstractListService(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     /**

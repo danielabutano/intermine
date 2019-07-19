@@ -25,6 +25,7 @@ public class GenomicRegionGFF3Servlet extends BioExportServlet
      * @return Web service
      */
     protected WebService getService() {
-        return new GenomicRegionGFF3Service(api);
+        //return new GenomicRegionGFF3Service(api);
+        return null;
     }
 }

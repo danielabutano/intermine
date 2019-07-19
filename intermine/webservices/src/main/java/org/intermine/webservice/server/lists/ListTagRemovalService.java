@@ -17,6 +17,7 @@ import org.intermine.api.profile.InterMineBag;
 import org.intermine.api.profile.Profile;
 import org.intermine.api.profile.TagManager;
 import org.intermine.api.userprofile.Tag;
+import org.intermine.webservice.server.Format;
 
 /**
  * A service for removing tags from a list.
@@ -30,8 +31,8 @@ public class ListTagRemovalService extends ListTagAddingService
      * Constructor.
      * @param im The InterMine application object.
      */
-    public ListTagRemovalService(InterMineAPI im) {
-        super(im);
+    public ListTagRemovalService(InterMineAPI im, Format format, String listName) {
+        super(im, format, listName);
     }
 
     @Override

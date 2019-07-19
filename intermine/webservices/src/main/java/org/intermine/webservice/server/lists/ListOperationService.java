@@ -11,6 +11,7 @@ package org.intermine.webservice.server.lists;
  */
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.intermine.api.InterMineAPI;
@@ -19,6 +20,7 @@ import org.intermine.api.bag.operations.IncompatibleTypes;
 import org.intermine.api.bag.operations.NoContent;
 import org.intermine.api.profile.InterMineBag;
 import org.intermine.api.profile.Profile;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 
 /**
@@ -33,8 +35,8 @@ public abstract class ListOperationService extends ListMakerService
      * Constructor.
      * @param api The InterMine application object.
      */
-    public ListOperationService(InterMineAPI api) {
-        super(api);
+    public ListOperationService(InterMineAPI api, Format format) {
+        super(api, format);
     }
 
     @Override
@@ -71,7 +73,7 @@ public abstract class ListOperationService extends ListMakerService
 
         try {
             if (type == null) {
-                addOutputInfo(ListMakerService.LIST_TYPE_KEY, operation.getNewBagType());
+                //addOutputInfo(ListMakerService.LIST_TYPE_KEY, operation.getNewBagType());
             }
             newBag = operation.operate();
             size = newBag.getSize();
@@ -84,7 +86,7 @@ public abstract class ListOperationService extends ListMakerService
                 input.getDescription(),
                 im.getClassKeys());
         }
-        addOutputInfo(LIST_ID_KEY, newBag.getSavedBagId().toString());
+        //addOutputInfo(LIST_ID_KEY, newBag.getSavedBagId().toString());
 
         if (input.getDescription() != null) {
             newBag.setDescription(input.getDescription());
@@ -93,13 +95,37 @@ public abstract class ListOperationService extends ListMakerService
             bagManager.addTagsToBag(input.getTags(), newBag, profile);
         }
 
-        output.addResultItem(Arrays.asList("" + size));
+        //output.addResultItem(Arrays.asList("" + size));
 
         if (input.doReplace()) {
             ListServiceUtils.ensureBagIsDeleted(profile, input.getListName());
         }
 
         profile.renameBag(newBag.getName(), input.getListName());
+    }
+
+
+    @Override
+    protected void execute() throws Exception {
+        final Profile profile = getPermission().getProfile();
+        final ListInput input = getInput();
+
+        //listsPost.setListName(input.getListName());
+
+        final String type = getNewListType(input);
+        if (type != null) {
+            //listsPost.setType(type);
+        }
+
+        final Set<String> rubbishbin = new HashSet<String>();
+        initialiseDelendumAccumulator(rubbishbin, input);
+        try {
+            makeList(input, type, profile, rubbishbin);
+        } finally {
+            for (final String delendum: rubbishbin) {
+                ListServiceUtils.ensureBagIsDeleted(profile, delendum);
+            }
+        }
     }
 
 }

@@ -24,6 +24,7 @@ public class GenomicRegionBedServlet extends BioExportServlet
 
     @Override
     protected WebService getService() {
-        return new GenomicRegionBedService(api);
+        //return new GenomicRegionBedService(api);
+        return null;
     }
 }

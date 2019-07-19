@@ -5,7 +5,7 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.webservice.model.SavedTemplate;
 import org.intermine.webservice.model.SimpleJsonModel;
-import org.intermine.webservice.model.TemplateTags;
+import org.intermine.webservice.model.Tags;
 import org.intermine.webservice.model.Templates;
 import org.intermine.webservice.model.TemplatesSystem;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,8 +21,6 @@ import org.intermine.webservice.server.template.TemplateTagRemovalService;
 import org.intermine.webservice.server.template.TemplateTagService;
 import org.intermine.webservice.server.template.TemplateUploadService;
 import org.intermine.webservice.util.ResponseUtilSpring;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -192,11 +190,11 @@ public class TemplatesApiController extends InterMineController implements Templ
         } catch (Throwable throwable) {
             sendError(throwable);
         }
-        TemplateTags templateTags = templateTagRemovalService.getTemplateTags();
+        Tags templateTags = templateTagRemovalService.getTemplateTags();
         if(format.equals("json")) {
             ResponseUtilSpring.setJSONHeader(httpHeaders, "tags" + ".json", false);
             setFooter(templateTags);
-            return new ResponseEntity<TemplateTags>(templateTags, httpHeaders,httpStatus);
+            return new ResponseEntity<Tags>(templateTags, httpHeaders,httpStatus);
         }
         return new ResponseEntity<Object>(templateTags.getTags(),httpHeaders,httpStatus);
 
@@ -213,11 +211,11 @@ public class TemplatesApiController extends InterMineController implements Templ
         } catch (Throwable throwable) {
             sendError(throwable);
         }
-        TemplateTags templateTags = templateTagService.getTemplateTags();
+        Tags templateTags = templateTagService.getTemplateTags();
         if(format.equals("json")) {
             ResponseUtilSpring.setJSONHeader(httpHeaders, "tags" + ".json", false);
             setFooter(templateTags);
-            return new ResponseEntity<TemplateTags>(templateTags, httpHeaders,httpStatus);
+            return new ResponseEntity<Tags>(templateTags, httpHeaders,httpStatus);
         }
         return new ResponseEntity<Object>(templateTags.getTags(),httpHeaders,httpStatus);
 
@@ -234,11 +232,11 @@ public class TemplatesApiController extends InterMineController implements Templ
         } catch (Throwable throwable) {
             sendError(throwable);
         }
-        TemplateTags templateTags = templateTagAddingService.getTemplateTags();
+        Tags templateTags = templateTagAddingService.getTemplateTags();
         if(format.equals("json")) {
             ResponseUtilSpring.setJSONHeader(httpHeaders, "tags" + ".json", false);
             setFooter(templateTags);
-            return new ResponseEntity<TemplateTags>(templateTags, httpHeaders,httpStatus);
+            return new ResponseEntity<Tags>(templateTags, httpHeaders,httpStatus);
         }
         return new ResponseEntity<Object>(templateTags.getTags(),httpHeaders,httpStatus);
 

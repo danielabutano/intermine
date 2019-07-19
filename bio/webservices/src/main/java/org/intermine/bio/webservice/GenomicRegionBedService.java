@@ -20,6 +20,7 @@ import org.intermine.bio.web.logic.SequenceFeatureExportUtil;
 import org.intermine.bio.web.logic.SequenceFeatureExportUtil.InvalidQueryException;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.web.logic.export.Exporter;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 
 /**
@@ -37,8 +38,8 @@ public class GenomicRegionBedService extends AbstractRegionExportService
      * Constructor.
      * @param im A reference to an InterMine API settings bundle.
      */
-    public GenomicRegionBedService(InterMineAPI im) {
-        super(im);
+    public GenomicRegionBedService(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     @Override

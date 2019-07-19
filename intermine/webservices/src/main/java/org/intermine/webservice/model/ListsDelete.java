@@ -6,48 +6,37 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 /**
- * TemplateTags
+ * ListsDelete
  */
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-07-13T20:52:32.591+05:30[Asia/Kolkata]")
-@JsonPropertyOrder({ "tags", "executionTime", "wasSuccessful", "error", "statusCode" })
-public class TemplateTags extends JSONModel {
-  @JsonProperty("tags")
-  @Valid
-  private List<String> tags = null;
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-07-16T22:35:41.810+05:30[Asia/Kolkata]")
+@JsonPropertyOrder({ "listName", "executionTime", "wasSuccessful", "error", "statusCode" })
+public class ListsDelete  extends JSONModel {
+  @JsonProperty("listName")
+  private String listName = null;
 
-  public TemplateTags tags(List<String> tags) {
-    this.tags = tags;
-    return this;
-  }
-
-  public TemplateTags addTagsItem(String tagsItem) {
-    if (this.tags == null) {
-      this.tags = new ArrayList<String>();
-    }
-    this.tags.add(tagsItem);
+  public ListsDelete listName(String listName) {
+    this.listName = listName;
     return this;
   }
 
   /**
-   * Get tags
-   * @return tags
+   * Get listName
+   * @return listName
   **/
   @ApiModelProperty(value = "")
 
-  public List<String> getTags() {
-    return tags;
+  public String getListName() {
+    return listName;
   }
 
-  public void setTags(List<String> tags) {
-    this.tags = tags;
+  public void setListName(String listName) {
+    this.listName = listName;
   }
 
   @Override
@@ -58,25 +47,25 @@ public class TemplateTags extends JSONModel {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    TemplateTags templateTags = (TemplateTags) o;
-    return Objects.equals(this.tags, templateTags.tags) &&
-        Objects.equals(this.executionTime, templateTags.executionTime) &&
-        Objects.equals(this.wasSuccessful, templateTags.wasSuccessful) &&
-        Objects.equals(this.error, templateTags.error) &&
-        Objects.equals(this.statusCode, templateTags.statusCode);
+    ListsDelete listsDelete = (ListsDelete) o;
+    return Objects.equals(this.listName, listsDelete.listName) &&
+        Objects.equals(this.executionTime, listsDelete.executionTime) &&
+        Objects.equals(this.wasSuccessful, listsDelete.wasSuccessful) &&
+        Objects.equals(this.error, listsDelete.error) &&
+        Objects.equals(this.statusCode, listsDelete.statusCode);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(tags, executionTime, wasSuccessful, error, statusCode);
+    return Objects.hash(listName, executionTime, wasSuccessful, error, statusCode);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class TemplateTags {\n");
+    sb.append("class ListsDelete {\n");
     
-    sb.append("    tags: ").append(toIndentedString(tags)).append("\n");
+    sb.append("    listName: ").append(toIndentedString(listName)).append("\n");
     sb.append("    executionTime: ").append(toIndentedString(executionTime)).append("\n");
     sb.append("    wasSuccessful: ").append(toIndentedString(wasSuccessful)).append("\n");
     sb.append("    error: ").append(toIndentedString(error)).append("\n");

@@ -7,25 +7,20 @@ package org.intermine.webservice.api;
 
 import org.intermine.webservice.model.SavedTemplate;
 import org.intermine.webservice.model.SimpleJsonModel;
-import org.intermine.webservice.model.TemplateTags;
+import org.intermine.webservice.model.Tags;
 import org.intermine.webservice.model.Templates;
 import org.intermine.webservice.model.TemplatesSystem;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
-import java.util.List;
-import java.util.Map;
+
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-19T01:19:48.599+05:30[Asia/Kolkata]")
 @Api(value = "templates", description = "the templates API")
 public interface TemplatesApi {
@@ -95,33 +90,33 @@ public interface TemplatesApi {
             method = RequestMethod.GET)
     ResponseEntity<?> savedTemplateGet(@ApiParam(value = "The name of the template to fetch.",required=true) @PathVariable("name") String name,@ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
 
-    @ApiOperation(value = "Delete one or more tags from a list.", nickname = "templateTagsDelete", notes = "", response = TemplateTags.class, authorizations = {
+    @ApiOperation(value = "Delete one or more tags from a list.", nickname = "templateTagsDelete", notes = "", response = Tags.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
             @Authorization(value = "JWTBearerAuth")    }, tags={  })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = TemplateTags.class) })
+            @ApiResponse(code = 200, message = "OK", response = Tags.class) })
     @RequestMapping(value = "/template/tags",
             produces = { "application/json" },
             method = RequestMethod.DELETE)
     ResponseEntity<?> templateTagsDelete(@NotNull @ApiParam(value = "The name of a template to add the tag(s) to.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "The name of the tags to remove. It should take to from of a semi-colon delimited concatenation of the tag names.", required = true) @Valid @RequestParam(value = "tags", required = true) String tags,@ApiParam(value = "", allowableValues = "xml, json, tab, csv") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
 
 
-    @ApiOperation(value = "Get the tags for a template, or all the tags for a given user.", nickname = "templateTagsGet", notes = "Fetch an up-to-date list of all tags associated with a template, or all templates.", response = TemplateTags.class, tags={  })
+    @ApiOperation(value = "Get the tags for a template, or all the tags for a given user.", nickname = "templateTagsGet", notes = "Fetch an up-to-date list of all tags associated with a template, or all templates.", response = Tags.class, tags={  })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = TemplateTags.class) })
+            @ApiResponse(code = 200, message = "OK", response = Tags.class) })
     @RequestMapping(value = "/template/tags",
             produces = { "application/json" },
             method = RequestMethod.GET)
     ResponseEntity<?> templateTagsGet(@ApiParam(value = "The name of a template whose tags to retrieve. If no template is provided, then all the tags associated with the authenticating user will be returned.") @Valid @RequestParam(value = "name", required = false) String name,@ApiParam(value = "", allowableValues = "xml, json, tab, csv") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
 
 
-    @ApiOperation(value = "Add one or more tags to a list.", nickname = "templateTagsPost", notes = "", response = TemplateTags.class, authorizations = {
+    @ApiOperation(value = "Add one or more tags to a list.", nickname = "templateTagsPost", notes = "", response = Tags.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
             @Authorization(value = "JWTBearerAuth")    }, tags={  })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = TemplateTags.class) })
+            @ApiResponse(code = 200, message = "OK", response = Tags.class) })
     @RequestMapping(value = "/template/tags",
             produces = { "application/json" },
             method = RequestMethod.POST)

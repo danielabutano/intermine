@@ -100,6 +100,12 @@ public class JSONListFormatter implements ListFormatter
     }
 
     @Override
+    public Map<String, Object> formatSpring(InterMineBag list) {
+        return bagToMap(list);
+
+    }
+
+    @Override
     public void setSize(int size) {
         this.rowsLeft = size;
     }

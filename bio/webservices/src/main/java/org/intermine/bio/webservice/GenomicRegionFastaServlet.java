@@ -24,6 +24,7 @@ public class GenomicRegionFastaServlet extends BioExportServlet
 
     @Override
     protected WebService getService() {
-        return new GenomicRegionFastaService(api);
+        //return new GenomicRegionFastaService(api);
+        return null;
     }
 }

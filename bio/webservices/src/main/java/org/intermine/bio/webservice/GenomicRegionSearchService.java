@@ -27,6 +27,7 @@ import org.intermine.bio.web.model.GenomicRegion;
 import org.intermine.bio.webservice.GenomicRegionSearchListInput.GenomicRegionSearchInfo;
 import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.objectstore.query.Query;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.lists.ListInput;
 import org.intermine.webservice.server.lists.ListMakerService;
@@ -45,8 +46,8 @@ public class GenomicRegionSearchService extends ListMakerService
      * Constructor.
      * @param im The InterMine state and settings object.
      */
-    public GenomicRegionSearchService(InterMineAPI im) {
-        super(im);
+    public GenomicRegionSearchService(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     @Override
@@ -75,10 +76,10 @@ public class GenomicRegionSearchService extends ListMakerService
             throw new BadRequestException(e.getMessage(), e);
         }
 
-        addOutputInfo(LIST_SIZE_KEY, tempBag.getSize() + "");
+        //addOutputInfo(LIST_SIZE_KEY, tempBag.getSize() + "");
 
         List<String> row = new ArrayList<String>(searchInput.getSearchInfo().getInvalidSpans());
-        output.addResultItem(row);
+        //output.addResultItem(row);
         if (!input.getTags().isEmpty()) {
             im.getBagManager().addTagsToBag(input.getTags(), tempBag, profile);
         }
@@ -108,20 +109,6 @@ public class GenomicRegionSearchService extends ListMakerService
         return tempBag;
     }
 
-    /**
-     * Gets the header attributes on the output object.
-     * @return A map of header attributes for JSON output.
-     */
-    @Override
-    protected Map<String, Object> getHeaderAttributes() {
-        final Map<String, Object> attributes = super.getHeaderAttributes();
-        if (formatIsJSON()) {
-            attributes.put(JSONFormatter.KEY_INTRO, "\"invalidSpans\":[");
-            attributes.put(JSONFormatter.KEY_OUTRO, "]");
-            attributes.put(JSONFormatter.KEY_QUOTE, Boolean.TRUE);
-        }
-        return attributes;
-    }
 
     @Override
     protected ListInput getInput() {
