@@ -21,6 +21,7 @@ import org.intermine.webservice.server.core.ListManager;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.MissingParameterException;
 import org.intermine.webservice.server.exceptions.ServiceException;
+import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
 import org.intermine.webservice.server.exceptions.UnauthorizedException;
 import org.springframework.stereotype.Service;
 
@@ -450,6 +451,22 @@ public class WebServiceSpring {
         } catch (MissingParameterException e) {
             return defaultValue;
         }
+    }
+
+    /**
+     * Get a profile that is a true authenticated user that exists in the
+     * database.
+     *
+     * @return The user's profile.
+     * @throws ServiceForbiddenException
+     *             if this request resolves to an unauthenticated profile.
+     */
+    protected Profile getAuthenticatedUser() {
+        Profile profile = getPermission().getProfile();
+        if (profile.isLoggedIn()) {
+            return profile;
+        }
+        throw new ServiceForbiddenException("You must be logged in to use this service");
     }
 
     /**

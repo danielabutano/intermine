@@ -22,6 +22,9 @@ import org.intermine.api.profile.Profile;
 import org.intermine.util.Emailer;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.web.context.MailAction;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.ListInvitationSingle;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.JSONService;
 import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
 
@@ -30,15 +33,29 @@ import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
  * @author Alex Kalderimis
  *
  */
-public class ListSharingInvitationService extends JSONService
+public class ListSharingInvitationService extends JSONServiceSpring
 {
 
     private static final Logger LOG = Logger.getLogger(ListSharingInvitationService.class);
     private static final String EMAIL_PROPERTY = "sharing-invite";
 
+    private String bagName;
+    private String to;
+    private Boolean notifyParam;
+
+    public ListInvitationSingle getListInvitationSingle() {
+        return listInvitationSingle;
+    }
+
+    private ListInvitationSingle listInvitationSingle;
+
     /** @param im The InterMine state object **/
-    public ListSharingInvitationService(InterMineAPI im) {
-        super(im);
+    public ListSharingInvitationService(InterMineAPI im, Format format, String bagName, String to, Boolean notifyParam) {
+        super(im, format);
+        this.bagName = bagName;
+        this.to = to;
+        this.notifyParam = notifyParam;
+        listInvitationSingle = new ListInvitationSingle();
     }
 
     @Override
@@ -55,14 +72,12 @@ public class ListSharingInvitationService extends JSONService
 
         UserInput() {
             owner = getAuthenticatedUser();
-            String bagName = getRequiredParameter("list");
             bag = owner.getSavedBags().get(bagName);
             if (bag == null) {
                 throw new ResourceNotFoundException("You do not own a list called " + bagName);
             }
-            invitee = getRequiredParameter("to");
-            String sendEmail = getOptionalParameter("notify", "false");
-            notify = ("true".equalsIgnoreCase(sendEmail) || "1".equals(sendEmail));
+            invitee = to;
+            notify = notifyParam;
         }
     }
 
@@ -72,7 +87,7 @@ public class ListSharingInvitationService extends JSONService
 
         SharingInvite invite = SharedBagManager.inviteToShare(input.bag, input.invitee);
 
-        addResultItem(marshallInvite(input, invite), false);
+        listInvitationSingle.setInvitation(marshallInvite(input, invite));
 
         if (input.notify) {
             notifyInvitee(input, invite);

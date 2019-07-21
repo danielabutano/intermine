@@ -7,12 +7,17 @@ package org.intermine.webservice.api;
 
 import org.intermine.webservice.model.JaccardIndex;
 import org.intermine.webservice.model.ListAppend;
+import org.intermine.webservice.model.ListInvitationMultiple;
+import org.intermine.webservice.model.ListInvitationSingle;
 import org.intermine.webservice.model.ListOperations;
 import org.intermine.webservice.model.ListRename;
+import org.intermine.webservice.model.ListSharingGet;
+import org.intermine.webservice.model.ListSharingPost;
 import org.intermine.webservice.model.ListsDelete;
 import org.intermine.webservice.model.ListsGet;
 import org.intermine.webservice.model.ListsPost;
 import io.swagger.annotations.*;
+import org.intermine.webservice.model.SimpleJsonModel;
 import org.intermine.webservice.model.Tags;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -231,5 +236,88 @@ public interface ListsApi {
             produces = { "application/json" },
             method = RequestMethod.POST)
     ResponseEntity<?> listsWithObjectPost(@ApiParam(value = "A stable identifier that can be used to find the object.") @Valid @RequestParam(value = "publicId", required = false) String publicId,@ApiParam(value = "The internal DB id (changes on each re-release).") @Valid @RequestParam(value = "id", required = false) Integer id,@ApiParam(value = "The type of object (required if using a public id).") @Valid @RequestParam(value = "type", required = false) String type,@ApiParam(value = "An extra value to disambiguate objects.") @Valid @RequestParam(value = "extraValue", required = false) String extraValue,@ApiParam(value = "", allowableValues = "json, html, text, csv, tab") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
+
+    @ApiOperation(value = "Details of all outstanding invitations.", nickname = "listInvitationsGet", notes = "This service returns a description of all the outstanding list invitations for a user on the system.", response = ListInvitationMultiple.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ListInvitationMultiple.class) })
+    @RequestMapping(value = "/lists/invitations",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<ListInvitationMultiple> listInvitationsGet();
+
+
+    @ApiOperation(value = "Invite another user to share a list.", nickname = "listInvitationsPost", notes = "This service allows users to share one of their lists with another user.       This allows read-only access to the given list, allowing it to be used in       queries, exported, etc. You should only do this if you trust the other       party with your data.       <br/><br/>       Users can be designated by their username, display-name (if set) or by       and email address. If the email address is not registered with a user in       the system, an invitation will be sent to that address, with a code that       allows the user to activate the list share.", response = ListInvitationSingle.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ListInvitationSingle.class) })
+    @RequestMapping(value = "/lists/invitations",
+            produces = { "application/json" },
+            method = RequestMethod.POST)
+    ResponseEntity<ListInvitationSingle> listInvitationsPost(@NotNull @ApiParam(value = "The list of yours you wish to share.", required = true) @Valid @RequestParam(value = "list", required = true) String list,@ApiParam(value = "The email address of the user to invite to share a list.") @Valid @RequestParam(value = "to", required = false) String to,@ApiParam(value = "Whether or not to send an email to the invitee. The invitee value must be an email address if true.") @Valid @RequestParam(value = "notify", required = false, defaultValue = "false") Boolean notify);
+
+
+    @ApiOperation(value = "Rescind the Permission Granted to a User to Access a List.", nickname = "listSharesDelete", notes = "Stop a user from being able to access a list that you own. This service allows a user     to remove a user's previously granted permission to view the contents of a list.     <br/><br/>     Other than a json results envelope no meaningful results are returned, and the caller     should simply check for a successful response.", response = SimpleJsonModel.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = SimpleJsonModel.class) })
+    @RequestMapping(value = "/lists/shares",
+            produces = { "application/json" },
+            method = RequestMethod.DELETE)
+    ResponseEntity<SimpleJsonModel> listSharesDelete(@NotNull @ApiParam(value = "", required = true) @Valid @RequestParam(value = "list", required = true) String list, @NotNull @ApiParam(value = "", required = true) @Valid @RequestParam(value = "with", required = true) String with);
+
+
+    @ApiOperation(value = "Retrieve information about which lists are shared with and by whom.", nickname = "listSharesGet", notes = "Get information about each list that is shared by or with the authenticating     user. The service returns a map with two keys \"sharedByUser\" and \"sharedWithUser\"     which are themselves each maps, with list names as keys, and either lists of     users with access as values, or the name of the original owner as values.", response = ListSharingGet.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ListSharingGet.class) })
+    @RequestMapping(value = "/lists/shares",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<ListSharingGet> listSharesGet();
+
+
+    @ApiOperation(value = "Authorise another user to access a list.", nickname = "listSharesPost", notes = "This service provides a means for authorising another user to access a list. To     share a list the user making the request must be the owner of the list and you must     know the username of the user you wish to share with. If you do not know the username     of the user to share with, then the user should issue an invitation instead. The user     the list is shared with must exist and the list must not already be shared with them.     <br/><br/>     The service returns information detailing whom the list in question is currently     shared with.", response = ListSharingPost.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ListSharingPost.class) })
+    @RequestMapping(value = "/lists/shares",
+            produces = { "application/json" },
+            method = RequestMethod.POST)
+    ResponseEntity<ListSharingPost> listSharesPost(@NotNull @ApiParam(value = "The list of yours you wish to share.", required = true) @Valid @RequestParam(value = "list", required = true) String list, @NotNull @ApiParam(value = "The username of the user who will have access.", required = true) @Valid @RequestParam(value = "with", required = true) String with, @ApiParam(value = "Whether or not to send an email to the user you are sharing with.") @Valid @RequestParam(value = "notify", required = false, defaultValue = "false") Boolean notify);
+
+
+    @ApiOperation(value = "Details of a single invitation.", nickname = "listsInvitationsUidGet", notes = "This service returns details of a single invitation on the system.", response = ListInvitationSingle.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ListInvitationSingle.class) })
+    @RequestMapping(value = "/lists/invitations/{uid}",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<ListInvitationSingle> listsInvitationsUidGet(@ApiParam(value = "The identifier of the invitation - a 20 character unique string.",required=true) @PathVariable("uid") String uid);
+
+
+    @ApiOperation(value = "Declare the acceptance of an invitation.", nickname = "listsInvitationsUidPut", notes = "The service accepts the invitation, activating the share. It must be accessed       by the user it was sent to.", response = ListInvitationSingle.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ListInvitationSingle.class) })
+    @RequestMapping(value = "/lists/invitations/{uid}",
+            produces = { "application/json" },
+            method = RequestMethod.PUT)
+    ResponseEntity<ListInvitationSingle> listsInvitationsUidPut(@ApiParam(value = "The identifier of the invitation - a 20 character unique string.",required=true) @PathVariable("uid") String uid,@NotNull @ApiParam(value = "Whether or not this invitation is accepted or not.", required = true) @Valid @RequestParam(value = "accepted", required = true) Boolean accepted);
 
 }

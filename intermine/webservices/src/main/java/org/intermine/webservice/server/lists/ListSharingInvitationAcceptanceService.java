@@ -30,6 +30,9 @@ import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.util.Emailer;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.web.context.MailAction;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.ListInvitationSingle;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.JSONService;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
@@ -37,7 +40,7 @@ import org.intermine.webservice.server.exceptions.ServiceException;
 import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
 
 /** @author Alex Kalderimis **/
-public class ListSharingInvitationAcceptanceService extends JSONService
+public class ListSharingInvitationAcceptanceService extends JSONServiceSpring
 {
 
     private static final Logger LOG =
@@ -47,10 +50,22 @@ public class ListSharingInvitationAcceptanceService extends JSONService
 
     private final SharedBagManager sbm;
 
+    private String token;
+    private Boolean isAccepted;
+
+    public ListInvitationSingle getListInvitationSingle() {
+        return listInvitationSingle;
+    }
+
+    private ListInvitationSingle listInvitationSingle;
+
     /** @param im The InterMine state object **/
-    public ListSharingInvitationAcceptanceService(InterMineAPI im) {
-        super(im);
+    public ListSharingInvitationAcceptanceService(InterMineAPI im, Format format, String token, Boolean isAccepted) {
+        super(im, format);
         sbm = SharedBagManager.getInstance(im.getProfileManager());
+        this.token = token;
+        this.isAccepted = isAccepted;
+        listInvitationSingle = new ListInvitationSingle();
     }
 
     @Override
@@ -80,22 +95,13 @@ public class ListSharingInvitationAcceptanceService extends JSONService
             if (!accepter.isLoggedIn()) {
                 throw new ServiceForbiddenException("You must be logged in");
             }
-            String token, pathInfo = request.getPathInfo();
-            if (pathInfo != null && pathInfo.matches("/[^/]{20}")) {
-                token = pathInfo.substring(1, 21);
-            } else {
-                token = request.getParameter("uid");
-            }
             if (StringUtils.isBlank(token)) {
                 throw new BadRequestException("Missing required parameter: 'uid'");
             }
-            String isAccepted = request.getParameter("accepted");
-            if (StringUtils.isBlank(isAccepted)) {
+            if (isAccepted==null) {
                 throw new BadRequestException("Missing required parameter: 'accepted'");
-            } else if (!ACCEPTABLE_ACCEPTANCES.contains(isAccepted.toLowerCase())) {
-                throw new BadRequestException(NOT_ACCEPTABLE + ACCEPTABLE_ACCEPTANCES);
             }
-            accepted = Boolean.parseBoolean(isAccepted);
+            accepted = isAccepted;
 
             try {
                 invite = SharingInvite.getByToken(im, token);
@@ -141,9 +147,9 @@ public class ListSharingInvitationAcceptanceService extends JSONService
         // Send back information about the new list, if they accepted.
         if (input.accepted) {
             JSONListFormatter formatter = new JSONListFormatter(im, input.accepter, false);
-            addResultItem(formatter.bagToMap(input.invite.getBag()), false);
+            listInvitationSingle.setInvitation(formatter.bagToMap(input.invite.getBag()));
         } else {
-            addResultItem(new HashMap<String, Object>(), false);
+            listInvitationSingle.setInvitation(new HashMap<String, Object>());
         }
     }
 

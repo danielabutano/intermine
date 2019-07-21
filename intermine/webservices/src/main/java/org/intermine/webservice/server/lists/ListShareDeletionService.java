@@ -16,23 +16,30 @@ import org.intermine.api.bag.SharedBagManager;
 import org.intermine.api.profile.InterMineBag;
 import org.intermine.api.profile.Profile;
 import org.intermine.api.profile.ProfileManager;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.JSONService;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
 import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
 
 /** @author Alex Kalderimis **/
-public class ListShareDeletionService extends JSONService
+public class ListShareDeletionService extends JSONServiceSpring
 {
 
     private final ProfileManager pm;
     private final SharedBagManager sbm;
 
+    private String bagName;
+    private String recipientName;
+
     /** @param im The InterMine state object **/
-    public ListShareDeletionService(InterMineAPI im) {
-        super(im);
+    public ListShareDeletionService(InterMineAPI im, Format format, String bagName, String recipientName) {
+        super(im, format);
         pm = im.getProfileManager();
         sbm = SharedBagManager.getInstance(pm);
+        this.bagName = bagName;
+        this.recipientName = recipientName;
     }
 
     private final class UserInput
@@ -46,7 +53,6 @@ public class ListShareDeletionService extends JSONService
             if (!owner.isLoggedIn()) {
                 throw new ServiceForbiddenException("Not authenticated.");
             }
-            String bagName = request.getParameter("list");
             if (StringUtils.isBlank(bagName)) {
                 throw new BadRequestException("Missing parameter: 'list'");
             }
@@ -59,7 +65,6 @@ public class ListShareDeletionService extends JSONService
             } else {
                 bag = null; // meaning wildcard
             }
-            String recipientName = request.getParameter("with");
             if (StringUtils.isBlank(recipientName)) {
                 throw new BadRequestException("Missing parameter: 'with'");
             }

@@ -22,6 +22,10 @@ import org.intermine.api.bag.SharingInvite.NotFoundException;
 import org.intermine.api.profile.InterMineBag;
 import org.intermine.api.profile.Profile;
 import org.intermine.objectstore.ObjectStoreException;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.ListInvitationMultiple;
+import org.intermine.webservice.model.ListInvitationSingle;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.F;
 import org.intermine.webservice.server.core.JSONService;
 import org.intermine.webservice.server.core.ListFunctions;
@@ -30,19 +34,28 @@ import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
 import org.intermine.webservice.server.output.JSONFormatter;
 
 /** @author Alex Kalderimis **/
-public class ListSharingInvitationDetailsService extends JSONService
+public class ListSharingInvitationDetailsService extends JSONServiceSpring
 {
 
-    /** @param im The InterMine state object **/
-    public ListSharingInvitationDetailsService(InterMineAPI im) {
-        super(im);
+    private String token;
+
+    public ListInvitationSingle getListInvitationSingle() {
+        return listInvitationSingle;
     }
 
-    @Override
-    protected Map<String, Object> getHeaderAttributes() {
-        Map<String, Object> attrs = super.getHeaderAttributes();
-        attrs.put(JSONFormatter.KEY_INTRO, "\"invitation\":");
-        return attrs;
+    public ListInvitationMultiple getListInvitationMultiple() {
+        return listInvitationMultiple;
+    }
+
+    private ListInvitationSingle listInvitationSingle;
+    private ListInvitationMultiple listInvitationMultiple;
+
+    /** @param im The InterMine state object **/
+    public ListSharingInvitationDetailsService(InterMineAPI im, Format format, String token) {
+        super(im, format);
+        this.token = token;
+        listInvitationMultiple = new ListInvitationMultiple();
+        listInvitationSingle = new ListInvitationSingle();
     }
 
     @Override
@@ -50,12 +63,6 @@ public class ListSharingInvitationDetailsService extends JSONService
         Profile p = getPermission().getProfile();
         if (!p.isLoggedIn()) {
             throw new ServiceForbiddenException("You must be logged in to use this service");
-        }
-        String token, pathInfo = request.getPathInfo();
-        if (pathInfo != null && pathInfo.matches("/[^/]{20}")) {
-            token = pathInfo.substring(1, 21);
-        } else {
-            token = request.getParameter("uid");
         }
 
         if (StringUtils.isBlank(token)) {
@@ -69,12 +76,12 @@ public class ListSharingInvitationDetailsService extends JSONService
         Profile inviter = getPermission().getProfile();
         Collection<SharingInvite> invites = SharingInvite.getInvites(im, inviter);
 
-        addResultItem(ListFunctions.map(invites, new F<SharingInvite, Object>() {
+        listInvitationMultiple.setInvitation(ListFunctions.map(invites, new F<SharingInvite, Object>() {
             @Override
             public Object call(SharingInvite a) {
                 return inviteToMap(a);
             }
-        }), false);
+        }));
     }
 
     private void  sendIndividual(String token) throws SQLException, ObjectStoreException {
@@ -88,8 +95,7 @@ public class ListSharingInvitationDetailsService extends JSONService
 
         Map<String, Object> toSerialise = inviteToMap(invite);
 
-        addResultItem(toSerialise, false);
-
+        listInvitationSingle.setInvitation(toSerialise);
     }
 
     private Map<String, Object> inviteToMap(SharingInvite invite) {

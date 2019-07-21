@@ -24,13 +24,13 @@ public class ListSharingInvitationServlet extends WebServiceServlet
     protected WebService getService(Method method) throws NoServiceException {
         switch (method) {
             case GET:
-                return new ListSharingInvitationDetailsService(api);
+                //return new ListSharingInvitationDetailsService(api);
             case POST:
-                return new ListSharingInvitationService(api);
+                //return new ListSharingInvitationService(api);
             case PUT:
-                return new ListSharingInvitationAcceptanceService(api);
+                //return new ListSharingInvitationAcceptanceService(api);
             case DELETE:
-                return new ListSharingInvitationDeletionService(api);
+                //return new ListSharingInvitationDeletionService(api);
             default:
                 throw new NoServiceException();
         }

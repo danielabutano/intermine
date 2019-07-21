@@ -24,24 +24,41 @@ import org.intermine.util.Emailer;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.web.context.MailAction;
 import org.intermine.web.logic.Constants;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.ListSharingPost;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.JSONService;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
 import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
 
 /** @author Alex Kalderimis **/
-public class ListShareCreationService extends JSONService
+public class ListShareCreationService extends JSONServiceSpring
 {
 
     private static final Logger LOG = Logger.getLogger(ListShareCreationService.class);
     private final ProfileManager pm;
     private final SharedBagManager sbm;
 
+    private String bagName;
+    private String recipientName;
+    private Boolean notifyStr;
+
+    public ListSharingPost getListSharingPost() {
+        return listSharingPost;
+    }
+
+    private ListSharingPost listSharingPost;
+
     /** @param im The InterMine state object. **/
-    public ListShareCreationService(InterMineAPI im) {
-        super(im);
+    public ListShareCreationService(InterMineAPI im, Format format, String bagName, String recipientName, Boolean notifyStr) {
+        super(im, format);
         pm = im.getProfileManager();
         sbm = SharedBagManager.getInstance(pm);
+        this.bagName = bagName;
+        this.recipientName = recipientName;
+        this.notifyStr = notifyStr;
+        listSharingPost = new ListSharingPost();
     }
 
     private final class UserInput
@@ -65,12 +82,10 @@ public class ListShareCreationService extends JSONService
                 throw new BadRequestException("You do not have any lists to share");
             }
 
-            String bagName = getRequiredParameter("list");
             bag = bags.get(bagName);
             if (bag == null) {
                 throw new ResourceNotFoundException(NOT_YOUR_LIST);
             }
-            String recipientName = getRequiredParameter("with");
             // Is this dangerous? it allows users to
             // scrape for usernames. But the you can do the same
             // thing in the registration service...
@@ -79,9 +94,7 @@ public class ListShareCreationService extends JSONService
                 // Maybe insert sleep here to prevent scraping??
                 throw new ResourceNotFoundException(CANT_SHARE_WITH_THEM);
             }
-
-            String notifyStr = getOptionalParameter("notify", "false");
-            notify = Boolean.parseBoolean(notifyStr);
+            notify = notifyStr;
         }
     }
 
@@ -116,8 +129,7 @@ public class ListShareCreationService extends JSONService
                 LOG.error("Could not send email message");
             }
         }
-
-        addResultItem(data, false);
+        listSharingPost.setShare(data);
 
     }
 

@@ -19,29 +19,31 @@ import org.intermine.api.bag.SharedBagManager;
 import org.intermine.api.profile.InterMineBag;
 import org.intermine.api.profile.Profile;
 import org.intermine.api.profile.ProfileManager;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.ListSharingGet;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.JSONService;
 import org.intermine.webservice.server.exceptions.UnauthorizedException;
 
 /** @author Alex Kalderimis **/
-public class ListShareDetailsService extends JSONService
+public class ListShareDetailsService extends JSONServiceSpring
 {
 
     private final SharedBagManager sbm;
     private final ProfileManager pm;
 
-    /** @param im The InterMine state object **/
-    public ListShareDetailsService(InterMineAPI im) {
-        super(im);
-        pm = im.getProfileManager();
-        sbm = SharedBagManager.getInstance(pm);
+    public ListSharingGet getListSharingGet() {
+        return listSharingGet;
     }
 
-    @Override
-    protected void postInit() {
-        super.postInit();
-        if (!this.isAuthenticated()) {
-            throw new UnauthorizedException("Users must authenticate.");
-        }
+    private ListSharingGet listSharingGet;
+
+    /** @param im The InterMine state object **/
+    public ListShareDetailsService(InterMineAPI im, Format format) {
+        super(im, format);
+        pm = im.getProfileManager();
+        sbm = SharedBagManager.getInstance(pm);
+        listSharingGet = new ListSharingGet();
     }
 
     @Override
@@ -51,6 +53,9 @@ public class ListShareDetailsService extends JSONService
 
     @Override
     protected void execute() throws Exception {
+        if (!this.isAuthenticated()) {
+            throw new UnauthorizedException("Users must authenticate.");
+        }
         Profile user = getPermission().getProfile();
         Map<String, InterMineBag> usersBags = user.getSavedBags();
         Map<String, Set<String>> usersWhoCanAccessEachBag
@@ -70,7 +75,7 @@ public class ListShareDetailsService extends JSONService
         data.put("sharedByUser", usersWhoCanAccessEachBag);
         data.put("sharedWithUser", ownersOfBagsSharedWithMe);
 
-        addResultItem(data, false);
+        listSharingGet.setLists(data);
     }
 
 }

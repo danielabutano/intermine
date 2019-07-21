@@ -5,13 +5,18 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.webservice.model.JaccardIndex;
 import org.intermine.webservice.model.ListAppend;
+import org.intermine.webservice.model.ListInvitationMultiple;
+import org.intermine.webservice.model.ListInvitationSingle;
 import org.intermine.webservice.model.ListOperations;
 import org.intermine.webservice.model.ListRename;
+import org.intermine.webservice.model.ListSharingGet;
+import org.intermine.webservice.model.ListSharingPost;
 import org.intermine.webservice.model.ListsDelete;
 import org.intermine.webservice.model.ListsGet;
 import org.intermine.webservice.model.ListsPost;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
+import org.intermine.webservice.model.SimpleJsonModel;
 import org.intermine.webservice.model.Tags;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.WebServiceRequestParser;
@@ -325,6 +330,125 @@ public class ListsApiController extends InterMineController implements ListsApi 
             ResponseUtilSpring.setCSVHeader(httpHeaders, FILE_BASE_NAME + ".csv");
         }
         return new ResponseEntity<Object>(listsGet.getLists(),httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<ListInvitationMultiple> listInvitationsGet() {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        ListSharingInvitationDetailsService listSharingInvitationDetailsService = new ListSharingInvitationDetailsService(im, format, "");
+        try {
+            listSharingInvitationDetailsService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        ListInvitationMultiple listInvitationMultiple = listSharingInvitationDetailsService.getListInvitationMultiple();
+        setFooter(listInvitationMultiple);
+
+        return new ResponseEntity<ListInvitationMultiple>(listInvitationMultiple,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<ListInvitationSingle> listInvitationsPost(@NotNull @ApiParam(value = "The list of yours you wish to share.", required = true) @Valid @RequestParam(value = "list", required = true) String list, @ApiParam(value = "The email address of the user to invite to share a list.") @Valid @RequestParam(value = "to", required = false) String to, @ApiParam(value = "Whether or not to send an email to the invitee. The invitee value must be an email address if true.") @Valid @RequestParam(value = "notify", required = false, defaultValue = "false") Boolean notify) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        ListSharingInvitationService listSharingInvitationService = new ListSharingInvitationService(im, format, list, to, notify);
+        try {
+            listSharingInvitationService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        ListInvitationSingle listInvitationSingle = listSharingInvitationService.getListInvitationSingle();
+        setFooter(listInvitationSingle);
+
+        return new ResponseEntity<ListInvitationSingle>(listInvitationSingle,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<SimpleJsonModel> listSharesDelete(@NotNull @ApiParam(value = "", required = true) @Valid @RequestParam(value = "list", required = true) String list, @NotNull @ApiParam(value = "", required = true) @Valid @RequestParam(value = "with", required = true) String with) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        ListShareDeletionService listShareDeletionService = new ListShareDeletionService(im, format, list, with);
+        try {
+            listShareDeletionService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        SimpleJsonModel simpleJsonModel = new SimpleJsonModel();
+        setFooter(simpleJsonModel);
+
+        return new ResponseEntity<SimpleJsonModel>(simpleJsonModel,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<ListSharingGet> listSharesGet() {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        ListShareDetailsService listShareDetailsService = new ListShareDetailsService(im, format);
+        try {
+            listShareDetailsService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        ListSharingGet listSharingGet = listShareDetailsService.getListSharingGet();
+        setFooter(listSharingGet);
+
+        return new ResponseEntity<ListSharingGet>(listSharingGet,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<ListSharingPost> listSharesPost(@NotNull @ApiParam(value = "The list of yours you wish to share.", required = true) @Valid @RequestParam(value = "list", required = true) String list, @NotNull @ApiParam(value = "The username of the user who will have access.", required = true) @Valid @RequestParam(value = "with", required = true) String with, @ApiParam(value = "Whether or not to send an email to the user you are sharing with.") @Valid @RequestParam(value = "notify", required = false, defaultValue = "false") Boolean notify) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        ListShareCreationService listShareCreationService = new ListShareCreationService(im, format, list, with, notify);
+        try {
+            listShareCreationService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        ListSharingPost listSharingPost = listShareCreationService.getListSharingPost();
+        setFooter(listSharingPost);
+
+        return new ResponseEntity<ListSharingPost>(listSharingPost,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<ListInvitationSingle> listsInvitationsUidGet(@ApiParam(value = "The identifier of the invitation - a 20 character unique string.",required=true) @PathVariable("uid") String uid) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        ListSharingInvitationDetailsService listSharingInvitationDetailsService = new ListSharingInvitationDetailsService(im, format, uid);
+        try {
+            listSharingInvitationDetailsService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        ListInvitationSingle listInvitationSingle = listSharingInvitationDetailsService.getListInvitationSingle();
+        setFooter(listInvitationSingle);
+
+        return new ResponseEntity<ListInvitationSingle>(listInvitationSingle,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<ListInvitationSingle> listsInvitationsUidPut(@ApiParam(value = "The identifier of the invitation - a 20 character unique string.",required=true) @PathVariable("uid") String uid,@NotNull @ApiParam(value = "Whether or not this invitation is accepted or not.", required = true) @Valid @RequestParam(value = "accepted", required = true) Boolean accepted) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        ListSharingInvitationAcceptanceService listSharingInvitationAcceptanceService = new ListSharingInvitationAcceptanceService(im, format, uid, accepted);
+        try {
+            listSharingInvitationAcceptanceService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        ListInvitationSingle listInvitationSingle = listSharingInvitationAcceptanceService.getListInvitationSingle();
+        setFooter(listInvitationSingle);
+
+        return new ResponseEntity<ListInvitationSingle>(listInvitationSingle,httpHeaders,httpStatus);
     }
 
     @Override
