@@ -70,15 +70,15 @@ public abstract class BioQueryService extends AbstractQueryService
      * Constructor.
      * @param im A reference to an InterMine API settings bundle.
      */
-    public BioQueryService(InterMineAPI im) {
-        super(im);
+    public BioQueryService(InterMineAPI im, Format format) {
+        super(im, format);
     }
-
+    /*
     @Override
     protected String getDefaultFileName() {
         return "results" + StringUtil.uniqueString() + getSuffix();
     }
-
+    */
     /**
      * @return suffix
      */
@@ -89,6 +89,7 @@ public abstract class BioQueryService extends AbstractQueryService
      */
     protected abstract String getContentType();
 
+    /*
     @Override
     protected Output getDefaultOutput(PrintWriter out, OutputStream outputstream, String sep) {
         // Most exporters need direct access to these.
@@ -99,7 +100,7 @@ public abstract class BioQueryService extends AbstractQueryService
             ResponseUtil.setCustomTypeHeader(response, getDefaultFileName(), getContentType());
         }
         return output;
-    }
+    }*/
 
     @Override
     public Format getDefaultFormat() {

@@ -52,8 +52,8 @@ public class TableRowService extends QueryResultService
 {
 
     /** @param im The InterMine state object **/
-    public TableRowService(InterMineAPI im) {
-        super(im);
+    public TableRowService(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     @Override
@@ -117,9 +117,9 @@ public class TableRowService extends QueryResultService
             }
             JSONArray ja = new JSONArray(rowdata);
             if (iter.hasNext()) {
-                output.addResultItem(Arrays.asList(ja.toString(), ""));
+                //output.addResultItem(Arrays.asList(ja.toString(), ""));
             } else {
-                output.addResultItem(Arrays.asList(ja.toString()));
+                //output.addResultItem(Arrays.asList(ja.toString()));
             }
         }
     }

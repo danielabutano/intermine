@@ -18,6 +18,7 @@ import org.intermine.api.query.NotPresentException;
 import org.intermine.api.query.QueryStoreException;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.pathquery.PathQueryBinding;
+import org.intermine.webservice.WebServiceSpring;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.WebService;
 import org.intermine.webservice.server.exceptions.BadRequestException;
@@ -29,32 +30,17 @@ import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
  * @author Alex Kalderimis
  *
  */
-public class QueryRetrieverService extends WebService
+public class QueryRetrieverService extends WebServiceSpring
 {
+    public String getResult() {
+        return result;
+    }
+
+    private String result;
 
     /** @param im The InterMine state object **/
-    public QueryRetrieverService(InterMineAPI im) {
-        super(im);
-    }
-
-    @Override
-    protected Format getDefaultFormat() {
-        return Format.JSON;
-    }
-
-    @Override
-    protected boolean canServe(Format format) {
-        return (format == Format.JSON || format == Format.XML);
-    }
-
-    @Override
-    protected String getDefaultFileName() {
-        return "query";
-    }
-
-    @Override
-    protected void postInit() {
-        output = null;
+    public QueryRetrieverService(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     @Override
@@ -76,10 +62,7 @@ public class QueryRetrieverService extends WebService
             // Shouldn't happen. Never harms to check.
             throw new BadRequestException(e);
         }
-        String ret = formatPathQuery(pq);
-        PrintWriter pw = getRawOutput();
-        pw.write(ret);
-        pw.flush();
+        result = formatPathQuery(pq);
     }
 
     private String formatPathQuery(PathQuery pq) {

@@ -57,7 +57,7 @@ public class TemplateListAppendServlet extends HttpServlet
     private void runService(HttpServletRequest request,
         HttpServletResponse response) {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
-        new TemplateListAppendService(im).service(request, response);
+        //new TemplateListAppendService(im).service(request, response);
     }
 
 }

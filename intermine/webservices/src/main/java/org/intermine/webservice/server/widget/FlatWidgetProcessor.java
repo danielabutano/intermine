@@ -13,6 +13,7 @@ package org.intermine.webservice.server.widget;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.intermine.web.logic.widget.config.WidgetConfig;
@@ -55,5 +56,17 @@ public final class FlatWidgetProcessor extends WidgetProcessorImpl
             sb.append(s);
         }
         return sb.toString();
+    }
+
+    @Override
+    public Object processSpring(String name, WidgetConfig widgetConfig) {
+        return new LinkedList<>(
+                Arrays.asList(
+                        name,
+                        widgetConfig.getTitle(),
+                        widgetConfig.getDescription(),
+                        getWidgetType(widgetConfig).toString(),
+                        formatTypeClass(widgetConfig.getTypeClass()),
+                        widgetConfig.getFilters()));
     }
 }

@@ -60,8 +60,8 @@ public class QueryToListService extends AbstractQueryService
      * Constructor.
      * @param im The intermine settings bundle
      */
-    public QueryToListService(InterMineAPI im) {
-        super(im);
+    public QueryToListService(InterMineAPI im, Format format) {
+        super(im, format);
         bagManager = im.getBagManager();
     }
 
@@ -160,13 +160,13 @@ public class QueryToListService extends AbstractQueryService
             }
             profile.renameBag(tempName, name);
 
-            output.addResultItem(Arrays.asList("" + newList.size()));
+            //output.addResultItem(Arrays.asList("" + newList.size()));
 
         } catch (CompletelyFalseException e) {
-            output.addResultItem(Arrays.asList("0"));
+            //output.addResultItem(Arrays.asList("0"));
             throw new BadRequestException("List not created - it would be of size 0");
         } catch (UnknownBagTypeException e) {
-            output.addResultItem(Arrays.asList("0"));
+            //output.addResultItem(Arrays.asList("0"));
             throw new ServiceException(e.getMessage(), e);
         } catch (ClassKeysNotFoundException cke) {
             throw new BadRequestException("Bag has not class key set", cke);
@@ -214,7 +214,7 @@ public class QueryToListService extends AbstractQueryService
         kvPairs.put("listName", name);
         kvPairs.put("listId", "" + id);
         attributes.put(JSONFormatter.KEY_KV_PAIRS, kvPairs);
-        output.setHeaderAttributes(attributes);
+        //output.setHeaderAttributes(attributes);
     }
 
 }

@@ -3,6 +3,7 @@ package org.intermine.webservice.api;
 import org.apache.log4j.Logger;
 import org.intermine.api.InterMineAPI;
 import org.intermine.web.context.InterMineContext;
+import org.intermine.webservice.model.JaccardIndex;
 import org.intermine.webservice.model.ListAppend;
 import org.intermine.webservice.model.ListOperations;
 import org.intermine.webservice.model.ListRename;
@@ -14,19 +15,7 @@ import io.swagger.annotations.*;
 import org.intermine.webservice.model.Tags;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.WebServiceRequestParser;
-import org.intermine.webservice.server.lists.AvailableListsService;
-import org.intermine.webservice.server.lists.ListAppendService;
-import org.intermine.webservice.server.lists.ListDeletionService;
-import org.intermine.webservice.server.lists.ListDifferenceService;
-import org.intermine.webservice.server.lists.ListIntersectionService;
-import org.intermine.webservice.server.lists.ListOperationService;
-import org.intermine.webservice.server.lists.ListRenameService;
-import org.intermine.webservice.server.lists.ListSubtractionService;
-import org.intermine.webservice.server.lists.ListTagAddingService;
-import org.intermine.webservice.server.lists.ListTagRemovalService;
-import org.intermine.webservice.server.lists.ListTagService;
-import org.intermine.webservice.server.lists.ListUnionService;
-import org.intermine.webservice.server.lists.ListUploadService;
+import org.intermine.webservice.server.lists.*;
 import org.intermine.webservice.util.ResponseUtilSpring;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -43,6 +32,7 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-07-16T22:35:41.810+05:30[Asia/Kolkata]")
@@ -276,6 +266,65 @@ public class ListsApiController extends InterMineController implements ListsApi 
             return new ResponseEntity<ListOperations>(listOperations, httpHeaders,httpStatus);
         }
         return new ResponseEntity<Object>("",httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<JaccardIndex> jaccardIndexGet(@ApiParam(value = "The name of the list.") @Valid @RequestParam(value = "list", required = false) String list, @ApiParam(value = "The list of InterMine IDs.") @Valid @RequestParam(value = "ids", required = false) String ids, @ApiParam(value = "If the Jaccard Index is lower than this value, discard.") @Valid @RequestParam(value = "min", required = false, defaultValue = "0.05") BigDecimal min, @ApiParam(value = "The type of InterMine objects (if providing IDs).") @Valid @RequestParam(value = "type", required = false) String type) {
+        initController();
+        return serveJaccardIndex(list, ids, min, type);
+    }
+
+    public ResponseEntity<JaccardIndex> jaccardIndexPost(@ApiParam(value = "The name of the list.") @Valid @RequestParam(value = "list", required = false) String list, @ApiParam(value = "The list of InterMine IDs.") @Valid @RequestParam(value = "ids", required = false) String ids, @ApiParam(value = "If the Jaccard Index is lower than this value, discard.") @Valid @RequestParam(value = "min", required = false, defaultValue = "0.05") BigDecimal min, @ApiParam(value = "The type of InterMine objects (if providing IDs).") @Valid @RequestParam(value = "type", required = false) String type) {
+        initController();
+        return serveJaccardIndex(list, ids, min, type);
+    }
+
+    private ResponseEntity<JaccardIndex> serveJaccardIndex(String listName, String ids, BigDecimal min, String type){
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        JaccardIndexService jaccardIndexService = new JaccardIndexService(im, getFormat(), listName, ids, min, type);
+        try {
+            jaccardIndexService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        JaccardIndex jaccardIndex = jaccardIndexService.getJaccardIndexModel();
+        setFooter(jaccardIndex);
+        return new ResponseEntity<JaccardIndex>(jaccardIndex,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<?> listsWithObjectGet(@ApiParam(value = "A stable identifier that can be used to find the object.") @Valid @RequestParam(value = "publicId", required = false) String publicId,@ApiParam(value = "The internal DB id (changes on each re-release).") @Valid @RequestParam(value = "id", required = false) Integer id,@ApiParam(value = "The type of object (required if using a public id).") @Valid @RequestParam(value = "type", required = false) String type,@ApiParam(value = "An extra value to disambiguate objects.") @Valid @RequestParam(value = "extraValue", required = false) String extraValue,@ApiParam(value = "", allowableValues = "json, html, text, csv, tab") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        return serveListswithObjects(format);
+    }
+
+    public ResponseEntity<?> listsWithObjectPost(@ApiParam(value = "A stable identifier that can be used to find the object.") @Valid @RequestParam(value = "publicId", required = false) String publicId,@ApiParam(value = "The internal DB id (changes on each re-release).") @Valid @RequestParam(value = "id", required = false) Integer id,@ApiParam(value = "The type of object (required if using a public id).") @Valid @RequestParam(value = "type", required = false) String type,@ApiParam(value = "An extra value to disambiguate objects.") @Valid @RequestParam(value = "extraValue", required = false) String extraValue,@ApiParam(value = "", allowableValues = "json, html, text, csv, tab") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        return serveListswithObjects(format);
+    }
+
+    private ResponseEntity<?> serveListswithObjects(String format){
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        ListsService listsService = new ListsService(im, getFormat());
+        try {
+            listsService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        ListsGet listsGet = listsService.getListsGet();
+        if(format.equals("json")) {
+            setFooter(listsGet);
+            return new ResponseEntity<ListsGet>(listsGet, httpHeaders,httpStatus);
+        } else if(format.equals("text")) {
+            ResponseUtilSpring.setPlainTextHeader(httpHeaders, FILE_BASE_NAME + ".tsv");
+        } else if(format.equals("tab")) {
+            ResponseUtilSpring.setTabHeader(httpHeaders, FILE_BASE_NAME + ".tsv");
+        } else if(format.equals("csv")) {
+            ResponseUtilSpring.setCSVHeader(httpHeaders, FILE_BASE_NAME + ".csv");
+        }
+        return new ResponseEntity<Object>(listsGet.getLists(),httpHeaders,httpStatus);
     }
 
     @Override

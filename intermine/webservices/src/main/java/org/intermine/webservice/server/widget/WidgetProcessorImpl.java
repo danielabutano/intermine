@@ -46,6 +46,8 @@ public abstract class WidgetProcessorImpl implements WidgetProcessor
      */
     public abstract List<String> process(String name, WidgetConfig widgetConfig);
 
+    public abstract Object processSpring(String name, WidgetConfig widgetConfig);
+
     /**
      * @param widgetConfig The description of the widget.
      * @return What type of widget we have here.

@@ -25,6 +25,7 @@ import org.intermine.objectstore.query.Query;
 import org.intermine.objectstore.query.QuerySelectable;
 import org.intermine.pathquery.PathException;
 import org.intermine.pathquery.PathQuery;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
 
@@ -41,8 +42,8 @@ public class TemplateListAppendService extends TemplateToListService
      * Constructor.
      * @param im The reference to the InterMine settings bundle.
      */
-    public TemplateListAppendService(InterMineAPI im) {
-        super(im);
+    public TemplateListAppendService(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     @Override
@@ -71,7 +72,7 @@ public class TemplateListAppendService extends TemplateToListService
                 throw new ServiceForbiddenException(e.getMessage());
             }
         } finally {
-            output.addResultItem(Arrays.asList("" + list.size()));
+            //output.addResultItem(Arrays.asList("" + list.size()));
         }
     }
 }

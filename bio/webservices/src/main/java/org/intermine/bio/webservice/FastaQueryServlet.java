@@ -24,6 +24,7 @@ public class FastaQueryServlet extends BioExportServlet
 
     @Override
     protected WebService getService() {
-        return new FastaQueryService(api);
+        //return new FastaQueryService(api);
+        return null;
     }
 }

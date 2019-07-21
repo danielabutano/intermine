@@ -24,7 +24,8 @@ public class JaccardIndexServlet extends WebServiceServlet
         if (Method.DELETE == method) {
             throw new NoServiceException();
         }
-        return new JaccardIndexService(api);
+        //return new JaccardIndexService(api);
+        return null;
     }
 
 }

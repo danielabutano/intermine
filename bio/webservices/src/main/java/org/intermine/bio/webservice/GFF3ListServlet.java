@@ -24,6 +24,7 @@ public class GFF3ListServlet extends BioExportServlet
 
     @Override
     protected WebService getService() {
-        return new GFF3ListService(api);
+        //return new GFF3ListService(api);
+        return null;
     }
 }

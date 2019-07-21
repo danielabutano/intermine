@@ -24,6 +24,7 @@ public class GFF3QueryServlet extends BioExportServlet
 
     @Override
     protected WebService getService() {
-        return new GFFQueryService(api);
+        //return new GFFQueryService(api);
+        return null;
     }
 }

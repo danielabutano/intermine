@@ -17,6 +17,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,11 +36,15 @@ import org.intermine.metadata.AttributeDescriptor;
 import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.objectstore.ObjectStoreQueryDurationException;
 import org.intermine.objectstore.query.Results;
+import org.intermine.pathquery.ConstraintValueParser;
 import org.intermine.pathquery.Path;
 import org.intermine.pathquery.PathException;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.web.logic.WebCoreUtil;
+import org.intermine.webservice.model.QueryResultsJson;
+import org.intermine.webservice.model.QueryResultsJsonCount;
+import org.intermine.webservice.model.QueryResultsJsonObject;
 import org.intermine.webservice.server.ColumnHeaderStyle;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.WebServiceRequestParser;
@@ -86,12 +91,33 @@ public class QueryResultService extends AbstractQueryService
     private boolean wantsCount = false;
     private PathQueryExecutor executor;
 
+    public QueryResultsJson getQueryResultsJson() {
+        return queryResultsJson;
+    }
+
+    public QueryResultsJsonCount getQueryResultsJsonCount() {
+        return queryResultsJsonCount;
+    }
+
+    public QueryResultsJsonObject getQueryResultsJsonObject() {
+        return queryResultsJsonObject;
+    }
+
+    private QueryResultsJson queryResultsJson;
+
+    private QueryResultsJsonCount queryResultsJsonCount;
+
+    private QueryResultsJsonObject queryResultsJsonObject;
+
     /**
      * Constructor
      * @param im The InterMineAPI settings bundle for this webservice
      */
-    public QueryResultService(InterMineAPI im) {
-        super(im);
+    public QueryResultService(InterMineAPI im, Format format) {
+        super(im, format);
+        queryResultsJson = new QueryResultsJson();
+        queryResultsJsonCount = new QueryResultsJsonCount();
+        queryResultsJsonObject = new QueryResultsJsonObject();
     }
 
     /**
@@ -99,6 +125,7 @@ public class QueryResultService extends AbstractQueryService
      */
     @Override
     protected void execute() {
+        executor = getPathQueryExecutor();
         QueryResultInput input = getInput();
         PathQueryBuilder builder = getQueryBuilder(input.getXml());
         PathQuery query = builder.getQuery();
@@ -112,30 +139,6 @@ public class QueryResultService extends AbstractQueryService
         wantsCount = WebServiceRequestParser.isCountRequest(request);
     }
 
-    @Override
-    protected Format getDefaultFormat() {
-        return Format.TSV;
-    }
-
-    private static final Set<Format> MENU = new HashSet<Format>() {
-        private static final long serialVersionUID = -6257564064566791521L;
-        {
-            addAll(Format.BASIC_FORMATS);
-            addAll(Format.FLAT_FILES);
-            addAll(Format.JSON_FORMATS);
-        }
-    };
-
-    @Override
-    protected boolean canServe(Format format) {
-        return MENU.contains(format);
-    }
-
-    @Override
-    protected void postInit() {
-        executor = getPathQueryExecutor();
-    }
-
     /**
      * Set the header attributes of the output based on the values of the PathQuery
      *
@@ -147,18 +150,21 @@ public class QueryResultService extends AbstractQueryService
 
         if (formatIsJSON()) {
             // These attributes are always needed
-            attributes.put(JSONResultFormatter.KEY_MODEL_NAME, pq.getModel().getName());
-            attributes.put(JSONResultFormatter.KEY_VIEWS, pq.getView());
-
-            attributes.put(JSONTableFormatter.KEY_COLUMN_HEADERS,
-                    WebCoreUtil.formatPathQueryView(pq, InterMineContext.getWebConfig()));
-            attributes.put("start", String.valueOf(start));
+            queryResultsJson.setModelName(pq.getModel().getName());
+            queryResultsJson.setViews(pq.getView());
+            queryResultsJson.setColumnHeaders(WebCoreUtil.formatPathQueryView(pq, InterMineContext.getWebConfig()));
+            queryResultsJson.setStart(start);
+            queryResultsJsonObject.setModelName(pq.getModel().getName());
+            queryResultsJsonObject.setViews(pq.getView());
+            queryResultsJsonObject.setColumnHeaders(WebCoreUtil.formatPathQueryView(pq, InterMineContext.getWebConfig()));
+            queryResultsJsonObject.setStart(start);
             try {
-                attributes.put(JSONResultFormatter.KEY_ROOT_CLASS, pq.getRootClass());
+                queryResultsJson.setRootClass(pq.getRootClass());
+                queryResultsJsonObject.setRootClass(pq.getRootClass());
             } catch (PathException e) {
                 throw new ServiceException(e);
             }
-            String summaryPath = request.getParameter("summaryPath");
+            /*String summaryPath = request.getParameter("summaryPath");
             if (!isBlank(summaryPath)) {
                 int count;
                 try {
@@ -169,12 +175,12 @@ public class QueryResultService extends AbstractQueryService
                     throw new ServiceException("Problem getting unique column value count.", e);
                 }
                 attributes.put("uniqueValues", count);
-            }
-            if (formatIsJSONP()) {
+            }*/
+            /*if (formatIsJSONP()) {
                 String callback = StringUtils.defaultString(getCallback(), "makeResultsTable");
                 attributes.put(JSONResultFormatter.KEY_CALLBACK, callback);
-            }
-        } else if (formatIsFlatFile()) {
+            }*/
+        } /*else if (formatIsFlatFile()) {
             if (wantsColumnHeaders()) {
                 if (ColumnHeaderStyle.FRIENDLY == getColumnHeaderStyle()) {
                     attributes.put(FlatFileFormatter.COLUMN_HEADERS,
@@ -183,9 +189,9 @@ public class QueryResultService extends AbstractQueryService
                     attributes.put(FlatFileFormatter.COLUMN_HEADERS, pq.getView());
                 }
             }
-        }
+        }*/
 
-        switch(getFormat()) {
+        /*switch(getFormat()) {
             case TABLE:
                 List<String> viewTypes = new ArrayList<String>();
                 for (String v: pq.getView()) {
@@ -210,9 +216,9 @@ public class QueryResultService extends AbstractQueryService
                 break;
             default:
                 break;
-        }
+        }*/
 
-        if (!wantsCount) { // mutually exclusive options.
+        /*if (!wantsCount) { // mutually exclusive options.
             String summaryPath = getOptionalParameter("summaryPath");
             if (isNotBlank(summaryPath)) {
                 Path p;
@@ -242,17 +248,7 @@ public class QueryResultService extends AbstractQueryService
                     attributes.put(FlatFileFormatter.COLUMN_HEADERS, colHeaders);
                 }
             }
-        }
-
-        output.setHeaderAttributes(attributes);
-    }
-
-    @Override
-    protected Output makeJSONOutput(PrintWriter out, String separator) {
-        if (wantsCount) {
-            return new StreamedOutput(out, new JSONCountFormatter(), separator);
-        }
-        return new StreamedOutput(out, new JSONTableFormatter(), separator);
+        }*/
     }
 
     /**
@@ -281,8 +277,7 @@ public class QueryResultService extends AbstractQueryService
         } catch (ObjectStoreException e) {
             throw new ServiceException("Problem getting count.", e);
         }
-        CountProcessor processor = new CountProcessor();
-        processor.writeCount(count, output);
+        queryResultsJsonCount.setCount(count);
     }
 
     /**
@@ -307,7 +302,7 @@ public class QueryResultService extends AbstractQueryService
         final boolean canGoFaster;
         final Iterator<List<ResultElement>> it;
         final String summaryPath = getOptionalParameter("summaryPath");
-        if (isNotBlank(summaryPath)) {
+        /*if (isNotBlank(summaryPath)) {
             Integer uniqs = (Integer) attributes.get("uniqueValues");
             boolean occurancesOnly = (uniqs == null) || (uniqs < 2);
             try {
@@ -329,7 +324,7 @@ public class QueryResultService extends AbstractQueryService
             } catch (ObjectStoreException e) {
                 throw new ServiceException("Problem getting summary.", e);
             }
-        } else {
+        } else {*/
             canGoFaster = maxResults > (BATCH_SIZE * 2);
             executor.setBatchSize(BATCH_SIZE);
             try {
@@ -339,9 +334,9 @@ public class QueryResultService extends AbstractQueryService
             } catch (ObjectStoreException e) {
                 throw new ServiceException("Problem getting summary.", e);
             }
-        }
+       // }
 
-        ResultProcessor processor = makeResultProcessor();
+        /*ResultProcessor processor = makeResultProcessor();
         if (it.hasNext()) { // Prime the batch fetching pumps
             try {
                 if (canGoFaster) {
@@ -354,7 +349,32 @@ public class QueryResultService extends AbstractQueryService
                     ((ExportResultsIterator) it).releaseGoFaster();
                 }
             }
+        }*/
+        List<Object> resultList = new ArrayList<>();
+        while (it.hasNext())  {
+            List<ResultElement> row = it.next();
+            resultList.add(convertResultElementsToStrings(row));
+            queryResultsJson.addResultsItem(convertResultElementsToStrings(row));
         }
+        queryResultsJsonObject.setResults(resultList);
+    }
+
+    private static List<String> convertResultElementsToStrings(List<ResultElement> row) {
+        List<String> ret = new ArrayList<String>();
+        String value;
+        for (ResultElement el : row) {
+            if (el != null && el.getField() != null) {
+                if (el.getField() instanceof Date) {
+                    value = ConstraintValueParser.ISO_DATE_FORMAT.format(el.getField());
+                } else {
+                    value = el.getField().toString();
+                }
+            } else {
+                value = "";
+            }
+            ret.add(value);
+        }
+        return ret;
     }
 
     private ResultProcessor makeResultProcessor() {

@@ -5,6 +5,7 @@
  */
 package org.intermine.webservice.api;
 
+import org.intermine.webservice.model.JaccardIndex;
 import org.intermine.webservice.model.ListAppend;
 import org.intermine.webservice.model.ListOperations;
 import org.intermine.webservice.model.ListRename;
@@ -26,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-07-16T22:35:41.810+05:30[Asia/Kolkata]")
@@ -195,5 +197,39 @@ public interface ListsApi {
             produces = { "application/json" },
             method = RequestMethod.POST)
     ResponseEntity<?> listsUnionPost(@NotNull @ApiParam(value = "The name of the list to create.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "The name of a source list, or multiple list names concatenated with a ';' separator.", required = true) @Valid @RequestParam(value = "lists", required = true) List<String> lists,@ApiParam(value = "A description of this new list.") @Valid @RequestParam(value = "description", required = false) String description,@ApiParam(value = "A set of tags to apply to the new list.") @Valid @RequestParam(value = "tags", required = false) List<String> tags,@ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
+
+    @ApiOperation(value = "Measure similarity of lists using Jaccard Index.", nickname = "jaccardIndexGet", notes = "This service compares the named list with all available lists. (public lists and private ones if the user is logged in). Its returns the name of each list compared plus a number representing the Jaccard Index. See https://en.wikipedia.org/wiki/Jaccard_index", response = JaccardIndex.class, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = JaccardIndex.class) })
+    @RequestMapping(value = "/lists/jaccard-index",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<JaccardIndex> jaccardIndexGet(@ApiParam(value = "The name of the list.") @Valid @RequestParam(value = "list", required = false) String list, @ApiParam(value = "The list of InterMine IDs.") @Valid @RequestParam(value = "ids", required = false) String ids, @ApiParam(value = "If the Jaccard Index is lower than this value, discard.") @Valid @RequestParam(value = "min", required = false, defaultValue = "0.05") BigDecimal min, @ApiParam(value = "The type of InterMine objects (if providing IDs).") @Valid @RequestParam(value = "type", required = false) String type);
+
+
+    @ApiOperation(value = "Measure similarity of lists using Jaccard Index.", nickname = "jaccardIndexPost", notes = "This service compares the named list with all available lists. (public lists and private ones if the user is logged in). Its returns the name of each list compared plus a number representing the Jaccard Index. See https://en.wikipedia.org/wiki/Jaccard_index", response = JaccardIndex.class, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = JaccardIndex.class) })
+    @RequestMapping(value = "/lists/jaccard-index",
+            produces = { "application/json" },
+            method = RequestMethod.POST)
+    ResponseEntity<JaccardIndex> jaccardIndexPost(@ApiParam(value = "The name of the list.") @Valid @RequestParam(value = "list", required = false) String list,@ApiParam(value = "The list of InterMine IDs.") @Valid @RequestParam(value = "ids", required = false) String ids,@ApiParam(value = "If the Jaccard Index is lower than this value, discard.") @Valid @RequestParam(value = "min", required = false, defaultValue = "0.05") BigDecimal min,@ApiParam(value = "The type of InterMine objects (if providing IDs).") @Valid @RequestParam(value = "type", required = false) String type);
+
+    @ApiOperation(value = "Find lists on the server containing an object.", nickname = "listsWithObjectGet", notes = "This service allows users to get back a list of             lists that contain a given object, either defined by an             internal ID, or looked up from stable identifiers.             If the request does not authenticate to a user account,             then only relevant public lists will be returned.", response = ListsGet.class, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ListsGet.class) })
+    @RequestMapping(value = "/listswithobject",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<?> listsWithObjectGet(@ApiParam(value = "A stable identifier that can be used to find the object.") @Valid @RequestParam(value = "publicId", required = false) String publicId,@ApiParam(value = "The internal DB id (changes on each re-release).") @Valid @RequestParam(value = "id", required = false) Integer id,@ApiParam(value = "The type of object (required if using a public id).") @Valid @RequestParam(value = "type", required = false) String type,@ApiParam(value = "An extra value to disambiguate objects.") @Valid @RequestParam(value = "extraValue", required = false) String extraValue,@ApiParam(value = "", allowableValues = "json, html, text, csv, tab") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
+
+
+    @ApiOperation(value = "Find lists on the server containing an object.", nickname = "listsWithObjectPost", notes = "This service allows users to get back a list of             lists that contain a given object, either defined by an             internal ID, or looked up from stable identifiers.             If the request does not authenticate to a user account,             then only relevant public lists will be returned.", response = ListsGet.class, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ListsGet.class) })
+    @RequestMapping(value = "/listswithobject",
+            produces = { "application/json" },
+            method = RequestMethod.POST)
+    ResponseEntity<?> listsWithObjectPost(@ApiParam(value = "A stable identifier that can be used to find the object.") @Valid @RequestParam(value = "publicId", required = false) String publicId,@ApiParam(value = "The internal DB id (changes on each re-release).") @Valid @RequestParam(value = "id", required = false) Integer id,@ApiParam(value = "The type of object (required if using a public id).") @Valid @RequestParam(value = "type", required = false) String type,@ApiParam(value = "An extra value to disambiguate objects.") @Valid @RequestParam(value = "extraValue", required = false) String extraValue,@ApiParam(value = "", allowableValues = "json, html, text, csv, tab") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
 
 }

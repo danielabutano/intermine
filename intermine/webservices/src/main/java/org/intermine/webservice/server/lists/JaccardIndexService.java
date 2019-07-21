@@ -18,6 +18,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.collections.ListUtils;
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.InterMineBag;
+import org.intermine.webservice.WebServiceSpring;
+import org.intermine.webservice.model.JaccardIndex;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.WebService;
 import org.intermine.webservice.server.core.ListManager;
@@ -43,36 +45,38 @@ import java.util.Map.Entry;
  * @author Julie Sullivan
  *
  */
-public class JaccardIndexService extends WebService
+public class JaccardIndexService extends WebServiceSpring
 {
+
+    private String listName;
+    private String ids;
+    private BigDecimal minimumValue;
+    private String type;
+
+    public JaccardIndex getJaccardIndexModel() {
+        return jaccardIndexModel;
+    }
+
+    private JaccardIndex jaccardIndexModel;
 
     /**
      * Constructor
      * @param im A reference to the InterMine API settings bundle
      */
-    public JaccardIndexService(InterMineAPI im) {
-        super(im);
+    public JaccardIndexService(InterMineAPI im, Format format, String listName, String ids, BigDecimal min, String type) {
+        super(im, format);
+        this.listName = listName;
+        this.ids = ids;
+        this.minimumValue = min;
+        this.type = type;
+        jaccardIndexModel = new JaccardIndex();
     }
 
     @Override
     protected void execute() throws Exception {
 
-        String listName = request.getParameter("list");
-        String ids = request.getParameter("ids");
-        String min = request.getParameter("min");
-        String type = request.getParameter("type");
-        BigDecimal minimumValue = new BigDecimal(0);
-
         if (listName == null && ids == null) {
             throw new BadRequestException("Provide either name of a list or set of InterMine IDs");
-        }
-
-        if (min != null) {
-            try {
-                minimumValue = new BigDecimal(min);
-            } catch (NumberFormatException e) {
-                throw new BadRequestException("Min must be a valid number: '" + min + "'");
-            }
         }
 
         ListManager listManager = new ListManager(im, getPermission().getProfile());
@@ -101,7 +105,6 @@ public class JaccardIndexService extends WebService
 
         Map<String, BigDecimal> results = new HashMap<String, BigDecimal>();
 
-        output.setHeaderAttributes(getHeaderAttributes());
         for (Map.Entry<String, InterMineBag> entry : lists.entrySet()) {
             String name = entry.getKey();
             InterMineBag bag = entry.getValue();
@@ -137,7 +140,7 @@ public class JaccardIndexService extends WebService
 
         // sort results. need to be in this format to preserve sort order in JavaScript
         Map<String, BigDecimal> sortedMap = sortByValue(results);
-        ObjectMapper mapper = new ObjectMapper();
+        /*ObjectMapper mapper = new ObjectMapper();
         ArrayNode rootNode = mapper.createArrayNode();
         for (Map.Entry<String, BigDecimal> entry : sortedMap.entrySet()) {
             JsonNode childNode = mapper.createObjectNode();
@@ -146,7 +149,9 @@ public class JaccardIndexService extends WebService
         }
 
         String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode);
-        output.addResultItem(Collections.singletonList(jsonString));
+        output.addResultItem(Collections.singletonList(jsonString));*/
+        jaccardIndexModel.setInput(listName);
+        jaccardIndexModel.setLists(Collections.singletonList(sortedMap));
     }
 
     /**

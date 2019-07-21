@@ -56,7 +56,7 @@ public class QueryToListServlet extends HttpServlet
 
     private void runService(HttpServletRequest request, HttpServletResponse response) {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
-        new QueryToListService(im).service(request, response);
+        //new QueryToListService(im).service(request, response);
     }
 
 }

@@ -44,7 +44,7 @@ public final class AvailableWidgetsServlet extends HttpServlet
         // according new data
         // and not remember fields initialized according previous request data
         final InterMineAPI im = InterMineContext.getInterMineAPI();
-        new AvailableWidgetsService(im).service(request, response);
+        //new AvailableWidgetsService(im).service(request, response);
     }
 
 }

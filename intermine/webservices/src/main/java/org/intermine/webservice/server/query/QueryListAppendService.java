@@ -22,6 +22,7 @@ import org.intermine.objectstore.query.Query;
 import org.intermine.pathquery.Path;
 import org.intermine.pathquery.PathException;
 import org.intermine.pathquery.PathQuery;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.ServiceException;
 import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
@@ -38,8 +39,8 @@ public class QueryListAppendService extends QueryToListService
      * Constructor.
      * @param api A reference to the InterMine settings bundle.
      */
-    public QueryListAppendService(InterMineAPI api) {
-        super(api);
+    public QueryListAppendService(InterMineAPI api, Format format) {
+        super(api, format);
     }
 
     @Override
@@ -56,7 +57,7 @@ public class QueryListAppendService extends QueryToListService
             list.addToBagFromQuery(q);
         } finally {
             setHeaderAttributes(name, list.getSavedBagId());
-            output.addResultItem(Arrays.asList("" + list.size()));
+            //output.addResultItem(Arrays.asList("" + list.size()));
         }
     }
 

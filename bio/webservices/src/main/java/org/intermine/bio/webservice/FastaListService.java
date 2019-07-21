@@ -15,6 +15,7 @@ import org.intermine.api.profile.InterMineBag;
 import org.intermine.api.profile.Profile;
 import org.intermine.pathquery.Constraints;
 import org.intermine.pathquery.PathQuery;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 
 /**
@@ -31,8 +32,8 @@ public class FastaListService extends FastaQueryService
      *
      * @param im intermine API
      */
-    public FastaListService(InterMineAPI im) {
-        super(im);
+    public FastaListService(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     @Override

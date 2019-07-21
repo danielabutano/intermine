@@ -20,6 +20,7 @@ import org.intermine.bio.web.export.BEDExporter;
 import org.intermine.bio.web.logic.SequenceFeatureExportUtil;
 import org.intermine.bio.web.logic.SequenceFeatureExportUtil.InvalidQueryException;
 import org.intermine.pathquery.PathQuery;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 
 /**
@@ -38,8 +39,8 @@ public class BEDQueryService extends BioQueryService
      *
      * @param im A reference to an InterMine API settings bundle.
      */
-    public BEDQueryService(InterMineAPI im) {
-        super(im);
+    public BEDQueryService(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     @Override

@@ -24,6 +24,7 @@ import org.intermine.template.TemplateValue;
 import org.intermine.web.logic.template.TemplateResultInput;
 import org.intermine.web.logic.template.Templates;
 import org.intermine.web.logic.template.Templates.TemplateValueParseException;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
 import org.intermine.webservice.server.query.result.PathQueryBuilderForJSONObj;
@@ -48,8 +49,8 @@ public class TemplateResultService extends QueryResultService
      * Construct with an InterMineAPI.
      * @param im the InterMine API
      */
-    public TemplateResultService(InterMineAPI im) {
-        super(im);
+    public TemplateResultService(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     /**

@@ -25,6 +25,7 @@ public class BEDQueryServlet extends BioExportServlet
 
     @Override
     protected WebService getService() {
-        return new BEDQueryService(api);
+        //return new BEDQueryService(api);
+        return null;
     }
 }

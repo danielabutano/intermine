@@ -18,6 +18,7 @@ import org.intermine.objectstore.ObjectStore;
 import org.intermine.pathquery.Path;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.web.logic.export.Exporter;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 
 /**
@@ -36,8 +37,8 @@ public class FastaQueryService extends BioQueryService
      * Constructor.
      * @param im A reference to an InterMine API settings bundle.
      */
-    public FastaQueryService(InterMineAPI im) {
-        super(im);
+    public FastaQueryService(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     @Override
