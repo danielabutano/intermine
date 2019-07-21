@@ -8,6 +8,7 @@ package org.intermine.webservice.api;
 import org.intermine.webservice.model.DeregistrationToken;
 import org.intermine.webservice.model.PermanentToken;
 import org.intermine.webservice.model.Preferences;
+import org.intermine.webservice.model.SavedQueries;
 import org.intermine.webservice.model.SimpleJsonModel;
 import org.intermine.webservice.model.Token;
 import org.intermine.webservice.model.Tokens;
@@ -219,6 +220,64 @@ public interface UsersApi {
             produces = { "application/json" },
             method = RequestMethod.POST)
     ResponseEntity<Token> userTokensPost(@ApiParam(value = "The type of token to issue.", allowableValues = "day, once, api, perm") @Valid @RequestParam(value = "type", required = false, defaultValue = "day") String type,@ApiParam(value = "An optional message to associate with a token.") @Valid @RequestParam(value = "message", required = false) String message);
+
+    @ApiOperation(value = "Delete a saved query by name.", nickname = "userQueriesDelete", notes = "This resource exposes the ability to delete specific saved queries, identified         by name.         <br/><br/>         A user can only delete queries that they own, and must be executed         with `Read/Write` permission.", response = SimpleJsonModel.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = SimpleJsonModel.class) })
+    @RequestMapping(value = "/user/queries",
+            produces = { "application/json" },
+            method = RequestMethod.DELETE)
+    ResponseEntity<?> userQueriesDelete(@NotNull @ApiParam(value = "The name of the query to delete.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@ApiParam(value = "", allowableValues = "json, xml") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
+
+
+    @ApiOperation(value = "Get the Saved Queries You have Access to.", nickname = "userQueriesGet", notes = "This resource represents access to the set of saved-queries         accessible to a user. Saved queries are just normal queries, but         persisted with the user's account.", response = SavedQueries.class, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = SavedQueries.class) })
+    @RequestMapping(value = "/user/queries",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<?> userQueriesGet(@ApiParam(value = "An optional filter by name, allowing wildcards.") @Valid @RequestParam(value = "filter", required = false) String filter,@ApiParam(value = "", allowableValues = "json, xml") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
+
+
+    @ApiOperation(value = "Delete a saved query by name.", nickname = "userQueriesNameDelete", notes = "This resource exposes the ability to delete specific saved queries, identified         by name.         <br/><br/>         A user can only delete queries that they own, and must be executed         with `Read/Write` permission.", response = SimpleJsonModel.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = SimpleJsonModel.class) })
+    @RequestMapping(value = "/user/queries/{name}",
+            produces = { "application/json" },
+            method = RequestMethod.DELETE)
+    ResponseEntity<?> userQueriesNameDelete(@ApiParam(value = "The name of the query to delete.",required=true) @PathVariable("name") String name,@ApiParam(value = "", allowableValues = "json, xml") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
+
+
+    @ApiOperation(value = "Upload New Queries to be Saved into a User's Profile.", nickname = "userQueriesPost", notes = "This resource allows users to upload queries to be saved into their profile.         Queries that the user uploads should all be valid, and ideally have names. If they         do not have names, names will be assigned to them.", response = SavedQueries.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = SavedQueries.class) })
+    @RequestMapping(value = "/user/queries",
+            produces = { "application/json" },
+            consumes = { "application/xml" },
+            method = RequestMethod.POST)
+    ResponseEntity<?> userQueriesPost(@ApiParam(value = "The queries to upload. If using body content."  )  @Valid @RequestBody String body, @ApiParam(value = "The queries to upload, if using form parameters.") @Valid @RequestParam(value = "xml", required = false) String xml, @ApiParam(value = "", allowableValues = "text, json, xml, tab, csv") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format);
+
+
+    @ApiOperation(value = "Update Existing Queries in a User's Profile.", nickname = "userQueriesPut", notes = "This resource allows users to upload queries to be saved into their profile.         Queries that the user uploads should all be valid, and ideally have names. If they         do not have names, names will be assigned to them. If queries with the same name         already exist, they will be over-written. This provides a mechanism for updating         the value of saved queries on a service.", response = SavedQueries.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = SavedQueries.class) })
+    @RequestMapping(value = "/user/queries",
+            produces = { "application/json" },
+            consumes = { "application/xml" },
+            method = RequestMethod.PUT)
+    ResponseEntity<?> userQueriesPut(@ApiParam(value = "The queries to upload. If using body content."  )  @Valid @RequestBody String body,@ApiParam(value = "The queries to upload, if using form parameters.") @Valid @RequestParam(value = "query", required = false) String query,@ApiParam(value = "", allowableValues = "text, json, xml, tab, csv") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format);
 
 
 }

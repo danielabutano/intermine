@@ -28,7 +28,7 @@ public class QueryUploadServlet extends WebServiceServlet
     protected WebService getService(Method method) throws NoServiceException {
         switch (method) {
             case POST:
-                return new QueryUploadService(api);
+                //return new QueryUploadService(api);
             default:
                 throw new NoServiceException();
         }

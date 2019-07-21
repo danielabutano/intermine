@@ -2261,6 +2261,14 @@ public class PathQuery implements Cloneable
     }
 
     /**
+     * Convert a PathQuery to XML, using the default value of PathQuery.USERPROFILE_VERSION
+     * @return This query as xml
+     */
+    public synchronized String toXmlSpring(String name) {
+        return this.toXmlSpring(PathQuery.USERPROFILE_VERSION, name);
+    }
+
+    /**
      * Add a JSON property when serialising
      * @param sb The buffer we are serialing to.
      * @param key the property name.
@@ -2645,6 +2653,26 @@ public class PathQuery implements Cloneable
         try {
             XMLStreamWriter writer = factory.createXMLStreamWriter(sw);
             PathQueryBinding.marshal(this, "query", model.getName(), writer, version);
+        } catch (XMLStreamException e) {
+            throw new RuntimeException(e);
+        }
+
+        return sw.toString();
+    }
+
+    /**
+     * Convert a PathQuery to XML.
+     *
+     * @param version the version number of the XML format
+     * @return this template query as XML.
+     */
+    public synchronized String toXmlSpring(int version, String name) {
+        StringWriter sw = new StringWriter();
+        XMLOutputFactory factory = XMLOutputFactory.newInstance();
+
+        try {
+            XMLStreamWriter writer = factory.createXMLStreamWriter(sw);
+            PathQueryBinding.marshal(this, name, model.getName(), writer, version);
         } catch (XMLStreamException e) {
             throw new RuntimeException(e);
         }

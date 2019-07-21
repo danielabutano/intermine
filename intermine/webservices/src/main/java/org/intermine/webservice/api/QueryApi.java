@@ -6,6 +6,7 @@
 package org.intermine.webservice.api;
 
 import io.swagger.annotations.*;
+import org.intermine.webservice.model.SavedQueries;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,5 +42,28 @@ public interface QueryApi {
         produces = { "text/plain", "application/json", "application/xml" }, 
         method = RequestMethod.POST)
     ResponseEntity<?> generatedCodePost(@NotNull @ApiParam(value = "The language to generate code in.", required = true, allowableValues = "pl, py, rb, js, java") @Valid @RequestParam(value = "lang", required = true, defaultValue = "py") String lang,@NotNull @ApiParam(value = "The query to generate code for, in XML or JSON form.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@ApiParam(value = "", allowableValues = "text, xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format);
+
+    @ApiOperation(value = "Save queries to a user account on the server.", nickname = "queryUploadGet", notes = "This service provides the facility to submit one or more queries             and save it/them for future reference to a user account on the server.", response = SavedQueries.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = SavedQueries.class) })
+    @RequestMapping(value = "/query/upload",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<?> queryUploadGet(@NotNull @ApiParam(value = "A definition of the query/ies to save in Path-Query XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query, @ApiParam(value = "The version of the path-qeury format being used.") @Valid @RequestParam(value = "version", required = false, defaultValue = "2") Integer version, @ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
+
+
+    @ApiOperation(value = "Save queries to a user account on the server.", nickname = "queryUploadPost", notes = "This service provides the facility to submit one or more queries             and save it/them for future reference to a user account on the server.", response = SavedQueries.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = SavedQueries.class) })
+    @RequestMapping(value = "/query/upload",
+            produces = { "application/json" },
+            method = RequestMethod.POST)
+    ResponseEntity<?> queryUploadPost(@NotNull @ApiParam(value = "A definition of the query/ies to save in Path-Query XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@ApiParam(value = "The version of the path-qeury format being used.") @Valid @RequestParam(value = "version", required = false, defaultValue = "2") Integer version,@ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
 
 }

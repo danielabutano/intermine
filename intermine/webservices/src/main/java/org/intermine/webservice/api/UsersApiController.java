@@ -5,6 +5,7 @@ import org.intermine.web.context.InterMineContext;
 import org.intermine.webservice.model.DeregistrationToken;
 import org.intermine.webservice.model.PermanentToken;
 import org.intermine.webservice.model.Preferences;
+import org.intermine.webservice.model.SavedQueries;
 import org.intermine.webservice.model.SimpleJsonModel;
 import org.intermine.webservice.model.Token;
 import org.intermine.webservice.model.Tokens;
@@ -13,6 +14,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
 import org.intermine.webservice.model.WhoAmI;
 import org.intermine.webservice.server.Format;
+import org.intermine.webservice.server.query.QueryRemovalService;
+import org.intermine.webservice.server.query.QueryUpdateService;
+import org.intermine.webservice.server.query.QueryUploadService;
+import org.intermine.webservice.server.query.SavedQueryRetrievalService;
 import org.intermine.webservice.server.user.DeletePreferencesService;
 import org.intermine.webservice.server.user.DeleteTokensService;
 import org.intermine.webservice.server.user.DeletionTokenCancellationService;
@@ -34,6 +39,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.constraints.*;
@@ -341,6 +347,113 @@ public class UsersApiController extends InterMineController implements UsersApi 
         setFooter(token);
 
         return new ResponseEntity<Token>(token,httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<?> userQueriesDelete(@NotNull @ApiParam(value = "The name of the query to delete.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@ApiParam(value = "", allowableValues = "json, xml") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        QueryRemovalService queryRemovalService = new QueryRemovalService(im, getFormat(), name);
+        try {
+            queryRemovalService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        SimpleJsonModel simpleJsonModel = new SimpleJsonModel();
+        if(format.equals("json")) {
+            ResponseUtilSpring.setJSONHeader(httpHeaders, FILE_BASE_NAME + ".json", false);
+            setFooter(simpleJsonModel);
+            return new ResponseEntity<SimpleJsonModel>(simpleJsonModel, httpHeaders,httpStatus);
+        }
+        ResponseUtilSpring.setXMLHeader(httpHeaders, FILE_BASE_NAME + ".xml");
+        return new ResponseEntity<Object>("",httpHeaders,httpStatus);
+
+    }
+
+    public ResponseEntity<?> userQueriesGet(@ApiParam(value = "An optional filter by name, allowing wildcards.") @Valid @RequestParam(value = "filter", required = false) String filter, @ApiParam(value = "", allowableValues = "json, xml") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        SavedQueryRetrievalService savedQueryRetrievalService = new SavedQueryRetrievalService(im, getFormat(), format);
+        try {
+            savedQueryRetrievalService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        SavedQueries savedQueries = savedQueryRetrievalService.getSavedQueries();
+        if(format.equals("json")) {
+            ResponseUtilSpring.setJSONHeader(httpHeaders, FILE_BASE_NAME + ".json", false);
+            setFooter(savedQueries);
+            return new ResponseEntity<SavedQueries>(savedQueries, httpHeaders,httpStatus);
+        }
+        ResponseUtilSpring.setXMLHeader(httpHeaders, FILE_BASE_NAME + ".xml");
+        return new ResponseEntity<Object>(savedQueries.getQueries(),httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<?> userQueriesNameDelete(@ApiParam(value = "The name of the query to delete.",required=true) @PathVariable("name") String name,@ApiParam(value = "", allowableValues = "json, xml") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        QueryRemovalService queryRemovalService = new QueryRemovalService(im, getFormat(), name);
+        try {
+            queryRemovalService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        SimpleJsonModel simpleJsonModel = new SimpleJsonModel();
+        if(format.equals("json")) {
+            ResponseUtilSpring.setJSONHeader(httpHeaders, FILE_BASE_NAME + ".json", false);
+            setFooter(simpleJsonModel);
+            return new ResponseEntity<SimpleJsonModel>(simpleJsonModel, httpHeaders,httpStatus);
+        }
+        ResponseUtilSpring.setXMLHeader(httpHeaders, FILE_BASE_NAME + ".xml");
+        return new ResponseEntity<Object>("",httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<?> userQueriesPost(@ApiParam(value = "The queries to upload. If using body content."  )  @Valid @RequestBody String body, @ApiParam(value = "The queries to upload, if using form parameters.") @Valid @RequestParam(value = "xml", required = false) String xml, @ApiParam(value = "", allowableValues = "text, json, xml, tab, csv") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        QueryUploadService queryUploadService = new QueryUploadService(im, getFormat(), body);
+        try {
+            queryUploadService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        SavedQueries savedQueries = queryUploadService.getSavedQueries();
+        if(format.equals("json")) {
+            ResponseUtilSpring.setJSONHeader(httpHeaders, "uploaded-queries" + ".json", false);
+            setFooter(savedQueries);
+            return new ResponseEntity<SavedQueries>(savedQueries, httpHeaders,httpStatus);
+        }
+        ResponseUtilSpring.setXMLHeader(httpHeaders, "uploaded-queries" + ".xml");
+        return new ResponseEntity<Object>(savedQueries.getQueries(),httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<?> userQueriesPut(@ApiParam(value = "The queries to upload. If using body content."  )  @Valid @RequestBody String body,@ApiParam(value = "The queries to upload, if using form parameters.") @Valid @RequestParam(value = "query", required = false) String query,@ApiParam(value = "", allowableValues = "text, json, xml, tab, csv") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format) {
+        initController();
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        QueryUpdateService queryUpdateService = new QueryUpdateService(im, getFormat(), body);
+        try {
+            queryUpdateService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        SavedQueries savedQueries = queryUpdateService.getSavedQueries();
+        if(format.equals("json")) {
+            ResponseUtilSpring.setJSONHeader(httpHeaders, "uploaded-queries" + ".json", false);
+            setFooter(savedQueries);
+            return new ResponseEntity<SavedQueries>(savedQueries, httpHeaders,httpStatus);
+        }
+        ResponseUtilSpring.setXMLHeader(httpHeaders, "uploaded-queries" + ".xml");
+        return new ResponseEntity<Object>(savedQueries.getQueries(),httpHeaders,httpStatus);
+
     }
 
 

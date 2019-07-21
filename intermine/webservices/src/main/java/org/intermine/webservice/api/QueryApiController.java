@@ -5,11 +5,14 @@ import io.swagger.annotations.*;
 import org.intermine.api.InterMineAPI;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.webservice.model.GeneratedCode;
+import org.intermine.webservice.model.SavedQueries;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.query.CodeService;
+import org.intermine.webservice.server.query.QueryUploadService;
 import org.intermine.webservice.util.ResponseUtilSpring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -64,6 +67,36 @@ public class QueryApiController extends InterMineController implements QueryApi 
         return codeService.getGeneratedCode();
     }
 
+
+    public ResponseEntity<?> queryUploadGet(@NotNull @ApiParam(value = "A definition of the query/ies to save in Path-Query XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query, @ApiParam(value = "The version of the path-qeury format being used.") @Valid @RequestParam(value = "version", required = false, defaultValue = "2") Integer version, @ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        return serveQueryUpload(format, "");
+    }
+
+    public ResponseEntity<?> queryUploadPost(@NotNull @ApiParam(value = "A definition of the query/ies to save in Path-Query XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@ApiParam(value = "The version of the path-qeury format being used.") @Valid @RequestParam(value = "version", required = false, defaultValue = "2") Integer version,@ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        return serveQueryUpload(format, "");
+    }
+
+    private ResponseEntity<?> serveQueryUpload(String format, String body){
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        QueryUploadService queryUploadService = new QueryUploadService(im, getFormat(), body);
+        try {
+            queryUploadService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+        SavedQueries savedQueries = queryUploadService.getSavedQueries();
+        if(format.equals("json")) {
+            ResponseUtilSpring.setJSONHeader(httpHeaders, "uploaded-queries" + ".json", false);
+            setFooter(savedQueries);
+            return new ResponseEntity<SavedQueries>(savedQueries, httpHeaders,httpStatus);
+        }
+        ResponseUtilSpring.setXMLHeader(httpHeaders, "uploaded-queries" + ".xml");
+        return new ResponseEntity<Object>(savedQueries.getQueries(),httpHeaders,httpStatus);
+    }
 
     @Override
     protected String getDefaultFileName() {

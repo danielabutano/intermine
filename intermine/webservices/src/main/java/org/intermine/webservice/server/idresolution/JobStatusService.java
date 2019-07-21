@@ -14,23 +14,33 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.api.idresolution.IDResolver;
 import org.intermine.api.idresolution.Job;
 import org.intermine.api.idresolution.Job.JobStatus;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.IdResolutionStatus;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.JSONService;
 import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
 
 /** @author Alex Kalderimis **/
-public class JobStatusService extends JSONService
+public class JobStatusService extends JSONServiceSpring
 {
 
     private final String jobId;
+
+    public IdResolutionStatus getIdResolutionStatus() {
+        return idResolutionStatus;
+    }
+
+    private IdResolutionStatus idResolutionStatus;
 
     /**
      * Construct a handler for this request.
      * @param im The InterMine state object.
      * @param jobId The id of the job.
      */
-    public JobStatusService(InterMineAPI im, String jobId) {
-        super(im);
+    public JobStatusService(InterMineAPI im, Format format, String jobId) {
+        super(im, format);
         this.jobId = jobId;
+        idResolutionStatus = new IdResolutionStatus();
     }
 
     @Override
@@ -38,9 +48,9 @@ public class JobStatusService extends JSONService
         Job job = IDResolver.getInstance().getJobById(jobId);
         if (job != null) {
             if (job.getStatus() == JobStatus.ERROR) {
-                this.addOutputInfo("message", job.getError().getMessage());
+                idResolutionStatus.setMessage(job.getError().getMessage());
             }
-            addResultValue(job.getStatus().name(), false);
+            idResolutionStatus.setStatus(job.getStatus().name());
         } else {
             throw new ResourceNotFoundException("No such job: " + jobId);
         }

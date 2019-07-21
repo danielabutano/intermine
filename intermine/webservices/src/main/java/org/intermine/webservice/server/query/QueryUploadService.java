@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,6 +43,8 @@ import org.intermine.api.profile.ProfileManager.ApiPermission.Level;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.pathquery.PathQueryBinding;
 import org.intermine.web.logic.export.ResponseUtil;
+import org.intermine.webservice.WebServiceSpring;
+import org.intermine.webservice.model.SavedQueries;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.WebService;
 import org.intermine.webservice.server.exceptions.BadRequestException;
@@ -57,8 +60,18 @@ import org.intermine.webservice.server.output.StreamedOutput;
  * @author Alexis Kalderimis
  *
  */
-public class QueryUploadService extends WebService
+public class QueryUploadService extends WebServiceSpring
 {
+
+    public SavedQueries getSavedQueries() {
+        return savedQueries;
+    }
+
+    private SavedQueries savedQueries;
+
+    private String body;
+
+    List<String> resultList;
 
     /** The key for the queries parameter **/
     public static final String QUERIES_PARAMETER = "xml";
@@ -74,8 +87,11 @@ public class QueryUploadService extends WebService
      * Constructor.
      * @param im A reference to the API configuration and settings bundle.
      */
-    public QueryUploadService(InterMineAPI im) {
-        super(im);
+    public QueryUploadService(InterMineAPI im, Format format, String body) {
+        super(im, format);
+        this.body = body;
+        savedQueries = new SavedQueries();
+        resultList = new ArrayList<>();
     }
 
     @Override
@@ -93,28 +109,6 @@ public class QueryUploadService extends WebService
     }
 
     @Override
-    protected void postInit() {
-        profile = getPermission().getProfile();
-        BagManager bagManager = im.getBagManager();
-        lists = bagManager.getBags(profile);
-        knownBags.addAll(lists.keySet());
-        output.setHeaderAttributes(getHeaderAttributes());
-    }
-
-    private Map<String, Object> getHeaderAttributes() {
-        Map<String, Object> headerAttributes = new HashMap<String, Object>();
-        switch (getFormat()) {
-            case JSON:
-                headerAttributes.put(JSONFormatter.KEY_INTRO, "\"queries\":{");
-                headerAttributes.put(JSONFormatter.KEY_OUTRO, "},");
-                break;
-            default:
-                break;
-        }
-        return headerAttributes;
-    }
-
-    @Override
     protected void validateState() {
         if (getPermission().getLevel() == Level.RO) {
             throw new ServiceForbiddenException("Access denied.");
@@ -123,6 +117,11 @@ public class QueryUploadService extends WebService
 
     @Override
     protected void execute() throws Exception {
+
+        profile = getPermission().getProfile();
+        BagManager bagManager = im.getBagManager();
+        lists = bagManager.getBags(profile);
+        knownBags.addAll(lists.keySet());
 
         String queriesString = getQueryString();
         Map<String, PathQuery> toSave = new HashMap<String, PathQuery>();
@@ -176,6 +175,7 @@ public class QueryUploadService extends WebService
         } catch (Exception e) {
             throw new ServiceException("Failed to save queries", e);
         }
+        savedQueries.setQueries(resultList);
     }
 
     /**
@@ -190,23 +190,18 @@ public class QueryUploadService extends WebService
     private void addResultItem(Entry<String, String> mapping, boolean hasMore) {
         switch (getFormat()) {
             case JSON:
-                List<String> line = Arrays.asList(
-                        String.format("\"%s\":\"%s\"",
+
+                String line = String.format("%s:%s",
                                 StringEscapeUtils.escapeJava(mapping.getKey()),
-                                StringEscapeUtils.escapeJava(mapping.getValue())));
-                if (hasMore) {
-                    line.add("");
-                }
-                output.addResultItem(line);
+                                StringEscapeUtils.escapeJava(mapping.getValue()));
+                resultList.add(line);
                 break;
             case TEXT:
-                output.addResultItem(
-                        Arrays.asList(
-                                String.format("%s successfully saved as %s",
-                                        mapping.getKey(), mapping.getValue())));
+                resultList.add(String.format("%s successfully saved as %s",
+                                        mapping.getKey(), mapping.getValue()));
                 break;
             default:
-                output.addResultItem(Arrays.asList(mapping.getKey(), mapping.getValue()));
+                resultList.add(mapping.getKey() + ":" + mapping.getValue());
         }
     }
 
@@ -222,17 +217,16 @@ public class QueryUploadService extends WebService
             contentType = parts[0].trim();
         }
 
-        LOG.debug("Reading queries from " + contentType + " data");
+        LOG.error("Reading queries from " + contentType + " data");
         String queriesString;
         if ("application/xml".equals(contentType) || "text/xml".equals(contentType)) {
-            InputStream in = request.getInputStream();
-            queriesString = IOUtils.toString(in);
+            queriesString = body;
         } else if ("application/json".equals(contentType) || "text/json".equals(contentType)) {
-            InputStream in = request.getInputStream();
-            queriesString = IOUtils.toString(in);
+            queriesString = body;
         } else {
             queriesString = getRequiredParameter("query");
         }
+        LOG.error("*********QueryString :  " + queriesString + "*********");
         return queriesString;
     }
 
@@ -251,17 +245,6 @@ public class QueryUploadService extends WebService
         return getIntParameter(VERSION_PARAMETER, PathQuery.USERPROFILE_VERSION);
     }
 
-    @Override
-    protected Output makeXMLOutput(PrintWriter out, String separator) {
-        ResponseUtil.setXMLHeader(response, "uploaded-queries.xml");
-        try {
-            return new StreamedOutput(out, new XMLFormatter(out), separator);
-        } catch (XMLStreamException e) {
-            throw new ServiceException(e);
-        } catch (FactoryConfigurationError e) {
-            throw new ServiceException(e);
-        }
-    }
 
     private static class XMLFormatter extends Formatter
     {

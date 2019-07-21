@@ -11,6 +11,7 @@ package org.intermine.webservice.server.query;
  */
 
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,12 +22,15 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.Profile;
 import org.intermine.api.profile.SavedQuery;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.pathquery.PathQueryBinding;
 import org.intermine.web.logic.export.ResponseUtil;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.SavedQueries;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.JSONService;
 import org.intermine.webservice.server.core.Predicate;
@@ -39,30 +43,27 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /** @author Alex Kalderimis **/
-public class SavedQueryRetrievalService extends JSONService
+public class SavedQueryRetrievalService extends JSONServiceSpring
 {
 
+    private static final Logger LOG = Logger.getLogger(SavedQueryRetrievalService.class);
+
+
+    public SavedQueries getSavedQueries() {
+        return savedQueries;
+    }
+
+    private SavedQueries savedQueries;
+
+    private String formatStr;
+
     /** @param im The InterMine state object. **/
-    public SavedQueryRetrievalService(InterMineAPI im) {
-        super(im);
+    public SavedQueryRetrievalService(InterMineAPI im, Format format, String formatStr) {
+        super(im, format);
+        this.formatStr = formatStr;
+        savedQueries = new SavedQueries();
     }
 
-    @Override
-    protected boolean canServe(Format format) {
-        switch (format) {
-            case XML:
-            case JSON:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    @Override
-    protected Output makeXMLOutput(PrintWriter out, String separator) {
-        ResponseUtil.setXMLHeader(response, "saved-queries.xml");
-        return new StreamedOutput(out, new PlainFormatter(), separator);
-    }
 
     @Override
     protected void execute() {
@@ -70,42 +71,19 @@ public class SavedQueryRetrievalService extends JSONService
 
         Predicate<String> filter = getFilter(getOptionalParameter("filter", ""));
         Map<String, PathQuery> queries = getQueries(filter, p.getSavedQueries());
-        if (Format.JSON == getFormat()) {
-            sendJSON(queries);
+        if (formatStr.equals("json")) {
+            Map<String, Object> result = new HashMap<>();
+            for (Entry<String, PathQuery> pair: queries.entrySet()) {
+                result.put(pair.getKey(), pair.getValue().toJsonSpring());
+            }
+            savedQueries.setQueries(result);
         } else {
-            sendXML(queries);
-        }
-    }
-
-    private void sendXML(Map<String, PathQuery> queries) {
-        int version = im.getProfileManager().getVersion();
-
-        try {
-            XMLStreamWriter writer
-                = XMLOutputFactory.newInstance().createXMLStreamWriter(getRawOutput());
-
-            writer.writeStartElement("saved-queries");
+            String result = "";
             for (Entry<String, PathQuery> pair: queries.entrySet()) {
-                PathQueryBinding.marshal(pair.getValue(),
-                        pair.getKey(),
-                        pair.getValue().getModel().getName(),
-                        writer, version);
+                result = result + (pair.getValue().toXmlSpring(pair.getKey()));
+                result = result + "\n";
             }
-            writer.writeEndElement();
-        } catch (XMLStreamException e) {
-            throw new ServiceException("Serialization error.", e);
-        }
-    }
-
-    private void sendJSON(Map<String, PathQuery> queries) {
-        JSONObject result = new JSONObject();
-        try {
-            for (Entry<String, PathQuery> pair: queries.entrySet()) {
-                result.put(pair.getKey(), new JSONObject(pair.getValue().toJson()));
-            }
-            output.addResultItem(Arrays.asList(result.toString(0)));
-        } catch (JSONException e) {
-            throw new ServiceException("Serialization error.", e);
+            savedQueries.setQueries(result);
         }
     }
 

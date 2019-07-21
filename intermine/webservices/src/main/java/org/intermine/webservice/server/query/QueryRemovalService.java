@@ -13,27 +13,32 @@ package org.intermine.webservice.server.query;
 import org.apache.commons.lang.StringUtils;
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.Profile;
+import org.intermine.webservice.JSONServiceSpring;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.ReadWriteJSONService;
 import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
 import org.intermine.webservice.server.exceptions.ServiceException;
+import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
 
 /**
  * A service that removes a saved query from profile's collection of saved queries.
  * @author Alex Kalderimis
  *
  */
-public class QueryRemovalService extends ReadWriteJSONService
+public class QueryRemovalService extends JSONServiceSpring
 {
+    private static final String DENIAL_MSG = "Access denied.";
+
+    private String name;
 
     /** @param im The InterMine state object **/
-    public QueryRemovalService(InterMineAPI im) {
-        super(im);
+    public QueryRemovalService(InterMineAPI im, Format format, String name) {
+        super(im, format);
+        this.name = name;
     }
 
     @Override
     protected void execute() {
-        String name = getName();
         Profile p = getPermission().getProfile();
         if (!p.getSavedQueries().containsKey(name)) {
             throw new ResourceNotFoundException("Could not find query named " + name);
@@ -45,15 +50,6 @@ public class QueryRemovalService extends ReadWriteJSONService
         }
     }
 
-    // Allow name as /user/queries/:name and /user/queries?name=:name
-    private String getName() {
-        String name = StringUtils.defaultString(request.getPathInfo(), "");
-        name = name.replaceAll("^/", "");
-        if (StringUtils.isBlank(name)) {
-            name = getRequiredParameter("name");
-        }
-        return name;
-    }
 
     @Override
     protected boolean canServe(Format format) {
@@ -63,6 +59,13 @@ public class QueryRemovalService extends ReadWriteJSONService
                 return true;
             default:
                 return false;
+        }
+    }
+
+    @Override
+    protected void validateState() {
+        if (!isAuthenticated() || getPermission().isRO()) {
+            throw new ServiceForbiddenException(DENIAL_MSG);
         }
     }
 

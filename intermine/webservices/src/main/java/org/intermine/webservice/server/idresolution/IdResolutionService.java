@@ -21,6 +21,9 @@ import org.intermine.api.bag.BagQueryRunner;
 import org.intermine.api.idresolution.IDResolver;
 import org.intermine.api.idresolution.Job;
 import org.intermine.api.idresolution.JobInput;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.IdResolutionPost;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.JSONService;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.ServiceException;
@@ -30,14 +33,24 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 /** @author Alex Kalderimis **/
-public class IdResolutionService extends JSONService
+public class IdResolutionService extends JSONServiceSpring
 {
+    public IdResolutionPost getIdResolutionPost() {
+        return idResolutionPost;
+    }
+
+    private IdResolutionPost idResolutionPost;
+
+    private String body;
+
     /**
      * Default constructor.
      * @param im The InterMine state object.
      */
-    public IdResolutionService(InterMineAPI im) {
-        super(im);
+    public IdResolutionService(InterMineAPI im, Format format, String body) {
+        super(im, format);
+        this.body = body;
+        idResolutionPost = new IdResolutionPost();
     }
 
     @Override
@@ -55,13 +68,9 @@ public class IdResolutionService extends JSONService
 
         Job job = IDResolver.getInstance().submit(runner, in);
 
-        addResultValue(job.getUid(), false);
+        idResolutionPost.setUid(job.getUid());
     }
 
-    @Override
-    protected String getResultsKey() {
-        return "uid";
-    }
 
     private class WebserviceJobInput implements JobInput
     {
@@ -74,7 +83,7 @@ public class IdResolutionService extends JSONService
 
         WebserviceJobInput() throws JSONException, IOException {
             JSONObject requestDetails
-                = new JSONObject(new JSONTokener(request.getReader()));
+                = new JSONObject(body);
             JSONArray identifiers = requestDetails.getJSONArray("identifiers");
             ids = new LinkedList<String>();
             for (int i = 0; i < identifiers.length(); i++) {
