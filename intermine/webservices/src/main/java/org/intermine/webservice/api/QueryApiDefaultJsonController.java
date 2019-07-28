@@ -9,10 +9,13 @@ import org.intermine.webservice.model.QueryResultsJson;
 import org.intermine.webservice.model.QueryResultsJsonCount;
 import org.intermine.webservice.model.QueryResultsJsonObject;
 import org.intermine.webservice.model.QueryStore;
+import org.intermine.webservice.model.ToList;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.query.CodeService;
+import org.intermine.webservice.server.query.QueryListAppendService;
 import org.intermine.webservice.server.query.QueryRetrieverService;
 import org.intermine.webservice.server.query.QueryStoreService;
+import org.intermine.webservice.server.query.QueryToListService;
 import org.intermine.webservice.server.query.result.QueryResultService;
 import org.intermine.webservice.util.ResponseUtilSpring;
 import org.slf4j.Logger;
@@ -141,6 +144,68 @@ public class QueryApiDefaultJsonController extends InterMineController implement
         return new ResponseEntity<Object>(queryResultsJsonObject.getResults(),httpHeaders,httpStatus);
     }
 
+
+    public ResponseEntity<?> queryAppendToListGet(@NotNull @ApiParam(value = "A definition of the query to execute in Path-Query XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query, @NotNull @ApiParam(value = "The list to append items to.", required = true) @Valid @RequestParam(value = "name", required = true) String name, @ApiParam(value = "A set of tags to use to categorise the new list separated by semicolon(;).") @Valid @RequestParam(value = "tags", required = false) String tags, @ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        return serveAppendToList(format, name);
+    }
+
+    public ResponseEntity<?> queryAppendToListPost(@NotNull @ApiParam(value = "A definition of the query to execute in Path-Query XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@NotNull @ApiParam(value = "The list to append items to.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@ApiParam(value = "A set of tags to use to categorise the new list separated by semicolon(;).") @Valid @RequestParam(value = "tags", required = false) String tags,@ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        return serveAppendToList(format, name);
+    }
+
+    private ResponseEntity<?> serveAppendToList(String format, String name){
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        QueryListAppendService queryListAppendService = new QueryListAppendService(im, getFormat(), name);
+        try {
+            queryListAppendService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+
+        ToList toList = queryListAppendService.getToList();
+
+        if(format.equals("json")){
+            setFooter(toList);
+            return new ResponseEntity<ToList>(toList,httpHeaders,httpStatus);
+        }
+        ResponseUtilSpring.setPlainTextHeader(httpHeaders,"results.txt");
+        return new ResponseEntity<Integer>(toList.getListSize(),httpHeaders,httpStatus);
+    }
+
+    public ResponseEntity<?> queryToListGet(@NotNull @ApiParam(value = "A definition of the query to execute in Path-Query XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@NotNull @ApiParam(value = "The name for the new list. There must be no existing list of this name.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@ApiParam(value = "A description to attach to the new list.") @Valid @RequestParam(value = "description", required = false) String description,@ApiParam(value = "A set of tags to use to categorise the new list separated by semicolon(;).") @Valid @RequestParam(value = "tags", required = false) String tags,@ApiParam(value = "Whether or not to replace any existing list of this name.") @Valid @RequestParam(value = "replaceExisting", required = false, defaultValue = "false") Boolean replaceExisting,@ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        return serveToList(format, name);
+    }
+
+    public ResponseEntity<?> queryToListPost(@NotNull @ApiParam(value = "A definition of the query to execute in Path-Query XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@NotNull @ApiParam(value = "The name for the new list. There must be no existing list of this name.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@ApiParam(value = "A description to attach to the new list.") @Valid @RequestParam(value = "description", required = false) String description,@ApiParam(value = "A set of tags to use to categorise the new list separated by semicolon(;).") @Valid @RequestParam(value = "tags", required = false) String tags,@ApiParam(value = "Whether or not to replace any existing list of this name.") @Valid @RequestParam(value = "replaceExisting", required = false, defaultValue = "false") Boolean replaceExisting,@ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format) {
+        initController();
+        return serveToList(format, name);
+    }
+
+    private ResponseEntity<?> serveToList(String format, String name){
+        final InterMineAPI im = InterMineContext.getInterMineAPI();
+
+        setHeaders();
+        QueryToListService queryToListService = new QueryToListService(im, getFormat(), name);
+        try {
+            queryToListService.service(request);
+        } catch (Throwable throwable) {
+            sendError(throwable);
+        }
+
+        ToList toList = queryToListService.getToList();
+
+        if(format.equals("json")){
+            setFooter(toList);
+            return new ResponseEntity<ToList>(toList,httpHeaders,httpStatus);
+        }
+        ResponseUtilSpring.setPlainTextHeader(httpHeaders,"results.txt");
+        return new ResponseEntity<Integer>(toList.getListSize(),httpHeaders,httpStatus);
+    }
 
     @Override
     protected String getDefaultFileName() {

@@ -39,8 +39,8 @@ public class QueryListAppendService extends QueryToListService
      * Constructor.
      * @param api A reference to the InterMine settings bundle.
      */
-    public QueryListAppendService(InterMineAPI api, Format format) {
-        super(api, format);
+    public QueryListAppendService(InterMineAPI api, Format format, String listName) {
+        super(api, format, listName);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class QueryListAppendService extends QueryToListService
             list.addToBagFromQuery(q);
         } finally {
             setHeaderAttributes(name, list.getSavedBagId());
-            //output.addResultItem(Arrays.asList("" + list.size()));
+            toList.setListSize(list.size());
         }
     }
 

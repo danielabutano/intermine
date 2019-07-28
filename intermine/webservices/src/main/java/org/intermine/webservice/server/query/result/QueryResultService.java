@@ -89,7 +89,7 @@ public class QueryResultService extends AbstractQueryService
     protected Map<String, Object> attributes = new HashMap<String, Object>();
 
     private boolean wantsCount = false;
-    private PathQueryExecutor executor;
+    protected PathQueryExecutor executor;
 
     public QueryResultsJson getQueryResultsJson() {
         return queryResultsJson;

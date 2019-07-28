@@ -59,8 +59,8 @@ public class TemplateToListService extends QueryToListService
      * Constructor
      * @param im API settings bundle
      */
-    public TemplateToListService(InterMineAPI im, Format format) {
-        super(im, format);
+    public TemplateToListService(InterMineAPI im, Format format, String listName) {
+        super(im, format, listName);
         templateManager = im.getTemplateManager();
     }
 

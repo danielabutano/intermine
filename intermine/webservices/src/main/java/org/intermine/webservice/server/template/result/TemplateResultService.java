@@ -58,6 +58,7 @@ public class TemplateResultService extends QueryResultService
      */
     @Override
     protected void execute() {
+        executor = getPathQueryExecutor();
         TemplateManager templateManager = this.im.getTemplateManager();
         TemplateResultInput input = getInput();
         TemplateQuery template;

@@ -3,6 +3,7 @@ package org.intermine.webservice.api;
 import io.swagger.annotations.*;
 import org.intermine.webservice.model.QueryResultsJson;
 import org.intermine.webservice.model.QueryStore;
+import org.intermine.webservice.model.ToList;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,5 +56,52 @@ public interface QueryApiDefaultJson {
             produces = { "application/json" },
             method = RequestMethod.POST)
     ResponseEntity<?> queryResultsPost(@NotNull @ApiParam(value = "A definition of the query to execute in Path-Query XML format.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@ApiParam(value = "The version of the XML format used.") @Valid @RequestParam(value = "version", required = false) Integer version,@ApiParam(value = "The index of the first result to return.") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,@ApiParam(value = "The maximum size of the result set.") @Valid @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,@ApiParam(value = "Include column headers. Use friendly for human readable paths. (Only for flat-file formats).", allowableValues = "none, path, friendly") @Valid @RequestParam(value = "columnheaders", required = false, defaultValue = "none") String columnheaders,@ApiParam(value = "", allowableValues = "tab, csv, count, json, jsonobject, jsoncount, xml, html") @Valid @RequestParam(value = "format", required = false, defaultValue = "tab") String format);
+
+    @ApiOperation(value = "Add the result set of a query to a list on the server.", nickname = "queryAppendToListGet", notes = "This service provides the facility to submit a query and add the objects           contained in its result set to a list that already exists on the server. This           facility places a couple of restrictions on the query itself, namely that           the view list may only contain a single item, which should refer to the           internal id attribute of an object in the query.", response = ToList.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ToList.class) })
+    @RequestMapping(value = "/query/append/tolist",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<?> queryAppendToListGet(@NotNull @ApiParam(value = "A definition of the query to execute in Path-Query XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@NotNull @ApiParam(value = "The list to append items to.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@ApiParam(value = "A set of tags to use to categorise the new list separated by semicolon(;).") @Valid @RequestParam(value = "tags", required = false) String tags,@ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
+
+
+    @ApiOperation(value = "Add the result set of a query to a list on the server.", nickname = "queryAppendToListPost", notes = "This service provides the facility to submit a query and add the objects           contained in its result set to a list that already exists on the server. This           facility places a couple of restrictions on the query itself, namely that           the view list may only contain a single item, which should refer to the           internal id attribute of an object in the query.", response = ToList.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ToList.class) })
+    @RequestMapping(value = "/query/append/tolist",
+            produces = { "application/json" },
+            method = RequestMethod.POST)
+    ResponseEntity<?> queryAppendToListPost(@NotNull @ApiParam(value = "A definition of the query to execute in Path-Query XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@NotNull @ApiParam(value = "The list to append items to.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@ApiParam(value = "A set of tags to use to categorise the new list separated by semicolon(;).") @Valid @RequestParam(value = "tags", required = false) String tags,@ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
+
+
+    @ApiOperation(value = "Save the result set of a query as a list on the server.", nickname = "queryToListGet", notes = "This service provides the facility to submit a query and create a new list whose contents shall be the result set defined by running the query. <br/><br/> This facility places a couple of restrictions on the query itself, namely that the view list may only contain a single item, which can refer to any attribute of an object. The attribute itself will be ignored, and the object itself will be selected. For this reason, one might choose to always select the `.id` attribute when using this service.", response = ToList.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ToList.class) })
+    @RequestMapping(value = "/query/tolist",
+            produces = { "application/json" },
+            method = RequestMethod.GET)
+    ResponseEntity<?> queryToListGet(@NotNull @ApiParam(value = "A definition of the query to execute in Path-Query XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query, @NotNull @ApiParam(value = "The name for the new list. There must be no existing list of this name.", required = true) @Valid @RequestParam(value = "name", required = true) String name, @ApiParam(value = "A description to attach to the new list.") @Valid @RequestParam(value = "description", required = false) String description, @ApiParam(value = "A set of tags to use to categorise the new list separated by semicolon(;).") @Valid @RequestParam(value = "tags", required = false) String tags, @ApiParam(value = "Whether or not to replace any existing list of this name.") @Valid @RequestParam(value = "replaceExisting", required = false, defaultValue = "false") Boolean replaceExisting, @ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
+
+
+    @ApiOperation(value = "Save the result set of a query as a list on the server.", nickname = "queryToListPost", notes = "This service provides the facility to submit a query and create a new list whose contents shall be the result set defined by running the query. <br/><br/> This facility places a couple of restrictions on the query itself, namely that the view list may only contain a single item, which can refer to any attribute of an object. The attribute itself will be ignored, and the object itself will be selected. For this reason, one might choose to always select the `.id` attribute when using this service.", response = ToList.class, authorizations = {
+            @Authorization(value = "ApiKeyAuthToken"),
+            @Authorization(value = "BasicAuth"),
+            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ToList.class) })
+    @RequestMapping(value = "/query/tolist",
+            produces = { "application/json" },
+            method = RequestMethod.POST)
+    ResponseEntity<?> queryToListPost(@NotNull @ApiParam(value = "A definition of the query to execute in Path-Query XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@NotNull @ApiParam(value = "The name for the new list. There must be no existing list of this name.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@ApiParam(value = "A description to attach to the new list.") @Valid @RequestParam(value = "description", required = false) String description,@ApiParam(value = "A set of tags to use to categorise the new list separated by semicolon(;).") @Valid @RequestParam(value = "tags", required = false) String tags,@ApiParam(value = "Whether or not to replace any existing list of this name.") @Valid @RequestParam(value = "replaceExisting", required = false, defaultValue = "false") Boolean replaceExisting,@ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
 
 }

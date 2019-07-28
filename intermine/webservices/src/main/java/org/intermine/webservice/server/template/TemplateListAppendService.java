@@ -42,8 +42,8 @@ public class TemplateListAppendService extends TemplateToListService
      * Constructor.
      * @param im The reference to the InterMine settings bundle.
      */
-    public TemplateListAppendService(InterMineAPI im, Format format) {
-        super(im, format);
+    public TemplateListAppendService(InterMineAPI im, Format format, String listName) {
+        super(im, format, listName);
     }
 
     @Override
@@ -72,7 +72,8 @@ public class TemplateListAppendService extends TemplateToListService
                 throw new ServiceForbiddenException(e.getMessage());
             }
         } finally {
-            //output.addResultItem(Arrays.asList("" + list.size()));
+            setHeaderAttributes(name, list.getSavedBagId());
+            toList.setListSize(list.size());
         }
     }
 }
