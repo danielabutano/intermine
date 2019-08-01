@@ -11,10 +11,17 @@ package org.intermine.web.struts;
  */
 
 import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+
 
 import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;
@@ -23,6 +30,8 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.Profile;
+import org.intermine.api.profile.ProfileManager;
+import org.intermine.web.context.InterMineContext;
 import org.intermine.web.logic.profile.LoginHandler;
 import org.intermine.web.logic.profile.ProfileMergeIssues;
 import org.intermine.web.logic.session.SessionMethods;
@@ -46,6 +55,8 @@ public class LoginAction extends LoginHandler
      */
     @Override public ActionForward execute(ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        Properties webProperties = InterMineContext.getWebProperties();
         HttpSession session = request.getSession();
         final InterMineAPI im = SessionMethods.getInterMineAPI(session);
 
@@ -62,6 +73,18 @@ public class LoginAction extends LoginHandler
         recordMessage(new ActionMessage("login.loggedin", user.getName()), request);
         //track the user login
         im.getTrackerDelegate().trackLogin(lf.getUsername());
+
+        //Merge old mine account with new IM account
+        if(request.getSession().getAttribute("sub")!=null){
+            String sub= (String) request.getSession().getAttribute("sub");
+            ProfileManager pm = im.getProfileManager();
+            pm.updateProfile(user,sub);
+            String url = webProperties.getProperty("oauth2.IM.url.account")+"?sub="+sub+"&clientId="+webProperties.getProperty("oauth2.IM.client-id");
+            HttpClient client = HttpClientBuilder.create().build();
+            HttpGet req = new HttpGet(url);
+            HttpResponse res = client.execute(req);
+        }
+
 
         if (issues.hasIssues()) {
             for (Map.Entry<String, String> renamed: issues.getRenamedBags().entrySet()) {

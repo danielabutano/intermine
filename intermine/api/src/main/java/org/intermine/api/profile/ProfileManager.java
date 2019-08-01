@@ -1580,4 +1580,15 @@ public class ProfileManager
         return preferencesManager;
     }
 
+    /**
+     * Update an old mine account with new IM account details
+     * @param profile The profile to update.
+     * @param sub Unique Id of IM user.
+     */
+    public synchronized void updateProfile(Profile profile,String sub) throws ObjectStoreException {
+        UserProfile userProfile = getUserProfile(profile.getUserId());
+        userProfile.setUsername("IM:"+sub);
+        userProfile.setPassword(null);
+        uosw.store(userProfile);
+    }
 }

@@ -21,6 +21,7 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.tiles.ComponentContext;
 import org.apache.struts.tiles.actions.TilesAction;
+import org.intermine.web.context.InterMineContext;
 import org.intermine.web.logic.session.SessionMethods;
 
 /**
@@ -43,10 +44,22 @@ public class LoginController extends TilesAction
                                  HttpServletResponse response)
         throws Exception {
 
+        Properties webProperties = InterMineContext.getWebProperties();
         LoginForm loginForm = (LoginForm) form;
         String returnToString = request.getParameter("returnto");
         loginForm.setReturnToString(returnToString);
         request.getSession().setAttribute("returnTo", returnToString);
+
+        //Handle Merge request from IM auth server
+        try {
+            if (request.getHeader("referer").contains(webProperties.getProperty("oauth2.IM.url.auth"))) {
+                String sub = request.getParameter("sub");
+                request.getSession().setAttribute("sub", sub);
+            }
+        }
+        catch (NullPointerException e){
+            System.out.print("This is not a Merge request");
+        }
 
         Properties webprops = SessionMethods.getWebProperties(request);
         String ourPath = webprops.getProperty("webapp.baseurl");
