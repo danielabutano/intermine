@@ -27,7 +27,7 @@ import java.util.Map;
 @Api(value = "schema", description = "the schema API")
 public interface SchemaApi {
 
-    @ApiOperation(value = "Get all Schemata.", nickname = "allSchema", notes = "Get a listing of the available schemata.", response = Schema.class, tags={  })
+    @ApiOperation(value = "Get all Schemata.", nickname = "allSchema", notes = "Get a listing of the available schemata.", response = Schema.class, tags={ "Schemata" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = Schema.class) })
     @RequestMapping(value = "/schema",
@@ -36,7 +36,7 @@ public interface SchemaApi {
     ResponseEntity<Schema> allSchema();
 
 
-    @ApiOperation(value = "Get one Schema.", nickname = "oneSchema", notes = "Retrieve a specific schema.", tags={  })
+    @ApiOperation(value = "Get one Schema.", nickname = "oneSchema", notes = "Retrieve a specific schema.", tags={ "Schemata" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK") })
     @RequestMapping(value = "/schema/{name}/",

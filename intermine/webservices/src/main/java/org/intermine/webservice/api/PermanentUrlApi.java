@@ -26,7 +26,7 @@ import java.util.Map;
 @Api(value = "permanent-url", description = "the permanent-url API")
 public interface PermanentUrlApi {
 
-    @ApiOperation(value = "Get permanent URL for data object.", nickname = "permanentUrl", notes = "This service generates permanent URL based on the class type and identifier.", response = PermanentUrl.class, tags={  })
+    @ApiOperation(value = "Get permanent URL for data object.", nickname = "permanentUrl", notes = "This service generates permanent URL based on the class type and identifier.", response = PermanentUrl.class, tags={ "Permanent URL" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = PermanentUrl.class) })
     @RequestMapping(value = "/permanent-url",

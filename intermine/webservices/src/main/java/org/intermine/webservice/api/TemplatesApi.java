@@ -25,14 +25,14 @@ import javax.validation.constraints.*;
 @Api(value = "templates", description = "the templates API")
 public interface TemplatesApi {
 
-    @ApiOperation(value = "Get the list of system templates.", nickname = "templatesSystem", notes = "Get a listing of the templates configured in an InterMine instance tagged with the `im:converter` tag.", response = TemplatesSystem.class, tags={  })
+    @ApiOperation(value = "Get the list of system templates.", nickname = "templatesSystem", notes = "Get a listing of the templates configured in an InterMine instance tagged with the `im:converter` tag.", response = TemplatesSystem.class, tags={ "Templates (System)" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = TemplatesSystem.class) })
     @RequestMapping(value = "/templates/system",
         method = RequestMethod.GET)
     ResponseEntity<?> templatesSystem(@ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "xml") String format);
 
-    @ApiOperation(value = "Get the list of available templates.", nickname = "templatesGet", notes = "Get a listing of the templates configured in an InterMine instance. Each template contains a description of its properties, defining the parameters that must be provided to run it, as well as a definition of the output format for its results. If the request is authenticated to a user, then the templates that that has access to will also be returned.", response = Templates.class, tags={  })
+    @ApiOperation(value = "Get the list of available templates.", nickname = "templatesGet", notes = "Get a listing of the templates configured in an InterMine instance. Each template contains a description of its properties, defining the parameters that must be provided to run it, as well as a definition of the output format for its results. If the request is authenticated to a user, then the templates that that has access to will also be returned.", response = Templates.class, tags={ "Templates" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = Templates.class) })
     @RequestMapping(value = "/templates",
@@ -42,7 +42,7 @@ public interface TemplatesApi {
 
 
     @ApiOperation(value = "Upload one or more templates.", nickname = "templatesPost", notes = "Upload a set of templates to the current user profile.", response = SimpleJsonModel.class,  authorizations = {
-            @Authorization(value = "BasicAuth")    },  tags={  })
+            @Authorization(value = "BasicAuth")    },  tags={ "Templates" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = SimpleJsonModel.class) })
     @RequestMapping(value = "/templates",
@@ -52,7 +52,7 @@ public interface TemplatesApi {
     ResponseEntity<?> templatesPost(@ApiParam(value = "The templates to upload. If using body content."  )  @Valid @RequestBody String body,@ApiParam(value = "The xml or JSON to load, if using form parameters.") @Valid @RequestParam(value = "xml", required = false) String xml,@ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "xml") String format);
 
     @ApiOperation(value = "Save a Template, or Overwrite an Existing One.", nickname = "templateUploadGet", notes = "This service allows users to save templates they have authored on the server, associated with their account. The templates once saved can be used as any other template query.", response = SimpleJsonModel.class, authorizations = {
-            @Authorization(value = "BasicAuth")    }, tags={  })
+            @Authorization(value = "BasicAuth")    }, tags={ "Template Upload" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = SimpleJsonModel.class) })
     @RequestMapping(value = "/template/upload",
@@ -62,7 +62,7 @@ public interface TemplatesApi {
 
 
     @ApiOperation(value = "Save a Template, or Overwrite an Existing One.", nickname = "templateUploadPost", notes = "This service allows users to save templates they have authored on the server, associated with their account. The templates once saved can be used as any other template query.", response = SimpleJsonModel.class, authorizations = {
-            @Authorization(value = "BasicAuth")    }, tags={  })
+            @Authorization(value = "BasicAuth")    }, tags={ "Template Upload" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = SimpleJsonModel.class) })
     @RequestMapping(value = "/template/upload",
@@ -73,7 +73,7 @@ public interface TemplatesApi {
     @ApiOperation(value = "Delete a template by name.", nickname = "savedTemplateDelete", notes = "This resource exposes the ability to delete specific templates, identified         by name.         <br/><br/>         A user can only delete templates that they own, and must be executed         with `Read/Write` permission.", response = SimpleJsonModel.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Saved Template" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = SimpleJsonModel.class) })
     @RequestMapping(value = "/templates/{name}",
@@ -82,7 +82,7 @@ public interface TemplatesApi {
     ResponseEntity<?> savedTemplateDelete(@ApiParam(value = "The name of the template to delete.",required=true) @PathVariable("name") String name,@ApiParam(value = "", allowableValues = "xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
 
 
-    @ApiOperation(value = "Retrieve a template by name.", nickname = "savedTemplateGet", notes = "This resource retrieves a representation of a named template, returning         404 if the template cannot be found.         <br/><br/>         If the request is authenticated, then the templates visible to that user (created by         or shared with them) will be included along with publically accessible templates.", response = SavedTemplate.class, tags={  })
+    @ApiOperation(value = "Retrieve a template by name.", nickname = "savedTemplateGet", notes = "This resource retrieves a representation of a named template, returning         404 if the template cannot be found.         <br/><br/>         If the request is authenticated, then the templates visible to that user (created by         or shared with them) will be included along with publically accessible templates.", response = SavedTemplate.class, tags={ "Saved Template" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = SavedTemplate.class) })
     @RequestMapping(value = "/templates/{name}",
@@ -93,7 +93,7 @@ public interface TemplatesApi {
     @ApiOperation(value = "Delete one or more tags from a list.", nickname = "templateTagsDelete", notes = "", response = Tags.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Template Tags" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = Tags.class) })
     @RequestMapping(value = "/template/tags",
@@ -102,7 +102,7 @@ public interface TemplatesApi {
     ResponseEntity<?> templateTagsDelete(@NotNull @ApiParam(value = "The name of a template to add the tag(s) to.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "The name of the tags to remove. It should take to from of a semi-colon delimited concatenation of the tag names.", required = true) @Valid @RequestParam(value = "tags", required = true) String tags,@ApiParam(value = "", allowableValues = "xml, json, tab, csv") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
 
 
-    @ApiOperation(value = "Get the tags for a template, or all the tags for a given user.", nickname = "templateTagsGet", notes = "Fetch an up-to-date list of all tags associated with a template, or all templates.", response = Tags.class, tags={  })
+    @ApiOperation(value = "Get the tags for a template, or all the tags for a given user.", nickname = "templateTagsGet", notes = "Fetch an up-to-date list of all tags associated with a template, or all templates.", response = Tags.class, tags={ "Template Tags" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = Tags.class) })
     @RequestMapping(value = "/template/tags",
@@ -114,7 +114,7 @@ public interface TemplatesApi {
     @ApiOperation(value = "Add one or more tags to a list.", nickname = "templateTagsPost", notes = "", response = Tags.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Template Tags" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = Tags.class) })
     @RequestMapping(value = "/template/tags",

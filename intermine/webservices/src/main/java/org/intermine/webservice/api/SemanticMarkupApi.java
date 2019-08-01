@@ -27,7 +27,7 @@ import java.util.Map;
 @Api(value = "semantic-markup", description = "the semantic-markup API")
 public interface SemanticMarkupApi {
 
-    @ApiOperation(value = "Get semantic markup for datacatalog type.", nickname = "semanticMarkupDatacatalog", notes = "This service provides semantic markup for the InterMine home page.", response = SemanticMarkup.class, tags={  })
+    @ApiOperation(value = "Get semantic markup for datacatalog type.", nickname = "semanticMarkupDatacatalog", notes = "This service provides semantic markup for the InterMine home page.", response = SemanticMarkup.class, tags={ "Semantic Markup" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = SemanticMarkup.class) })
     @RequestMapping(value = "/semantic-markup/datacatalog",
@@ -36,7 +36,7 @@ public interface SemanticMarkupApi {
     ResponseEntity<SemanticMarkup> semanticMarkupDatacatalog();
 
 
-    @ApiOperation(value = "Get semantic markup for bioentity.", nickname = "semanticMarkupBioEntity", notes = "This service provides semantic markup for BioChemEntity type.", response = SemanticMarkup.class, tags={  })
+    @ApiOperation(value = "Get semantic markup for bioentity.", nickname = "semanticMarkupBioEntity", notes = "This service provides semantic markup for BioChemEntity type.", response = SemanticMarkup.class, tags={ "Semantic Markup" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = SemanticMarkup.class) })
     @RequestMapping(value = "/semantic-markup/bioentity",
@@ -45,7 +45,7 @@ public interface SemanticMarkupApi {
     ResponseEntity<SemanticMarkup> semanticMarkupBioEntity(@NotNull @ApiParam(value = "The type of the bioentity.", required = true) @Valid @RequestParam(value = "type", required = true) String type,@NotNull @ApiParam(value = "The primary identifier of the bioentity.", required = true) @Valid @RequestParam(value = "id", required = true) Integer id);
 
 
-    @ApiOperation(value = "Get semantic markup for dataset type.", nickname = "semanticMarkupDataset", notes = "This service provides semantic markup for DataSet type.", response = SemanticMarkup.class, tags={  })
+    @ApiOperation(value = "Get semantic markup for dataset type.", nickname = "semanticMarkupDataset", notes = "This service provides semantic markup for DataSet type.", response = SemanticMarkup.class, tags={ "Semantic Markup" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = SemanticMarkup.class) })
     @RequestMapping(value = "/semantic-markup/dataset",

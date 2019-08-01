@@ -26,7 +26,7 @@ import java.util.Map;
 @Api(value = "path", description = "the path API")
 public interface PathApi {
 
-    @ApiOperation(value = "Get the possible values a path may have.", nickname = "pathValuesGet", notes = "This service provides the possible values that a path may represent        in the database. This functionality is expected to primarily useful for        applications providing completion and suggestions for user-input.", response = PossibleValues.class, tags={  })
+    @ApiOperation(value = "Get the possible values a path may have.", nickname = "pathValuesGet", notes = "This service provides the possible values that a path may represent        in the database. This functionality is expected to primarily useful for        applications providing completion and suggestions for user-input.", response = PossibleValues.class, tags={ "Possible Values" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = PossibleValues.class) })
     @RequestMapping(value = "/path/values",
@@ -35,7 +35,7 @@ public interface PathApi {
     ResponseEntity<?> pathValuesGet(@ApiParam(value = "The path whose possible values are requested.", required = true)@Valid @RequestParam("path") String path, @ApiParam(value = "A json object mapping which describes the type constraints on this path.") @Valid @RequestParam(value = "typeConstraints", required = false) String typeConstraints, @ApiParam(value = "", allowableValues = "json, jsoncount, count") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
 
 
-    @ApiOperation(value = "Get the possible values a path may have.", nickname = "pathValuesPost", notes = "This service provides the possible values that a path may represent        in the database. This functionality is expected to primarily useful for        applications providing completion and suggestions for user-input.", response = PossibleValues.class, tags={  })
+    @ApiOperation(value = "Get the possible values a path may have.", nickname = "pathValuesPost", notes = "This service provides the possible values that a path may represent        in the database. This functionality is expected to primarily useful for        applications providing completion and suggestions for user-input.", response = PossibleValues.class, tags={ "Possible Values" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = PossibleValues.class) })
     @RequestMapping(value = "/path/values",

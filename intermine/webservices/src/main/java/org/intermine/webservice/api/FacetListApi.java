@@ -26,7 +26,7 @@ import java.util.Map;
 @Api(value = "facet-list", description = "the facet-list API")
 public interface FacetListApi {
 
-    @ApiOperation(value = "Retrieve all the possible facets.", nickname = "facetlist", notes = "Retrieve all the possible facets.", response = FacetList.class, tags={  })
+    @ApiOperation(value = "Retrieve all the possible facets.", nickname = "facetlist", notes = "Retrieve all the possible facets.", response = FacetList.class, tags={ "FacetList" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = FacetList.class) })
     @RequestMapping(value = "/facet-list",

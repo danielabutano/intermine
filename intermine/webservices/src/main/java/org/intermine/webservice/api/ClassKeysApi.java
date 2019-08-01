@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Api(value = "classkeys", description = "the classkeys API")
 public interface ClassKeysApi {
 
-    @ApiOperation(value = "Get the fields used to identify an object.", nickname = "classkeys", notes = "Get the fields configured for this service to identify objects uniquely within the database.", response = SummaryFields.class, tags={  })
+    @ApiOperation(value = "Get the fields used to identify an object.", nickname = "classkeys", notes = "Get the fields configured for this service to identify objects uniquely within the database.", response = SummaryFields.class, tags={ "Key Fields" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = SummaryFields.class) })
     @RequestMapping(value = "/classkeys",

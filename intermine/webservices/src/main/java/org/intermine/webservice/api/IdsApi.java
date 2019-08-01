@@ -32,7 +32,7 @@ public interface IdsApi {
     @ApiOperation(value = "Delete a given job from the server.", nickname = "idsDelete", notes = "Each job should be removed from the server when the user has finished inspecting the results.", response = SimpleJsonModel.class, authorizations = {
         @Authorization(value = "ApiKeyAuthToken"),
 @Authorization(value = "BasicAuth"),
-@Authorization(value = "JWTBearerAuth")    }, tags={  })
+@Authorization(value = "JWTBearerAuth")    }, tags={ "Id Resolution" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = SimpleJsonModel.class) })
     @RequestMapping(value = "/ids/{uid}",
@@ -44,7 +44,7 @@ public interface IdsApi {
     @ApiOperation(value = "Start a New ID Resolution Job on the Server.", nickname = "idsPost", notes = "New ID resolution jobs are created by posting a representation of the job to this service. Jobs are run asynchronously, so this service simply submits the job, and returns the identifier of the job, so that its results and status may be polled later. <br/><br/> A job is a data structure (represented as `json`) that satisfies the following [json-schema](http://json-schema.org/) schema: <br/><br/> {     &emsp;\"type\":  \"object\", \\   &emsp;\"required\": [\"identifiers\", \"type\"], \\   &emsp;\"properties\": { \\     &emsp;&emsp;\"identifiers\": { \\       &emsp;&emsp;&emsp;\"type\": \"array\", \\       &emsp;&emsp;&emsp;\"items\": { \"type\": \"string\" }, \\       &emsp;&emsp;&emsp;\"minItems\": 1, \\       &emsp;&emsp;&emsp;\"uniqueItems\": true \\     &emsp;&emsp;}, \\     &emsp;\"type\":          { \"type\": \"string\"  }, \\     &emsp;\"extra\":         { \"type\": \"string\"  }, \\     &emsp;\"caseSensitive\": { \"type\": \"boolean\" }, \\     &emsp;\"wildCards\":     { \"type\": \"boolean\" } \\   &emsp;} \\ } ", response = IdResolutionPost.class, authorizations = {
         @Authorization(value = "ApiKeyAuthToken"),
 @Authorization(value = "BasicAuth"),
-@Authorization(value = "JWTBearerAuth")    }, tags={  })
+@Authorization(value = "JWTBearerAuth")    }, tags={ "Id Resolution" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = IdResolutionPost.class) })
     @RequestMapping(value = "/ids",
@@ -57,7 +57,7 @@ public interface IdsApi {
     @ApiOperation(value = "Get the Results of a Given Job", nickname = "idsResultsGet", notes = "Get the full results of running a specific job", response = IdResolutionResults.class, authorizations = {
         @Authorization(value = "ApiKeyAuthToken"),
 @Authorization(value = "BasicAuth"),
-@Authorization(value = "JWTBearerAuth")    }, tags={  })
+@Authorization(value = "JWTBearerAuth")    }, tags={ "Id Resolution" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = IdResolutionResults.class) })
     @RequestMapping(value = "/ids/{uid}/results",
@@ -69,7 +69,7 @@ public interface IdsApi {
     @ApiOperation(value = "Check the Status of a Given Job.", nickname = "idsStatusGet", notes = "Get a representation of the status of job.", response = IdResolutionStatus.class, authorizations = {
         @Authorization(value = "ApiKeyAuthToken"),
 @Authorization(value = "BasicAuth"),
-@Authorization(value = "JWTBearerAuth")    }, tags={  })
+@Authorization(value = "JWTBearerAuth")    }, tags={ "Id Resolution" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = IdResolutionStatus.class) })
     @RequestMapping(value = "/ids/{uid}/status",

@@ -26,7 +26,7 @@ import java.util.Map;
 @Api(value = "widgets", description = "the widgets API")
 public interface WidgetsApi {
 
-    @ApiOperation(value = "Get a list of the widgets available at a service.", nickname = "widgetsGet", notes = "This service returns a list of the widgets that are available at a         given service. Each entry for the widget includes details of its type,         the kind of data it processes, and any filters it accepts.", response = Widgets.class, tags={  })
+    @ApiOperation(value = "Get a list of the widgets available at a service.", nickname = "widgetsGet", notes = "This service returns a list of the widgets that are available at a         given service. Each entry for the widget includes details of its type,         the kind of data it processes, and any filters it accepts.", response = Widgets.class, tags={ "Widgets" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = Widgets.class) })
     @RequestMapping(value = "/widgets",

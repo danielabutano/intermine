@@ -19,7 +19,7 @@ import javax.validation.Valid;
 @Api(value = "model", description = "the model API")
 public interface ModelApi {
 
-    @ApiOperation(value = "Get a description of the data model.", nickname = "model", notes = "An InterMine data model can be fully described as a set of classes with various properties. This data model is useful for constructing queries and interpreting the results returned from the service.", response = Model.class, tags={  })
+    @ApiOperation(value = "Get a description of the data model.", nickname = "model", notes = "An InterMine data model can be fully described as a set of classes with various properties. This data model is useful for constructing queries and interpreting the results returned from the service.", response = Model.class, tags={ "Data Model" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = Model.class) })
     @RequestMapping(value = "/model",

@@ -26,7 +26,7 @@ import java.util.Map;
 @Api(value = "data", description = "the data API")
 public interface DataApi {
 
-    @ApiOperation(value = "Get Data about Objects of the Given Type.", nickname = "jBrowseSimpleData", notes = "This service allows simple access to queries against a single type. This is meant to allow for simple linking and resource-based access to InterMine data.", response = JBrowseData.class, tags={  })
+    @ApiOperation(value = "Get Data about Objects of the Given Type.", nickname = "jBrowseSimpleData", notes = "This service allows simple access to queries against a single type. This is meant to allow for simple linking and resource-based access to InterMine data.", response = JBrowseData.class, tags={ "JBrowse Simple Data Service" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = JBrowseData.class) })
     @RequestMapping(value = "/data/{type}",

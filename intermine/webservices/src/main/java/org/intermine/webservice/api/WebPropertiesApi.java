@@ -26,7 +26,7 @@ import java.util.Map;
 @Api(value = "web-properties", description = "the web-properties API")
 public interface WebPropertiesApi {
 
-    @ApiOperation(value = "Get a description of the data model.", nickname = "webProperties", notes = "The InterMine user interface can be customised with a set of properties, e.g. default values for the list upload, default values for the region search etc.", response = WebProperties.class, tags={  })
+    @ApiOperation(value = "Get a description of the data model.", nickname = "webProperties", notes = "The InterMine user interface can be customised with a set of properties, e.g. default values for the list upload, default values for the region search etc.", response = WebProperties.class, tags={ "WebProperties" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = WebProperties.class) })
     @RequestMapping(value = "/web-properties",

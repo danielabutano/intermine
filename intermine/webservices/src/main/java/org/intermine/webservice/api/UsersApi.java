@@ -34,14 +34,14 @@ import java.util.Map;
 @Api(value = "users", description = "the users API")
 public interface UsersApi {
 
-    @ApiOperation(value = "Create a new user in the user-profile.", nickname = "users", notes = "This service allows users of the web service to create a new user account. A user account is required for a number of operations, such as saving lists. This service allows users of the webservice to register an account, and start using these features that require authentication. The username and password provided will be able to be used for future requests, as will an API key provided with the response, which is valid for 24 hours. This is equivalent to the registration mechanism in the web-application interface. Requests to this service are rate limited by IP Address.", response = Users.class, tags={  })
+    @ApiOperation(value = "Create a new user in the user-profile.", nickname = "users", notes = "This service allows users of the web service to create a new user account. A user account is required for a number of operations, such as saving lists. This service allows users of the webservice to register an account, and start using these features that require authentication. The username and password provided will be able to be used for future requests, as will an API key provided with the response, which is valid for 24 hours. This is equivalent to the registration mechanism in the web-application interface. Requests to this service are rate limited by IP Address.", response = Users.class, tags={ "Users" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = Users.class) })
     @RequestMapping(value = "/users",
         method = RequestMethod.POST)
     ResponseEntity<Users> users(@NotNull @ApiParam(value = "The user name of the new user. It should be an email address if possible. There must not be any user with the same username.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "A password to associate with the account.", required = true) @Valid @RequestParam(value = "password", required = true) String password,@ApiParam(value = "Whether or not to subscribe to the mine's mailing list, if it has one. The username must be an email address if true.") @Valid @RequestParam(value = "subscribe-to-list", required = false) Boolean subscribeToList);
 
-    @ApiOperation(value = "Get details about the authenticated user.", nickname = "whoAmI", notes = "Retrieve information about the currently authenticated user. This can be used to display the user's name.", response = WhoAmI.class, tags={  })
+    @ApiOperation(value = "Get details about the authenticated user.", nickname = "whoAmI", notes = "Retrieve information about the currently authenticated user. This can be used to display the user's name.", response = WhoAmI.class, tags={ "Who-Am-I?" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = WhoAmI.class) })
     @RequestMapping(value = "/user/whoami",
@@ -49,7 +49,7 @@ public interface UsersApi {
             method = RequestMethod.GET)
     ResponseEntity<WhoAmI> whoAmI();
 
-    @ApiOperation(value = "Get a new API key.", nickname = "token", notes = "This service allows a user to retrieve an API token which is valid for up to 24 hours of unlimited use. The primary use case is to get an API key where the user has only username/password credentials, since the use of API keys is more secure.", response = Token.class, tags={  })
+    @ApiOperation(value = "Get a new API key.", nickname = "token", notes = "This service allows a user to retrieve an API token which is valid for up to 24 hours of unlimited use. The primary use case is to get an API key where the user has only username/password credentials, since the use of API keys is more secure.", response = Token.class, tags={ "Token" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = Token.class) })
     @RequestMapping(value = "/user/token",
@@ -60,7 +60,7 @@ public interface UsersApi {
     @ApiOperation(value = "Delete a deregistration token.", nickname = "deregistrationTokenDelete", notes = "This service deletes a deregistration token that a user has access to, thus cancelling the request to de-register the user.", response = DeregistrationToken.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Deregistration Tokens" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = DeregistrationToken.class) })
     @RequestMapping(value = "/user/deregistration/{uid}",
@@ -72,7 +72,7 @@ public interface UsersApi {
     @ApiOperation(value = "Get information about a deregistration token.", nickname = "deregistrationTokenGet", notes = "This service returns a representation of a deregistration token that a user has access to.", response = DeregistrationToken.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Deregistration Tokens" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = DeregistrationToken.class) })
     @RequestMapping(value = "/user/deregistration/{uid}",
@@ -84,7 +84,7 @@ public interface UsersApi {
     @ApiOperation(value = "Create a deregistration token.", nickname = "deregistrationTokenPost", notes = "This service creates a deregistration token, thus starting the process of de-registerin a user.", response = DeregistrationToken.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Deregistration Tokens" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = DeregistrationToken.class) })
     @RequestMapping(value = "/user/deregistration",
@@ -95,7 +95,7 @@ public interface UsersApi {
     @ApiOperation(value = "Delete the Current User.", nickname = "userDelete", notes = "This service deletes the current User and all their data. To ensure that you really mean to deregister a user programmatically, this service requires a deregistration token to be obtained before sending the delete request. As output it returns all of the user data it had before it was deleted.", response = Users.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "User" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = Users.class) })
     @RequestMapping(value = "/user",
@@ -107,7 +107,7 @@ public interface UsersApi {
     @ApiOperation(value = "Get information about the Current User.", nickname = "userGet", notes = "This service provides information about the current user, including their user name and preferences.", response = Users.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "User" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = Users.class) })
     @RequestMapping(value = "/user",
@@ -118,7 +118,7 @@ public interface UsersApi {
     @ApiOperation(value = "Remove one or all preferences.", nickname = "userPreferencesDelete", notes = "Delete either a single preference from a user's set of stored preferences, or deletes all stored preference values.", response = Preferences.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "User Preferences" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = Preferences.class) })
     @RequestMapping(value = "/user/preferences",
@@ -130,7 +130,7 @@ public interface UsersApi {
     @ApiOperation(value = "Get a user's preferences.", nickname = "userPreferencesGet", notes = "Get a complete listing of a user's preferences. This is presented as a mapping from string key to string value.", response = Preferences.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "User Preferences" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = Preferences.class) })
     @RequestMapping(value = "/user/preferences",
@@ -142,7 +142,7 @@ public interface UsersApi {
     @ApiOperation(value = "Set the value of one or more preferences.", nickname = "userPreferencesPost", notes = "This service allows a user to store or change a key value pair associated with their account. The keys may have a particular meaning. All values will be stored and retrieved as strings.", response = Preferences.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "User Preferences" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = Preferences.class) })
     @RequestMapping(value = "/user/preferences",
@@ -154,7 +154,7 @@ public interface UsersApi {
     @ApiOperation(value = "Set the value of one or more preferences.", nickname = "userPreferencesPut", notes = "This service allows a user to store or change a key value pair associated with their account. The keys may have a particular meaning. All values will be stored and retrieved as strings.", response = Preferences.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "User Preferences" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = Preferences.class) })
     @RequestMapping(value = "/user/preferences",
@@ -165,7 +165,7 @@ public interface UsersApi {
     @ApiOperation(value = "Delete a Token.", nickname = "permanentTokenDelete", notes = "Delete a specific permanent token. <br/><br/>          Permanent tokens are issued so that users may provide access          to their private data to third parties in a more secure manner.          This service lets users delete permanent tokens they have          issued.", response = SimpleJsonModel.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Permanent Token" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = SimpleJsonModel.class) })
     @RequestMapping(value = "/user/tokens/{uid}",
@@ -177,7 +177,7 @@ public interface UsersApi {
     @ApiOperation(value = "Get Token Information.", nickname = "permanentTokensGet", notes = "Retrieve information about a specific permanent token. <br/><br/>          Permanent tokens are issued so that users may provide access          to their private data to third parties in a more secure manner.          This service lets users inspect a specific permanent tokens they have          issued.", response = PermanentToken.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Permanent Token" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = PermanentToken.class) })
     @RequestMapping(value = "/user/tokens/{uid}",
@@ -189,7 +189,7 @@ public interface UsersApi {
     @ApiOperation(value = "Delete all Tokens.", nickname = "userTokensDelete", notes = "Delete all permanent tokens. <br/><br/>  Permanent tokens are issued so that users may provide access to their private data to third parties in a more secure manner. This service lets users all the delete permanent tokens they have issued.", response = SimpleJsonModel.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Tokens" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = SimpleJsonModel.class) })
     @RequestMapping(value = "/user/tokens",
@@ -201,7 +201,7 @@ public interface UsersApi {
     @ApiOperation(value = "Get List of Permanent Tokens.", nickname = "userTokensGet", notes = "Tokens are issued so that users may provide access to their private data to third parties in a more secure manner. This service lets users inspect the permanent tokens they have issued. <br/><br/> No access is provide here to other tokens (24hrs, api, day), for security and other reasons. Please look at the `Session` service for issuing new temporary tokens.", response = Tokens.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Tokens" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = Tokens.class) })
     @RequestMapping(value = "/user/tokens",
@@ -213,7 +213,7 @@ public interface UsersApi {
     @ApiOperation(value = "Create a New Token.", nickname = "userTokensPost", notes = "Tokens are issued so that users may provide access to their private data to third parties in a more secure manner. This service lets users create a new token they can provide to others. <br/><br/> The different token types are: <br/><br/> `day` : A token that will be valid for up to 24 hrs. <br/><br/> `once` : A token that can only be used for a single request. <br/><br/> `api` : The main Read-Write API key of the user. Generating one of these replaces the currrent key. <br/><br/> `perm` : A permanent Read-Only token that others can use.", response = Token.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Tokens" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = Token.class) })
     @RequestMapping(value = "/user/tokens",
@@ -224,7 +224,7 @@ public interface UsersApi {
     @ApiOperation(value = "Delete a saved query by name.", nickname = "userQueriesDelete", notes = "This resource exposes the ability to delete specific saved queries, identified         by name.         <br/><br/>         A user can only delete queries that they own, and must be executed         with `Read/Write` permission.", response = SimpleJsonModel.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Saved Queries" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = SimpleJsonModel.class) })
     @RequestMapping(value = "/user/queries",
@@ -233,7 +233,7 @@ public interface UsersApi {
     ResponseEntity<?> userQueriesDelete(@NotNull @ApiParam(value = "The name of the query to delete.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@ApiParam(value = "", allowableValues = "json, xml") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
 
 
-    @ApiOperation(value = "Get the Saved Queries You have Access to.", nickname = "userQueriesGet", notes = "This resource represents access to the set of saved-queries         accessible to a user. Saved queries are just normal queries, but         persisted with the user's account.", response = SavedQueries.class, tags={  })
+    @ApiOperation(value = "Get the Saved Queries You have Access to.", nickname = "userQueriesGet", notes = "This resource represents access to the set of saved-queries         accessible to a user. Saved queries are just normal queries, but         persisted with the user's account.", response = SavedQueries.class, tags={ "Saved Queries" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = SavedQueries.class) })
     @RequestMapping(value = "/user/queries",
@@ -245,7 +245,7 @@ public interface UsersApi {
     @ApiOperation(value = "Delete a saved query by name.", nickname = "userQueriesNameDelete", notes = "This resource exposes the ability to delete specific saved queries, identified         by name.         <br/><br/>         A user can only delete queries that they own, and must be executed         with `Read/Write` permission.", response = SimpleJsonModel.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Saved Query" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = SimpleJsonModel.class) })
     @RequestMapping(value = "/user/queries/{name}",
@@ -257,7 +257,7 @@ public interface UsersApi {
     @ApiOperation(value = "Upload New Queries to be Saved into a User's Profile.", nickname = "userQueriesPost", notes = "This resource allows users to upload queries to be saved into their profile.         Queries that the user uploads should all be valid, and ideally have names. If they         do not have names, names will be assigned to them.", response = SavedQueries.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Saved Queries" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = SavedQueries.class) })
     @RequestMapping(value = "/user/queries",
@@ -270,7 +270,7 @@ public interface UsersApi {
     @ApiOperation(value = "Update Existing Queries in a User's Profile.", nickname = "userQueriesPut", notes = "This resource allows users to upload queries to be saved into their profile.         Queries that the user uploads should all be valid, and ideally have names. If they         do not have names, names will be assigned to them. If queries with the same name         already exist, they will be over-written. This provides a mechanism for updating         the value of saved queries on a service.", response = SavedQueries.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Saved Queries" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = SavedQueries.class) })
     @RequestMapping(value = "/user/queries",

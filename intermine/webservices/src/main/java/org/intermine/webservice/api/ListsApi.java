@@ -39,7 +39,7 @@ import java.util.Map;
 @Api(value = "lists", description = "the lists API")
 public interface ListsApi {
 
-    @ApiOperation(value = "Rename an Existing List.", nickname = "listRenameGet", notes = "This service allows users to change the name of an existing list that they are the owner of.", response = ListRename.class, tags = {})
+    @ApiOperation(value = "Rename an Existing List.", nickname = "listRenameGet", notes = "This service allows users to change the name of an existing list that they are the owner of.", response = ListRename.class, tags = {"List Renaming"})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ListRename.class)})
     @RequestMapping(value = "/lists/rename",
@@ -48,7 +48,7 @@ public interface ListsApi {
     ResponseEntity<ListRename> listRenameGet(@NotNull @ApiParam(value = "The current name of the list.", required = true) @Valid @RequestParam(value = "oldname", required = true) String oldname, @NotNull @ApiParam(value = "The name the list should have.", required = true) @Valid @RequestParam(value = "newname", required = true) String newname);
 
 
-    @ApiOperation(value = "Rename an Existing List.", nickname = "listRenamePost", notes = "This service allows users to change the name of an existing list that they are the owner of.", response = ListRename.class, tags = {})
+    @ApiOperation(value = "Rename an Existing List.", nickname = "listRenamePost", notes = "This service allows users to change the name of an existing list that they are the owner of.", response = ListRename.class, tags = {"List Renaming"})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ListRename.class)})
     @RequestMapping(value = "/lists/rename",
@@ -57,7 +57,7 @@ public interface ListsApi {
     ResponseEntity<ListRename> listRenamePost(@NotNull @ApiParam(value = "The current name of the list.", required = true) @Valid @RequestParam(value = "oldname", required = true) String oldname, @NotNull @ApiParam(value = "The name the list should have.", required = true) @Valid @RequestParam(value = "newname", required = true) String newname);
 
 
-    @ApiOperation(value = "Add items to an existing list by identifiers.", nickname = "listsAppendPost", notes = "This service allows users to add new items to an existing     list by uploading a set of identifiers. This is equivalent to     creating a new list from a set of identifiers, and then performing     the union operation on that list an existing one, if the resulant     list replaced the existing list.", response = ListAppend.class, tags = {})
+    @ApiOperation(value = "Add items to an existing list by identifiers.", nickname = "listsAppendPost", notes = "This service allows users to add new items to an existing     list by uploading a set of identifiers. This is equivalent to     creating a new list from a set of identifiers, and then performing     the union operation on that list an existing one, if the resulant     list replaced the existing list.", response = ListAppend.class, tags = {"Append to List"})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ListAppend.class)})
     @RequestMapping(value = "/lists/append",
@@ -70,7 +70,7 @@ public interface ListsApi {
     @ApiOperation(value = "Delete an existing list.", nickname = "listsDelete", notes = "This service allows users to delete         lists that belong to them.", response = ListsDelete.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")}, tags = {})
+            @Authorization(value = "JWTBearerAuth")}, tags = {"Lists"})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ListsDelete.class)})
     @RequestMapping(value = "/lists",
@@ -79,7 +79,7 @@ public interface ListsApi {
     ResponseEntity<?> listsDelete(@NotNull @ApiParam(value = "The name of the list to delete.", required = true) @Valid @RequestParam(value = "name", required = true) String name, @ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
 
 
-    @ApiOperation(value = "Find lists on the server.", nickname = "listsGet", notes = "This service allows users to get back a list of             lists that they have access to. The lists can be optionally             be filtered on the server by name, thus returning just a single             name, or if '*' wildcards are used, a subset of all lists.", response = ListsGet.class, tags = {})
+    @ApiOperation(value = "Find lists on the server.", nickname = "listsGet", notes = "This service allows users to get back a list of             lists that they have access to. The lists can be optionally             be filtered on the server by name, thus returning just a single             name, or if '*' wildcards are used, a subset of all lists.", response = ListsGet.class, tags = {"Lists"})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ListsGet.class)})
     @RequestMapping(value = "/lists",
@@ -91,7 +91,7 @@ public interface ListsApi {
     @ApiOperation(value = "Create a new list.", nickname = "listsPost", notes = "This service allows users to create a new       list by uploading a set of identifiers.         The list is created by using the default settings         of the ID resolution mechanism and then taking         all the good matches.", response = ListsPost.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")}, tags = {})
+            @Authorization(value = "JWTBearerAuth")}, tags = {"Lists"})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ListsPost.class)})
     @RequestMapping(value = "/lists",
@@ -100,7 +100,7 @@ public interface ListsApi {
             method = RequestMethod.POST)
     ResponseEntity<?> listsPost(@ApiParam(value = "Identifiers for objects to add to the list, tab, comma or newline separated.", required = true) @Valid @RequestBody String body, @NotNull @ApiParam(value = "The name of the new list.", required = true) @Valid @RequestParam(value = "name", required = true) String name, @NotNull @ApiParam(value = "The type of the list.", required = true) @Valid @RequestParam(value = "type", required = true) String type, @ApiParam(value = "Whether or not to replace any existing list of this name.") @Valid @RequestParam(value = "replaceExisting", required = false) Boolean replaceExisting, @ApiParam(value = "A disambiguating value (such as organism name).") @Valid @RequestParam(value = "extraValue", required = false) String extraValue, @ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
 
-    @ApiOperation(value = "Get the tags for a list, or all the tags for a given user.", nickname = "listTagsGet", notes = "Fetch an up-to-date list of all tags associated with a list, or all lists.", response = Tags.class, tags = {})
+    @ApiOperation(value = "Get the tags for a list, or all the tags for a given user.", nickname = "listTagsGet", notes = "Fetch an up-to-date list of all tags associated with a list, or all lists.", response = Tags.class, tags = {"List Tags"})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = Tags.class)})
     @RequestMapping(value = "/list/tags",
@@ -112,7 +112,7 @@ public interface ListsApi {
     @ApiOperation(value = "Add one or more tags to a list.", nickname = "listTagsPost", notes = "", response = Tags.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")}, tags = {})
+            @Authorization(value = "JWTBearerAuth")}, tags = {"List Tags"})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = Tags.class)})
     @RequestMapping(value = "/list/tags",
@@ -124,7 +124,7 @@ public interface ListsApi {
     @ApiOperation(value = "Delete one or more tags from a list.", nickname = "listTagsDelete", notes = "", response = Tags.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")}, tags = {})
+            @Authorization(value = "JWTBearerAuth")}, tags = {"List Tags"})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = Tags.class)})
     @RequestMapping(value = "/list/tags",
@@ -135,7 +135,7 @@ public interface ListsApi {
     @ApiOperation(value = "Combine Two or More Lists through Difference.", nickname = "listsDifferencePost", notes = "This service allows users to create new lists which only contain members which are not shared by an even number of lists (see: http://en.wikipedia.org/wiki/Symmetric_difference). The user must have access to all the input lists, but need not be the owner of any of them.", response = ListOperations.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "List Difference" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ListOperations.class) })
     @RequestMapping(value = "/lists/difference",
@@ -147,7 +147,7 @@ public interface ListsApi {
     @ApiOperation(value = "Combine Two or More Lists through Intersection.", nickname = "listsIntersectPost", notes = "This service allows users to create new lists which contain only those items     which are members of all the source lists. The user must have access to all the input     lists, but need not be the owner of any of them. An intersection of a single list     may be considered a copy.", response = ListOperations.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "List Intersection" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ListOperations.class) })
     @RequestMapping(value = "/lists/intersect",
@@ -159,7 +159,7 @@ public interface ListsApi {
     @ApiOperation(value = "Subtract one List From Another.", nickname = "listsSubtractGet", notes = "This service allows users to create new lists which contain only those elements     which are present in one set of lists, and none of those elements which are present     in another set of lists. This is what is typically thought of as subtraction, or more     technically, the asymmetric difference of two sets. The user must supply the names of     the lists to be used as either the source lists or the subtraction lists, as well as     details for the new list to be created. The user must have access to all the named lists,     but need not be the owner of any of them.", response = ListOperations.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "List Substraction" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ListOperations.class) })
     @RequestMapping(value = "/lists/subtract",
@@ -171,7 +171,7 @@ public interface ListsApi {
     @ApiOperation(value = "Subtract one List From Another.", nickname = "listsSubtractPost", notes = "This service allows users to create new lists which contain only those elements     which are present in one set of lists, and none of those elements which are present     in another set of lists. This is what is typically thought of as subtraction, or more     technically, the asymmetric difference of two sets. The user must supply the names of     the lists to be used as either the source lists or the subtraction lists, as well as     details for the new list to be created. The user must have access to all the named lists,     but need not be the owner of any of them.", response = ListOperations.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "List Substraction" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ListOperations.class) })
     @RequestMapping(value = "/lists/subtract",
@@ -183,7 +183,7 @@ public interface ListsApi {
     @ApiOperation(value = "Combine Two or More Lists through Union.", nickname = "listsUnionGet", notes = "This service allows users to create new lists which contain all the members     contained in the set of input lists. The user must have access to all the input     lists, but need not be the owner of any of them. A union of a single list with     itself may be considered a copy.", response = ListOperations.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "List Union" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ListOperations.class) })
     @RequestMapping(value = "/lists/union",
@@ -195,7 +195,7 @@ public interface ListsApi {
     @ApiOperation(value = "Combine Two or More Lists through Union.", nickname = "listsUnionPost", notes = "This service allows users to create new lists which contain all the members     contained in the set of input lists. The user must have access to all the input     lists, but need not be the owner of any of them. A union of a single list with     itself may be considered a copy.", response = ListOperations.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "List Union" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ListOperations.class) })
     @RequestMapping(value = "/lists/union",
@@ -203,7 +203,7 @@ public interface ListsApi {
             method = RequestMethod.POST)
     ResponseEntity<?> listsUnionPost(@NotNull @ApiParam(value = "The name of the list to create.", required = true) @Valid @RequestParam(value = "name", required = true) String name,@NotNull @ApiParam(value = "The name of a source list, or multiple list names concatenated with a ';' separator.", required = true) @Valid @RequestParam(value = "lists", required = true) List<String> lists,@ApiParam(value = "A description of this new list.") @Valid @RequestParam(value = "description", required = false) String description,@ApiParam(value = "A set of tags to apply to the new list.") @Valid @RequestParam(value = "tags", required = false) List<String> tags,@ApiParam(value = "", allowableValues = "json, text") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
 
-    @ApiOperation(value = "Measure similarity of lists using Jaccard Index.", nickname = "jaccardIndexGet", notes = "This service compares the named list with all available lists. (public lists and private ones if the user is logged in). Its returns the name of each list compared plus a number representing the Jaccard Index. See https://en.wikipedia.org/wiki/Jaccard_index", response = JaccardIndex.class, tags={  })
+    @ApiOperation(value = "Measure similarity of lists using Jaccard Index.", nickname = "jaccardIndexGet", notes = "This service compares the named list with all available lists. (public lists and private ones if the user is logged in). Its returns the name of each list compared plus a number representing the Jaccard Index. See https://en.wikipedia.org/wiki/Jaccard_index", response = JaccardIndex.class, tags={ "Jaccard Index" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = JaccardIndex.class) })
     @RequestMapping(value = "/lists/jaccard-index",
@@ -212,7 +212,7 @@ public interface ListsApi {
     ResponseEntity<JaccardIndex> jaccardIndexGet(@ApiParam(value = "The name of the list.") @Valid @RequestParam(value = "list", required = false) String list, @ApiParam(value = "The list of InterMine IDs.") @Valid @RequestParam(value = "ids", required = false) String ids, @ApiParam(value = "If the Jaccard Index is lower than this value, discard.") @Valid @RequestParam(value = "min", required = false, defaultValue = "0.05") BigDecimal min, @ApiParam(value = "The type of InterMine objects (if providing IDs).") @Valid @RequestParam(value = "type", required = false) String type);
 
 
-    @ApiOperation(value = "Measure similarity of lists using Jaccard Index.", nickname = "jaccardIndexPost", notes = "This service compares the named list with all available lists. (public lists and private ones if the user is logged in). Its returns the name of each list compared plus a number representing the Jaccard Index. See https://en.wikipedia.org/wiki/Jaccard_index", response = JaccardIndex.class, tags={  })
+    @ApiOperation(value = "Measure similarity of lists using Jaccard Index.", nickname = "jaccardIndexPost", notes = "This service compares the named list with all available lists. (public lists and private ones if the user is logged in). Its returns the name of each list compared plus a number representing the Jaccard Index. See https://en.wikipedia.org/wiki/Jaccard_index", response = JaccardIndex.class, tags={ "Jaccard Index" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = JaccardIndex.class) })
     @RequestMapping(value = "/lists/jaccard-index",
@@ -220,7 +220,7 @@ public interface ListsApi {
             method = RequestMethod.POST)
     ResponseEntity<JaccardIndex> jaccardIndexPost(@ApiParam(value = "The name of the list.") @Valid @RequestParam(value = "list", required = false) String list,@ApiParam(value = "The list of InterMine IDs.") @Valid @RequestParam(value = "ids", required = false) String ids,@ApiParam(value = "If the Jaccard Index is lower than this value, discard.") @Valid @RequestParam(value = "min", required = false, defaultValue = "0.05") BigDecimal min,@ApiParam(value = "The type of InterMine objects (if providing IDs).") @Valid @RequestParam(value = "type", required = false) String type);
 
-    @ApiOperation(value = "Find lists on the server containing an object.", nickname = "listsWithObjectGet", notes = "This service allows users to get back a list of             lists that contain a given object, either defined by an             internal ID, or looked up from stable identifiers.             If the request does not authenticate to a user account,             then only relevant public lists will be returned.", response = ListsGet.class, tags={  })
+    @ApiOperation(value = "Find lists on the server containing an object.", nickname = "listsWithObjectGet", notes = "This service allows users to get back a list of             lists that contain a given object, either defined by an             internal ID, or looked up from stable identifiers.             If the request does not authenticate to a user account,             then only relevant public lists will be returned.", response = ListsGet.class, tags={ "Find Lists Containing an Object" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ListsGet.class) })
     @RequestMapping(value = "/listswithobject",
@@ -229,7 +229,7 @@ public interface ListsApi {
     ResponseEntity<?> listsWithObjectGet(@ApiParam(value = "A stable identifier that can be used to find the object.") @Valid @RequestParam(value = "publicId", required = false) String publicId,@ApiParam(value = "The internal DB id (changes on each re-release).") @Valid @RequestParam(value = "id", required = false) Integer id,@ApiParam(value = "The type of object (required if using a public id).") @Valid @RequestParam(value = "type", required = false) String type,@ApiParam(value = "An extra value to disambiguate objects.") @Valid @RequestParam(value = "extraValue", required = false) String extraValue,@ApiParam(value = "", allowableValues = "json, html, text, csv, tab") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
 
 
-    @ApiOperation(value = "Find lists on the server containing an object.", nickname = "listsWithObjectPost", notes = "This service allows users to get back a list of             lists that contain a given object, either defined by an             internal ID, or looked up from stable identifiers.             If the request does not authenticate to a user account,             then only relevant public lists will be returned.", response = ListsGet.class, tags={  })
+    @ApiOperation(value = "Find lists on the server containing an object.", nickname = "listsWithObjectPost", notes = "This service allows users to get back a list of             lists that contain a given object, either defined by an             internal ID, or looked up from stable identifiers.             If the request does not authenticate to a user account,             then only relevant public lists will be returned.", response = ListsGet.class, tags={ "Find Lists Containing an Object" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ListsGet.class) })
     @RequestMapping(value = "/listswithobject",
@@ -240,7 +240,7 @@ public interface ListsApi {
     @ApiOperation(value = "Details of all outstanding invitations.", nickname = "listInvitationsGet", notes = "This service returns a description of all the outstanding list invitations for a user on the system.", response = ListInvitationMultiple.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "List Invitations" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ListInvitationMultiple.class) })
     @RequestMapping(value = "/lists/invitations",
@@ -252,7 +252,7 @@ public interface ListsApi {
     @ApiOperation(value = "Invite another user to share a list.", nickname = "listInvitationsPost", notes = "This service allows users to share one of their lists with another user.       This allows read-only access to the given list, allowing it to be used in       queries, exported, etc. You should only do this if you trust the other       party with your data.       <br/><br/>       Users can be designated by their username, display-name (if set) or by       and email address. If the email address is not registered with a user in       the system, an invitation will be sent to that address, with a code that       allows the user to activate the list share.", response = ListInvitationSingle.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "List Invitations" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ListInvitationSingle.class) })
     @RequestMapping(value = "/lists/invitations",
@@ -264,7 +264,7 @@ public interface ListsApi {
     @ApiOperation(value = "Rescind the Permission Granted to a User to Access a List.", nickname = "listSharesDelete", notes = "Stop a user from being able to access a list that you own. This service allows a user     to remove a user's previously granted permission to view the contents of a list.     <br/><br/>     Other than a json results envelope no meaningful results are returned, and the caller     should simply check for a successful response.", response = SimpleJsonModel.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "List Sharing" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = SimpleJsonModel.class) })
     @RequestMapping(value = "/lists/shares",
@@ -276,7 +276,7 @@ public interface ListsApi {
     @ApiOperation(value = "Retrieve information about which lists are shared with and by whom.", nickname = "listSharesGet", notes = "Get information about each list that is shared by or with the authenticating     user. The service returns a map with two keys \"sharedByUser\" and \"sharedWithUser\"     which are themselves each maps, with list names as keys, and either lists of     users with access as values, or the name of the original owner as values.", response = ListSharingGet.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "List Sharing" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ListSharingGet.class) })
     @RequestMapping(value = "/lists/shares",
@@ -288,7 +288,7 @@ public interface ListsApi {
     @ApiOperation(value = "Authorise another user to access a list.", nickname = "listSharesPost", notes = "This service provides a means for authorising another user to access a list. To     share a list the user making the request must be the owner of the list and you must     know the username of the user you wish to share with. If you do not know the username     of the user to share with, then the user should issue an invitation instead. The user     the list is shared with must exist and the list must not already be shared with them.     <br/><br/>     The service returns information detailing whom the list in question is currently     shared with.", response = ListSharingPost.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "List Sharing" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ListSharingPost.class) })
     @RequestMapping(value = "/lists/shares",
@@ -300,7 +300,7 @@ public interface ListsApi {
     @ApiOperation(value = "Details of a single invitation.", nickname = "listsInvitationsUidGet", notes = "This service returns details of a single invitation on the system.", response = ListInvitationSingle.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "List Invitations" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ListInvitationSingle.class) })
     @RequestMapping(value = "/lists/invitations/{uid}",
@@ -312,7 +312,7 @@ public interface ListsApi {
     @ApiOperation(value = "Declare the acceptance of an invitation.", nickname = "listsInvitationsUidPut", notes = "The service accepts the invitation, activating the share. It must be accessed       by the user it was sent to.", response = ListInvitationSingle.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "List Invitations" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ListInvitationSingle.class) })
     @RequestMapping(value = "/lists/invitations/{uid}",

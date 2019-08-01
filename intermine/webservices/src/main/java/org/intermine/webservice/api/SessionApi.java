@@ -26,7 +26,7 @@ import java.util.Map;
 @Api(value = "session", description = "the session API")
 public interface SessionApi {
 
-    @ApiOperation(value = "Open a new Web-Services Session.", nickname = "session", notes = "This service opens a new 24 session for users. If authenticated to an existing user, it has the same effect as requesting a new 24hr token. But for unauthenticated users, it allocates a new temporary profile, and assigns a 24hr usage token.", response = Session.class, tags={  })
+    @ApiOperation(value = "Open a new Web-Services Session.", nickname = "session", notes = "This service opens a new 24 session for users. If authenticated to an existing user, it has the same effect as requesting a new 24hr token. But for unauthenticated users, it allocates a new temporary profile, and assigns a 24hr usage token.", response = Session.class, tags={ "Session" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = Session.class) })
     @RequestMapping(value = "/session",

@@ -18,7 +18,7 @@ import javax.validation.Valid;
 @Api(value = "summaryFields", description = "the summaryFields API")
 public interface SummaryFieldsApi {
 
-    @ApiOperation(value = "Get the fields used to summarise the class.", nickname = "summaryFields", notes = "", response = SummaryFields.class, tags={  })
+    @ApiOperation(value = "Get the fields used to summarise the class.", nickname = "summaryFields", notes = "", response = SummaryFields.class, tags={ "Summary Fields" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = SummaryFields.class) })
     @RequestMapping(value = "/summaryfields",

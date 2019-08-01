@@ -23,7 +23,7 @@ import java.util.Map;
 @Api(value = "query", description = "the query API")
 public interface QueryApiDefaultJson {
 
-    @ApiOperation(value = "Get a stored query.", nickname = "queriesGet", notes = "Get a query stored at the service.", response = Object.class, tags={  })
+    @ApiOperation(value = "Get a stored query.", nickname = "queriesGet", notes = "Get a query stored at the service.", response = Object.class, tags={ "Query Store" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = Object.class) })
     @RequestMapping(value = "/queries",
@@ -32,7 +32,7 @@ public interface QueryApiDefaultJson {
     ResponseEntity<Object> queriesGet(@NotNull @ApiParam(value = "The id of the query to fetch.", required = true) @Valid @RequestParam(value = "id", required = true) String id,@ApiParam(value = "", allowableValues = "json, xml") @Valid @RequestParam(value = "format", required = false, defaultValue = "json") String format);
 
 
-    @ApiOperation(value = "Store a query.", nickname = "queriesPost", notes = "", response = QueryStore.class, tags={  })
+    @ApiOperation(value = "Store a query.", nickname = "queriesPost", notes = "", response = QueryStore.class, tags={ "Query Store" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = QueryStore.class) })
     @RequestMapping(value = "/queries",
@@ -40,7 +40,7 @@ public interface QueryApiDefaultJson {
             method = RequestMethod.POST)
     ResponseEntity<QueryStore> queriesPost(@NotNull @ApiParam(value = "The name of the list to create.", required = true) @Valid @RequestParam(value = "query", required = true) String query);
 
-    @ApiOperation(value = "Get results for a query against the database.", nickname = "queryResultsGet", notes = "This service provides full access to arbitrary database queries.     Queries are accepted in a serialised XML format, executed and returned     in a streaming manner. The query format is a custom subset of the capabilities     of SQL; see the InterMine documentation for a full description of the query XML     syntax.", response = QueryResultsJson.class, tags={  })
+    @ApiOperation(value = "Get results for a query against the database.", nickname = "queryResultsGet", notes = "This service provides full access to arbitrary database queries.     Queries are accepted in a serialised XML format, executed and returned     in a streaming manner. The query format is a custom subset of the capabilities     of SQL; see the InterMine documentation for a full description of the query XML     syntax.", response = QueryResultsJson.class, tags={ "Query Results" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = QueryResultsJson.class) })
     @RequestMapping(value = "/query/results",
@@ -49,7 +49,7 @@ public interface QueryApiDefaultJson {
     ResponseEntity<?> queryResultsGet(@NotNull @ApiParam(value = "A definition of the query to execute in Path-Query XML format.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@ApiParam(value = "The version of the XML format used.") @Valid @RequestParam(value = "version", required = false) Integer version,@ApiParam(value = "The index of the first result to return.") @Valid @RequestParam(value = "start", required = false, defaultValue = "0") Integer start,@ApiParam(value = "The maximum size of the result set.") @Valid @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,@ApiParam(value = "Include column headers. Use friendly for human readable paths. (Only for flat-file formats).", allowableValues = "none, path, friendly") @Valid @RequestParam(value = "columnheaders", required = false, defaultValue = "none") String columnheaders,@ApiParam(value = "", allowableValues = "tab, csv, count, json, jsonobject, jsoncount, xml, html") @Valid @RequestParam(value = "format", required = false, defaultValue = "tab") String format);
 
 
-    @ApiOperation(value = "Get results for a query against the database.", nickname = "queryResultsPost", notes = "This service provides full access to arbitrary database queries.     Queries are accepted in a serialised XML format, executed and returned     in a streaming manner. The query format is a custom subset of the capabilities     of SQL; see the InterMine documentation for a full description of the query XML     syntax.", response = QueryResultsJson.class, tags={  })
+    @ApiOperation(value = "Get results for a query against the database.", nickname = "queryResultsPost", notes = "This service provides full access to arbitrary database queries.     Queries are accepted in a serialised XML format, executed and returned     in a streaming manner. The query format is a custom subset of the capabilities     of SQL; see the InterMine documentation for a full description of the query XML     syntax.", response = QueryResultsJson.class, tags={ "Query Results" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = QueryResultsJson.class) })
     @RequestMapping(value = "/query/results",
@@ -60,7 +60,7 @@ public interface QueryApiDefaultJson {
     @ApiOperation(value = "Add the result set of a query to a list on the server.", nickname = "queryAppendToListGet", notes = "This service provides the facility to submit a query and add the objects           contained in its result set to a list that already exists on the server. This           facility places a couple of restrictions on the query itself, namely that           the view list may only contain a single item, which should refer to the           internal id attribute of an object in the query.", response = ToList.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Add to List from Query" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ToList.class) })
     @RequestMapping(value = "/query/append/tolist",
@@ -72,7 +72,7 @@ public interface QueryApiDefaultJson {
     @ApiOperation(value = "Add the result set of a query to a list on the server.", nickname = "queryAppendToListPost", notes = "This service provides the facility to submit a query and add the objects           contained in its result set to a list that already exists on the server. This           facility places a couple of restrictions on the query itself, namely that           the view list may only contain a single item, which should refer to the           internal id attribute of an object in the query.", response = ToList.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Add to List from Query" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ToList.class) })
     @RequestMapping(value = "/query/append/tolist",
@@ -84,7 +84,7 @@ public interface QueryApiDefaultJson {
     @ApiOperation(value = "Save the result set of a query as a list on the server.", nickname = "queryToListGet", notes = "This service provides the facility to submit a query and create a new list whose contents shall be the result set defined by running the query. <br/><br/> This facility places a couple of restrictions on the query itself, namely that the view list may only contain a single item, which can refer to any attribute of an object. The attribute itself will be ignored, and the object itself will be selected. For this reason, one might choose to always select the `.id` attribute when using this service.", response = ToList.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Create List from Query" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ToList.class) })
     @RequestMapping(value = "/query/tolist",
@@ -96,7 +96,7 @@ public interface QueryApiDefaultJson {
     @ApiOperation(value = "Save the result set of a query as a list on the server.", nickname = "queryToListPost", notes = "This service provides the facility to submit a query and create a new list whose contents shall be the result set defined by running the query. <br/><br/> This facility places a couple of restrictions on the query itself, namely that the view list may only contain a single item, which can refer to any attribute of an object. The attribute itself will be ignored, and the object itself will be selected. For this reason, one might choose to always select the `.id` attribute when using this service.", response = ToList.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Create List from Query" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ToList.class) })
     @RequestMapping(value = "/query/tolist",

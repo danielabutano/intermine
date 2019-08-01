@@ -26,7 +26,7 @@ import java.util.Map;
 @Api(value = "search", description = "the search API")
 public interface SearchApi {
 
-    @ApiOperation(value = "Perform a key-word search and retrieve the results.", nickname = "quickSearchGet", notes = "Run a general key-word style search over all data in the data-warehouse. Rather than a structured query for a specific type of data, this allows the user to search broadly over a range of data types, and use facetting information to restrict the search results.", response = QuickSearch.class, tags={  })
+    @ApiOperation(value = "Perform a key-word search and retrieve the results.", nickname = "quickSearchGet", notes = "Run a general key-word style search over all data in the data-warehouse. Rather than a structured query for a specific type of data, this allows the user to search broadly over a range of data types, and use facetting information to restrict the search results.", response = QuickSearch.class, tags={ "QuickSearch" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = QuickSearch.class) })
     @RequestMapping(value = "/search",
@@ -35,7 +35,7 @@ public interface SearchApi {
     ResponseEntity<QuickSearch> quickSearchGet(@ApiParam(value = "The query string to search with. If absent, or blank, all results will be returned.") @Valid @RequestParam(value = "q", required = false) String q,@ApiParam(value = "The maximum number of records to return. If no limit is provided, up to 100 results will be returned.") @Valid @RequestParam(value = "size", required = false) Integer size,@ApiParam(value = "The index of the first result to return.") @Valid @RequestParam(value = "start", required = false) Integer start,@ApiParam(value = "A list to search within.") @Valid @RequestParam(value = "list", required = false) String list,@ApiParam(value = "A facet parameter, eg facet_Organism=D.melanogaster") @Valid @RequestParam(value = "facet_?", required = false) List<String> facet);
 
 
-    @ApiOperation(value = "Perform a key-word search and retrieve the results.", nickname = "quickSearchPost", notes = "Run a general key-word style search over all data in the data-warehouse. Rather than a structured query for a specific type of data, this allows the user to search broadly over a range of data types, and use facetting information to restrict the search results.", response = QuickSearch.class, tags={  })
+    @ApiOperation(value = "Perform a key-word search and retrieve the results.", nickname = "quickSearchPost", notes = "Run a general key-word style search over all data in the data-warehouse. Rather than a structured query for a specific type of data, this allows the user to search broadly over a range of data types, and use facetting information to restrict the search results.", response = QuickSearch.class, tags={ "QuickSearch" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = QuickSearch.class) })
     @RequestMapping(value = "/search",

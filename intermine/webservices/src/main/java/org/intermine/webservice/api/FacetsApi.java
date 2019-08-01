@@ -26,7 +26,7 @@ import java.util.Map;
 @Api(value = "facets", description = "the facets API")
 public interface FacetsApi {
 
-    @ApiOperation(value = "Perform a key-word search and retrieve the facets.", nickname = "facetSearchGet", notes = "Run a general key-word style search over all data in the data-warehouse. This is similar to Quick Search but here only the facet category counts are returned.", response = FacetSearch.class, tags={  })
+    @ApiOperation(value = "Perform a key-word search and retrieve the facets.", nickname = "facetSearchGet", notes = "Run a general key-word style search over all data in the data-warehouse. This is similar to Quick Search but here only the facet category counts are returned.", response = FacetSearch.class, tags={ "FacetSearch" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = FacetSearch.class) })
     @RequestMapping(value = "/facets",
@@ -35,7 +35,7 @@ public interface FacetsApi {
     ResponseEntity<FacetSearch> facetSearchGet(@ApiParam(value = "The query string to search with. If absent, or blank, all results will be returned.") @Valid @RequestParam(value = "q", required = false) String q,@ApiParam(value = "A list to search within.") @Valid @RequestParam(value = "list", required = false) String list,@ApiParam(value = "A facet parameter, eg facet_Organism=D.melanogaster") @Valid @RequestParam(value = "facet_?", required = false) List<String> facet);
 
 
-    @ApiOperation(value = "Perform a key-word search and retrieve the facets.", nickname = "facetSearchPost", notes = "Run a general key-word style search over all data in the data-warehouse. This is similar to Quick Search but here only the facet category counts are returned.", response = FacetSearch.class, tags={  })
+    @ApiOperation(value = "Perform a key-word search and retrieve the facets.", nickname = "facetSearchPost", notes = "Run a general key-word style search over all data in the data-warehouse. This is similar to Quick Search but here only the facet category counts are returned.", response = FacetSearch.class, tags={ "FacetSearch" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = FacetSearch.class) })
     @RequestMapping(value = "/facets",

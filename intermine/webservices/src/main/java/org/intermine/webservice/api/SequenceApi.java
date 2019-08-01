@@ -26,7 +26,7 @@ import java.util.Map;
 @Api(value = "sequence", description = "the sequence API")
 public interface SequenceApi {
 
-    @ApiOperation(value = "Get a portion of a sequence-like object.", nickname = "sequenceGet", notes = "Get either the entire sequence of an object, or fetch an indexed sub-sequence of it. This service expects a query with a single output column that resolves to a sub-sequenceable object. For example to get a sub-sequence of the genomic sequence of the fly X chromosome in a genomic mine, the following query could be used: ``` <query model=\"genomic\" view=\"Chromosome.sequence.residues\"> <constraint path=\"Chromosome\" op=\"LOOKUP\" value=\"X\" extraValue=\"D. melanogaster\"/> </query> ``` ", response = Sequence.class, tags={  })
+    @ApiOperation(value = "Get a portion of a sequence-like object.", nickname = "sequenceGet", notes = "Get either the entire sequence of an object, or fetch an indexed sub-sequence of it. This service expects a query with a single output column that resolves to a sub-sequenceable object. For example to get a sub-sequence of the genomic sequence of the fly X chromosome in a genomic mine, the following query could be used: ``` <query model=\"genomic\" view=\"Chromosome.sequence.residues\"> <constraint path=\"Chromosome\" op=\"LOOKUP\" value=\"X\" extraValue=\"D. melanogaster\"/> </query> ``` ", response = Sequence.class, tags={ "Sequence Access" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = Sequence.class) })
     @RequestMapping(value = "/sequence",
@@ -35,7 +35,7 @@ public interface SequenceApi {
     ResponseEntity<Sequence> sequenceGet(@NotNull @ApiParam(value = "The xml OR JSON of the query to run.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@ApiParam(value = "The start index.") @Valid @RequestParam(value = "start", required = false) Integer start,@ApiParam(value = "The end index.") @Valid @RequestParam(value = "end", required = false) Integer end);
 
 
-    @ApiOperation(value = "Get a portion of a sequence-like object.", nickname = "sequencePost", notes = "Get either the entire sequence of an object, or fetch an indexed sub-sequence of it. This service expects a query with a single output column that resolves to a sub-sequenceable object. For example to get a sub-sequence of the genomic sequence of the fly X chromosome in a genomic mine, the following query could be used: ``` <query model=\"genomic\" view=\"Chromosome.sequence.residues\"> <constraint path=\"Chromosome\" op=\"LOOKUP\" value=\"X\" extraValue=\"D. melanogaster\"/> </query> ``` ", response = Sequence.class, tags={  })
+    @ApiOperation(value = "Get a portion of a sequence-like object.", nickname = "sequencePost", notes = "Get either the entire sequence of an object, or fetch an indexed sub-sequence of it. This service expects a query with a single output column that resolves to a sub-sequenceable object. For example to get a sub-sequence of the genomic sequence of the fly X chromosome in a genomic mine, the following query could be used: ``` <query model=\"genomic\" view=\"Chromosome.sequence.residues\"> <constraint path=\"Chromosome\" op=\"LOOKUP\" value=\"X\" extraValue=\"D. melanogaster\"/> </query> ``` ", response = Sequence.class, tags={ "Sequence Access" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = Sequence.class) })
     @RequestMapping(value = "/sequence",

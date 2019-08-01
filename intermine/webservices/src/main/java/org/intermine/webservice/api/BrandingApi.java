@@ -26,7 +26,7 @@ import java.util.Map;
 @Api(value = "branding", description = "the branding API")
 public interface BrandingApi {
 
-    @ApiOperation(value = "Get Branding Information.", nickname = "branding", notes = "Retrieve branding information, so that elements may be visually styled appropriately for their source.", response = Branding.class, tags={  })
+    @ApiOperation(value = "Get Branding Information.", nickname = "branding", notes = "Retrieve branding information, so that elements may be visually styled appropriately for their source.", response = Branding.class, tags={ "Branding" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = Branding.class) })
     @RequestMapping(value = "/branding",

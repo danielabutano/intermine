@@ -26,7 +26,7 @@ import java.util.Map;
 @Api(value = "query", description = "the query API")
 public interface QueryApi {
 
-    @ApiOperation(value = "Get the code to run a pathquery in a given language.", nickname = "generatedCodeGet", notes = "This service provides the ability to generate code in one of several languages based on a pathquery provided in serialised form.", response = Object.class, tags={  })
+    @ApiOperation(value = "Get the code to run a pathquery in a given language.", nickname = "generatedCodeGet", notes = "This service provides the ability to generate code in one of several languages based on a pathquery provided in serialised form.", response = Object.class, tags={ "Generated Code" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = Object.class) })
     @RequestMapping(value = "/query/code",
@@ -35,7 +35,7 @@ public interface QueryApi {
     ResponseEntity<?> generatedCodeGet(@NotNull @ApiParam(value = "The language to generate code in.", required = true, allowableValues = "pl, py, rb, js, java") @Valid @RequestParam(value = "lang", required = true, defaultValue = "py") String lang,@NotNull @ApiParam(value = "The query to generate code for, in XML or JSON form.", required = true) @Valid @RequestParam(value = "query", required = true) String query,@ApiParam(value = "", allowableValues = "text, xml, json") @Valid @RequestParam(value = "format", required = false, defaultValue = "text") String format);
 
 
-    @ApiOperation(value = "Get the code to run a pathquery in a given language.", nickname = "generatedCodePost", notes = "This service provides the ability to generate code in one of several languages based on a pathquery provided in serialised form.", response = Object.class, tags={  })
+    @ApiOperation(value = "Get the code to run a pathquery in a given language.", nickname = "generatedCodePost", notes = "This service provides the ability to generate code in one of several languages based on a pathquery provided in serialised form.", response = Object.class, tags={ "Generated Code" })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = Object.class) })
     @RequestMapping(value = "/query/code",
@@ -46,7 +46,7 @@ public interface QueryApi {
     @ApiOperation(value = "Save queries to a user account on the server.", nickname = "queryUploadGet", notes = "This service provides the facility to submit one or more queries             and save it/them for future reference to a user account on the server.", response = SavedQueries.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Save Query" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = SavedQueries.class) })
     @RequestMapping(value = "/query/upload",
@@ -58,7 +58,7 @@ public interface QueryApi {
     @ApiOperation(value = "Save queries to a user account on the server.", nickname = "queryUploadPost", notes = "This service provides the facility to submit one or more queries             and save it/them for future reference to a user account on the server.", response = SavedQueries.class, authorizations = {
             @Authorization(value = "ApiKeyAuthToken"),
             @Authorization(value = "BasicAuth"),
-            @Authorization(value = "JWTBearerAuth")    }, tags={  })
+            @Authorization(value = "JWTBearerAuth")    }, tags={ "Save Query" })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = SavedQueries.class) })
     @RequestMapping(value = "/query/upload",
