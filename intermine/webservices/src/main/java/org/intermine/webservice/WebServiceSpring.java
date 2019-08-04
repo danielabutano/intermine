@@ -23,7 +23,6 @@ import org.intermine.webservice.server.exceptions.MissingParameterException;
 import org.intermine.webservice.server.exceptions.ServiceException;
 import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
 import org.intermine.webservice.server.exceptions.UnauthorizedException;
-import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -32,7 +31,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Properties;
 
-@Service
 public class WebServiceSpring {
 
     /** Default jsonp callback **/

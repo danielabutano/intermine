@@ -14,7 +14,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @EnableSwagger2
-@ComponentScan(basePackages = { "io.swagger", "org.intermine.webservice.api" , "io.swagger.configuration"})
+@ComponentScan(basePackages = { "io.swagger", "org.intermine" , "io.swagger.configuration"})
 public class Swagger2SpringBoot extends SpringBootServletInitializer implements CommandLineRunner {
 
     @Bean

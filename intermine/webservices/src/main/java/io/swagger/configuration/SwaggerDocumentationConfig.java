@@ -1,7 +1,10 @@
 package io.swagger.configuration;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.bind.annotation.RequestMapping;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -97,7 +100,7 @@ public class SwaggerDocumentationConfig {
                         new Tag("List Difference", "")
                         )
                 .select()
-                    .apis(RequestHandlerSelectors.basePackage("org.intermine.webservice.api"))
+                    .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
                     .build()
                 .directModelSubstitute(org.threeten.bp.LocalDate.class, java.sql.Date.class)
                 .directModelSubstitute(org.threeten.bp.OffsetDateTime.class, java.util.Date.class)
