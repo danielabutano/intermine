@@ -392,4 +392,38 @@
         });
 </script>
 
+<script>
+    jQuery(document).one('ready',function() {
+        if(${!PROFILE.loggedIn && !empty OAUTH2_PROVIDERS && WEB_PROPERTIES['oauth2.allowed'] != 'false' && OAUTH2_PROVIDERS.contains('IM')}){
+            console.log("condition is true here");
+            jQuery.ajax({
+                type: "GET",
+                url: "http://localhost:8282/intermine/isLoggedIn?client="+"${WEB_PROPERTIES['oauth2.IM.client-id']}",
+                data: {
+                    format: 'json'
+                },
+                // dataType: 'jsonp',
+                xhrFields: {
+                    withCredentials: true
+                },
+                crossDomain: true,
+                beforeSend: function (xhr) {
+                    // xhr.setRequestHeader("Cookie", "session=xyz");
+                },
+                success: function (data) {
+                    if (data === true) {
+                        window.location.href = "/${WEB_PROPERTIES['webapp.path']}/oauth2authenticator.do?provider=IM"
+                    }
+                },
+                error: function (xhr) {
+                    // alert(xhr.responseText);
+                    console.log(xhr.responseText);
+                }
+            })
+
+
+        }
+    });
+</script>
+
 <!-- /begin.jsp -->
