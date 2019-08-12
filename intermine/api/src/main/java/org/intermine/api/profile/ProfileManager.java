@@ -1344,6 +1344,41 @@ public class ProfileManager
     }
 
     /**
+     * Grant permission to the given identity, creating a profile for this
+     * identity if it is not already available and update the profile with new
+     * IM account details if account already exists.
+     *
+     * By this point in the process, the code calling this method is required to have
+     * validated the identity claims of the issuer.
+     *
+     * @param issuer The client claiming this identity for a user.
+     * @param identity The identity of the user.
+     * @param mid Merge Profile Id
+     * @param classKeys The class keys for this service.
+     *
+     * @return permission to use this service.
+     */
+    public ApiPermission grantPermission(String issuer, String identity,Integer mid,
+                                         Map<String, List<FieldDescriptor>> classKeys) throws ObjectStoreException {
+        String username = issuer + ":" + identity;
+        Profile profile = getProfile(username, classKeys);
+        if (profile == null && hasProfile(mid)) {
+            updateProfile(mid,username);
+            profile=getProfile(username);
+        }
+        else if(profile==null && !hasProfile(mid)){
+            profile =createNewProfile(username,null);
+        }
+        if (!profile.prefers(UserPreferences.EMAIL)
+                && identity.contains("@")) {
+            profile.getPreferences().put(UserPreferences.EMAIL, identity);
+        }
+        return new ApiPermission(profile, ApiPermission.Level.RW);
+    }
+
+
+
+    /**
      * Get the level of permission granted by an access token.
      * @param token The token supposedly associated with a user.
      * @param classKeys The class keys for this user.
@@ -1581,13 +1616,13 @@ public class ProfileManager
     }
 
     /**
-     * Update an old mine account with new IM account details
-     * @param profile The profile to update.
-     * @param sub Unique Id of IM user.
+     * Update the old mine account with new IM account details
+     * @param userId The profile id to update.
+     * @param username Unique Id of IM user along with 'IM:'.
      */
-    public synchronized void updateProfile(Profile profile,String sub) throws ObjectStoreException {
-        UserProfile userProfile = getUserProfile(profile.getUserId());
-        userProfile.setUsername("IM:"+sub);
+    public synchronized void updateProfile(Integer userId,String username) throws ObjectStoreException {
+        UserProfile userProfile = getUserProfile(userId);
+        userProfile.setUsername(username);
         userProfile.setPassword(null);
         uosw.store(userProfile);
     }

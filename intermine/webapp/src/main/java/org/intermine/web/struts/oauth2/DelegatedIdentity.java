@@ -24,6 +24,8 @@ public final class DelegatedIdentity
 
     private final String provider, id, email, name;
 
+    private final Integer mid;
+
     /**
      * Construct a new delegated identity.
      *
@@ -31,8 +33,9 @@ public final class DelegatedIdentity
      * @param id The id of the user - an opaque string.
      * @param email An optional email.
      * @param name An optional name.
+     * @param mid An optional profile id for migration.
      */
-    public DelegatedIdentity(String provider, String id, String email, String name) {
+    public DelegatedIdentity(String provider, String id, String email, String name, Integer mid) {
         if (provider == null || id == null) {
             throw new NullPointerException("provider and id must have values");
         }
@@ -40,6 +43,7 @@ public final class DelegatedIdentity
         this.id = id;
         this.email = email;
         this.name = name;
+        this.mid =mid;
     }
 
     /** @return the name of this identity. **/
@@ -62,11 +66,14 @@ public final class DelegatedIdentity
         return provider;
     }
 
+    /** @return the merge Profile id of this identity. **/
+    public Integer getMid(){return  mid;}
+
     @Override
     public String toString() {
         return String.format(
-                "<%s-identity id=%s email=%s name=%s>",
-                provider.toLowerCase(), id, email, name);
+                "<%s-identity id=%s email=%s name=%s mid=%d>",
+                provider.toLowerCase(), id, email, name, mid);
     }
 
     @Override

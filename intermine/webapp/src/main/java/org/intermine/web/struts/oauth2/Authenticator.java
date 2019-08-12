@@ -76,6 +76,13 @@ public class Authenticator extends InterMineAction
         String state = UUID.randomUUID().toString();
         request.getSession().setAttribute("oauth2.state", state);
 
+        //Check for merge request
+        String mergeProfile=null;
+        if (request.getSession().getAttribute("profileId")!=null) {
+            mergeProfile= String.valueOf(request.getSession().getAttribute("profileId"));
+            request.getSession().removeAttribute("profileId");
+        }
+
         String authorisationUrl = webProperties.getProperty("oauth2." + providerName + ".url.auth");
         if (authorisationUrl == null) {
             try {
@@ -97,6 +104,7 @@ public class Authenticator extends InterMineAction
                    .setScope(webProperties.getProperty("oauth2." + providerName + ".scopes"))
                    .setState(state)
                    .setParameter("response_type", "code")
+                    .setParameter("mergeProfile", mergeProfile)
                    .setParameter("openid.realm", realm) // link open-id 2.0 accounts [1]
                    .buildQueryMessage();
             String goHere = authRequest.getLocationUri();

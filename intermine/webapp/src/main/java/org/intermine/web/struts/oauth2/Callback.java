@@ -46,6 +46,7 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.DuplicateMappingException;
 import org.intermine.api.profile.Profile;
 import org.intermine.api.profile.UserPreferences;
+import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.web.logic.profile.LoginHandler;
 import org.intermine.web.logic.profile.ProfileMergeIssues;
@@ -124,7 +125,7 @@ public class Callback extends LoginHandler
     private ActionMessages googleProviderFlow(HttpServletRequest request,
             String providerName, String redirectUri, OAuthProvider provider,
             OAuthAuthzResponse oar)
-        throws ForseenProblem, OAuthSystemException, OAuthProblemException, JSONException {
+        throws ForseenProblem, OAuthSystemException, OAuthProblemException, JSONException, ObjectStoreException {
         // Special flow just for Google, because Google is special (not in a good way).
         OAuthAccessTokenResponse resp = getTokenResponse(redirectUri, oar, provider);
         LOG.debug("GOOGLE RESPONSE: " + resp.getBody());
@@ -159,7 +160,7 @@ public class Callback extends LoginHandler
     private ActionMessages standardProviderFlow(HttpServletRequest request,
             String providerName, String redirectUri, OAuthProvider provider,
             OAuthAuthzResponse oar) throws OAuthSystemException,
-            OAuthProblemException, JSONException {
+            OAuthProblemException, JSONException, ObjectStoreException {
         ActionMessages messages;
         // Step one - get token
         String accessToken = getAccessToken(redirectUri, oar, provider);
@@ -266,20 +267,22 @@ public class Callback extends LoginHandler
 
     private ActionMessages loginUser(
             HttpServletRequest request,
-            DelegatedIdentity identity) {
+            DelegatedIdentity identity) throws ObjectStoreException {
         return loginUser(request, identity, null);
     }
 
     private ActionMessages loginUser(
             HttpServletRequest request,
             DelegatedIdentity identity,
-            MigrationMapping mapping) {
+            MigrationMapping mapping) throws ObjectStoreException {
         LOG.debug("Logging in " + identity + " with migration mapping " + mapping);
         Profile currentProfile = SessionMethods.getProfile(request.getSession());
         InterMineAPI api = SessionMethods.getInterMineAPI(request.getSession());
-        Profile profile = api.getProfileManager()
-                 .grantPermission(identity.getProvider(), identity.getId(), api.getClassKeys())
-                 .getProfile();
+//        Profile profile = api.getProfileManager()
+//                 .grantPermission(identity.getProvider(), identity.getId(), api.getClassKeys())
+//                 .getProfile();
+        //New grantPermission method for migration process
+        Profile profile =api.getProfileManager().grantPermission(identity.getProvider(),identity.getId(),identity.getMid(),api.getClassKeys()).getProfile();
         Map<String, String> preferences = profile.getPreferences();
         if (!preferences.containsKey(UserPreferences.EMAIL)) {
             preferences.put(UserPreferences.EMAIL, identity.getEmail());
@@ -468,6 +471,12 @@ public class Callback extends LoginHandler
                 email = emails.optString("account");
             }
         }
+
+        Integer mid=null;
+        if(result.has("mid")){
+            mid = Integer.valueOf(result.get("mid").toString());
+        }
+
         return new DelegatedIdentity(provider, id, email, name);
     }
 }
