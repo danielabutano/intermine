@@ -15,7 +15,26 @@
   <div class="plainbox">
 
     <div class="column">
+      <% if (session.getAttribute("mergeRequest") == null) { %>
       <html:form action="/loginAction" focus="username" method="post" enctype="multipart/form-data">
+        <h3><fmt:message key="login.haspassword"/></h3>
+        <html:hidden property="returnToString"/>
+        <table>
+          <tr>
+            <td><fmt:message key="login.username"/></td>
+            <td><html:text property="username"/><br/></td>
+          </tr>
+          <tr>
+            <td><fmt:message key="login.password"/></td>
+            <td><html:password property="password"/><br/></td>
+          </tr>
+          <tr>
+            <td colspan="2"><html:submit property="action"><fmt:message key="login.login"/></html:submit></td>
+          </tr>
+        </table>
+      </html:form>
+      <% } else {%>
+      <html:form action="/mergeAction" focus="username" method="post" enctype="multipart/form-data">
         <h3><fmt:message key="login.haspassword"/></h3>
         <html:hidden property="returnToString"/>
         <table>
@@ -32,6 +51,8 @@
           </tr>
         </table>
       </html:form>
+      <% } %>
+      <% session.removeAttribute("mergeRequest"); %>
 
       <script language="javascript">
         var visibility = 'block';
