@@ -340,6 +340,10 @@
       <forward name="login" path="login.page"/>
       <forward name="mymine" redirect="true" path="/mymine.do"/>
     </action>
+    <action path="/mergeAction" name="loginForm" type="org.intermine.web.struts.MergeAction" input="login" parameter="action">
+      <forward name="login" path="login.page"/>
+      <forward name="mymine" redirect="true" path="/oauth2authenticator.do?provider=IM"/>
+    </action>
     <action path="/oauth2authenticator" type="org.intermine.web.struts.oauth2.Authenticator">
       <forward name="login" path="login.page"/>
     </action>
