@@ -74,18 +74,6 @@ public class LoginAction extends LoginHandler
         //track the user login
         im.getTrackerDelegate().trackLogin(lf.getUsername());
 
-        //Merge old mine account with new IM account
-        if(request.getSession().getAttribute("sub")!=null){
-            String sub= (String) request.getSession().getAttribute("sub");
-            ProfileManager pm = im.getProfileManager();
-            pm.updateProfile(user,sub);
-            String url = webProperties.getProperty("oauth2.IM.url.account")+"?sub="+sub+"&clientId="+webProperties.getProperty("oauth2.IM.client-id");
-            HttpClient client = HttpClientBuilder.create().build();
-            HttpGet req = new HttpGet(url);
-            HttpResponse res = client.execute(req);
-        }
-
-
         if (issues.hasIssues()) {
             for (Map.Entry<String, String> renamed: issues.getRenamedBags().entrySet()) {
                 recordMessage(new ActionMessage("login.renamedbags", renamed.getKey(),
