@@ -52,9 +52,8 @@ public class LoginController extends TilesAction
 
         //Handle Merge request from IM auth server
         try {
-            if (request.getHeader("referer").contains(webProperties.getProperty("oauth2.IM.url.auth"))) {
-                String sub = request.getParameter("sub");
-                request.getSession().setAttribute("sub", sub);
+            if (request.getHeader("referer").contains(webProperties.getProperty("oauth2.IM.url.auth")) && request.getParameter("merge")!=null) {
+                request.getSession().setAttribute("mergeRequest", true);
             }
         }
         catch (NullPointerException e){
