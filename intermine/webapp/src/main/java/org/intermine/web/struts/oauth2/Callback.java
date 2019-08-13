@@ -477,6 +477,6 @@ public class Callback extends LoginHandler
             mid = Integer.valueOf(result.get("mid").toString());
         }
 
-        return new DelegatedIdentity(provider, id, email, name);
+        return new DelegatedIdentity(provider, id, email, name, mid);
     }
 }
