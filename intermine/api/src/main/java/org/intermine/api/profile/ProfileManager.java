@@ -247,6 +247,15 @@ public class ProfileManager
     }
 
     /**
+     * Check whether a user already has a Profile
+     * @param userId the userid
+     * @return true if a profile exists
+     */
+    public boolean hasProfile(Integer userId){
+        return getUserProfile(userId) != null;
+    }
+
+    /**
      * Validate a user's password
      * A check should be made prior to this call to ensure a Profile exists
      * @param username the username
