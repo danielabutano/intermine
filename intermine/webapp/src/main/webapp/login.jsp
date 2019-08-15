@@ -91,18 +91,18 @@
       </div>
     </c:if>
 
-<%--    <c:if test="${!empty OAUTH2_PROVIDERS && WEB_PROPERTIES['oauth2.allowed'] != 'false'}">--%>
-<%--      <div class="column second oauth2"><im:debug message="${OAUTH2_PROVIDERS}"/>--%>
-<%--        <h3 class="oauth"><fmt:message key="login.oauth2"/></h3>--%>
-<%--        <c:forEach var="provider" items="${OAUTH2_PROVIDERS}">--%>
-<%--          <a class="oauth2-button"--%>
-<%--             href="/${WEB_PROPERTIES['webapp.path']}/oauth2authenticator.do?provider=${provider}">--%>
-<%--             <i class="fa fa-fw fa-<c:out value="${fn:toLowerCase(provider)}"/>"></i>--%>
-<%--             ${provider}--%>
-<%--          </a>--%>
-<%--        </c:forEach>--%>
-<%--      </div>--%>
-<%--    </c:if>--%>
+    <c:if test="${!empty OAUTH2_PROVIDERS && WEB_PROPERTIES['oauth2.allowed'] != 'false' && !OAUTH2_PROVIDERS.contains('IM')}">
+      <div class="column second oauth2"><im:debug message="${OAUTH2_PROVIDERS}"/>
+        <h3 class="oauth"><fmt:message key="login.oauth2"/></h3>
+        <c:forEach var="provider" items="${OAUTH2_PROVIDERS}">
+          <a class="oauth2-button"
+             href="/${WEB_PROPERTIES['webapp.path']}/oauth2authenticator.do?provider=${provider}">
+             <i class="fa fa-fw fa-<c:out value="${fn:toLowerCase(provider)}"/>"></i>
+             ${provider}
+          </a>
+        </c:forEach>
+      </div>
+    </c:if>
 
     <div class="clear"></div>
   </div>

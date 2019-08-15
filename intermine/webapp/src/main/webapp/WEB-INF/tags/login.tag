@@ -25,7 +25,7 @@ if (returnToPath != null) {
   <c:when test="${!PROFILE.loggedIn}">
 
       <c:choose>
-          <c:when test="${!empty OAUTH2_PROVIDERS && WEB_PROPERTIES['oauth2.allowed'] != 'false'}">
+          <c:when test="${!empty OAUTH2_PROVIDERS && WEB_PROPERTIES['oauth2.allowed'] != 'false' && OAUTH2_PROVIDERS.contains('IM')}">
               <td>Login With:</td>
               <select  onchange="location = this.options[this.selectedIndex].value;">
                   <option value="#">Select</option>
