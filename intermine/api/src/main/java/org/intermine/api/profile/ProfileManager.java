@@ -1371,6 +1371,9 @@ public class ProfileManager
                                          Map<String, List<FieldDescriptor>> classKeys) throws ObjectStoreException {
         String username = issuer + ":" + identity;
         Profile profile = getProfile(username, classKeys);
+        if(profile != null){
+            LOG.info("There is already a user with the username " + username );
+        }
         if (profile == null && hasProfile(mid)) {
             updateProfile(mid,username);
             profile=getProfile(username);
@@ -1630,9 +1633,15 @@ public class ProfileManager
      * @param username Unique Id of IM user along with 'IM:'.
      */
     public synchronized void updateProfile(Integer userId,String username) throws ObjectStoreException {
-        UserProfile userProfile = getUserProfile(userId);
-        userProfile.setUsername(username);
-        userProfile.setPassword(null);
-        uosw.store(userProfile);
+        Profile profile = getProfile(username);
+        if(profile != null){
+            LOG.info("There is already a user with the username " + username );
+        }
+        else {
+            UserProfile userProfile = getUserProfile(userId);
+            userProfile.setUsername(username);
+            userProfile.setPassword(null);
+            uosw.store(userProfile);
+        }
     }
 }
