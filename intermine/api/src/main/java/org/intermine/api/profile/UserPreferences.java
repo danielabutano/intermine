@@ -53,6 +53,12 @@ public class UserPreferences extends AbstractMap<String, String>
      * The preferred address to send emails to.
      */
     public static final String EMAIL = "email";
+
+    /**
+     * Former username in case of merge.
+     */
+    public static final String FORMER_USERNAME = "former_username";
+
     /**
      * Common keys
      */

@@ -1375,8 +1375,11 @@ public class ProfileManager
             LOG.info("There is already a user with the username " + username );
         }
         if (profile == null && hasProfile(mid)) {
+            Profile oldprofile = getProfile(mid);
+            String formerUsername = oldprofile.getUsername();
             updateProfile(mid,username);
             profile=getProfile(username);
+            profile.getPreferences().put(UserPreferences.FORMER_USERNAME, formerUsername);
         }
         else if(profile==null && !hasProfile(mid)){
             profile =createNewProfile(username,null);
