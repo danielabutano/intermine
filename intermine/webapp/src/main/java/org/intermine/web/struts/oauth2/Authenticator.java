@@ -30,6 +30,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.web.struts.InterMineAction;
+import org.intermine.web.util.URLGenerator;
 
 /**
  * The action that bounces the user off to their respective authentication
@@ -77,7 +78,8 @@ public class Authenticator extends InterMineAction
         request.getSession().setAttribute("oauth2.state", state);
 
         //Check for merge request
-        String mergeProfile=null;
+        String mergeProfile = null;
+        String mergeUrl = new URLGenerator(request).getPermanentBaseURL().concat("/login.do");
         if (request.getSession().getAttribute("profileId")!=null) {
             mergeProfile= String.valueOf(request.getSession().getAttribute("profileId"));
             request.getSession().removeAttribute("profileId");
@@ -105,6 +107,7 @@ public class Authenticator extends InterMineAction
                    .setState(state)
                    .setParameter("response_type", "code")
                     .setParameter("mergeProfile", mergeProfile)
+                    .setParameter("mergeUrl", mergeUrl)
                    .setParameter("openid.realm", realm) // link open-id 2.0 accounts [1]
                    .buildQueryMessage();
             String goHere = authRequest.getLocationUri();
