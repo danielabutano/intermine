@@ -106,6 +106,9 @@ public class LoginForm extends ActionForm
                 errors.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("login.badlogin"));
             }
         }
+        if(!errors.isEmpty() && request.getParameter("action").equals("Merge")){
+            request.getSession().setAttribute("mergeRequest", true);
+        }
         return errors;
     }
 
