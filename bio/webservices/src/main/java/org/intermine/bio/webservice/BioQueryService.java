@@ -10,8 +10,6 @@ package org.intermine.bio.webservice;
  *
  */
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -23,20 +21,16 @@ import org.intermine.api.profile.Profile;
 import org.intermine.api.query.PathQueryExecutor;
 import org.intermine.api.results.ExportResultsIterator;
 import org.intermine.metadata.ClassDescriptor;
-import org.intermine.metadata.StringUtil;
 import org.intermine.pathquery.Path;
 import org.intermine.pathquery.PathException;
 import org.intermine.pathquery.PathQuery;
-import org.intermine.web.logic.export.Exporter;
-import org.intermine.web.logic.export.ResponseUtil;
+import org.intermine.web.logic.export.ExporterSpring;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.WebServiceRequestParser;
 import org.intermine.webservice.server.exceptions.BadRequestException;
-import org.intermine.webservice.server.output.Output;
-import org.intermine.webservice.server.output.PlainFormatter;
-import org.intermine.webservice.server.output.StreamedOutput;
 import org.intermine.webservice.server.query.AbstractQueryService;
 import org.intermine.webservice.server.query.result.PathQueryBuilder;
+
 
 /**
  * A service for exporting query results as gff3.
@@ -45,66 +39,30 @@ import org.intermine.webservice.server.query.result.PathQueryBuilder;
  */
 public abstract class BioQueryService extends AbstractQueryService
 {
-    private static final String QUERY_PARAM = "query";
-    private static final String VIEW_PARAM = "view";
-
-    private PrintWriter pw;
-
     /**
-     * @return print writer
+     * so class names
      */
-    public PrintWriter getPrintWriter() {
-        return pw;
+    public static final String SO_CLASS_NAMES = "SO_CLASS_NAMES";
+
+    private String queryString;
+
+    private List<String> views;
+
+    public String getOutputString() {
+        return outputString;
     }
 
-    private OutputStream os;
-
-    /**
-     * @return output stream
-     */
-    public OutputStream getOutputStream() {
-        return os;
-    }
+    protected String outputString;
 
     /**
      * Constructor.
      * @param im A reference to an InterMine API settings bundle.
      */
-    public BioQueryService(InterMineAPI im, Format format) {
+    public BioQueryService(InterMineAPI im, Format format, String queryString, List<String> views) {
         super(im, format);
-    }
-    /*
-    @Override
-    protected String getDefaultFileName() {
-        return "results" + StringUtil.uniqueString() + getSuffix();
-    }
-    */
-    /**
-     * @return suffix
-     */
-    protected abstract String getSuffix();
-
-    /**
-     * @return content type
-     */
-    protected abstract String getContentType();
-
-    /*
-    @Override
-    protected Output getDefaultOutput(PrintWriter out, OutputStream outputstream, String sep) {
-        // Most exporters need direct access to these.
-        this.os = outputstream;
-        this.pw = out;
-        output = new StreamedOutput(out, new PlainFormatter(), sep);
-        if (isUncompressed()) {
-            ResponseUtil.setCustomTypeHeader(response, getDefaultFileName(), getContentType());
-        }
-        return output;
-    }*/
-
-    @Override
-    public Format getDefaultFormat() {
-        return Format.UNKNOWN;
+        this.queryString = queryString;
+        this.views = views;
+        this.outputString = "";
     }
 
 
@@ -116,7 +74,6 @@ public abstract class BioQueryService extends AbstractQueryService
      * @return A query.
      */
     protected PathQuery getQuery() {
-        String queryString = getRequiredParameter(QUERY_PARAM);
         PathQueryBuilder builder = getQueryBuilder(queryString);
         PathQuery pq = builder.getQuery();
 
@@ -148,7 +105,7 @@ public abstract class BioQueryService extends AbstractQueryService
      * @param pq pathquery
      * @return exporter
      */
-    protected abstract Exporter getExporter(PathQuery pq);
+    protected abstract ExporterSpring getExporter(PathQuery pq);
 
     /**
      * No-op stub. Put query validation here.
@@ -161,7 +118,6 @@ public abstract class BioQueryService extends AbstractQueryService
 
     @Override
     protected void execute() throws Exception {
-
         Profile profile = getPermission().getProfile();
         PathQueryExecutor executor = this.im.getPathQueryExecutor(profile);
         // For FASTA/BED/GFF only set Gene.id in the view in im-tables system
@@ -172,7 +128,6 @@ public abstract class BioQueryService extends AbstractQueryService
         // NB: Functional but bad practice?
         // view in http request will look like: view=Gene.name&view=Gene.length...
         // Support the standard mechanism for accepting multiple parameter values
-        List<String> views = getPathQueryViews(request.getParameterValues(VIEW_PARAM));
         if (views != null) {
             try {
                 pathQuery.addViews(views);
@@ -187,7 +142,7 @@ public abstract class BioQueryService extends AbstractQueryService
             pathQuery.addViews(al);
         }
 
-        Exporter exporter = getExporter(pathQuery);
+        ExporterSpring exporter = getExporter(pathQuery);
 
         ExportResultsIterator iter = null;
         try {
@@ -199,6 +154,7 @@ public abstract class BioQueryService extends AbstractQueryService
                 iter.releaseGoFaster();
             }
         }
+        this.outputString = exporter.getOutputString();
     }
 
     /**

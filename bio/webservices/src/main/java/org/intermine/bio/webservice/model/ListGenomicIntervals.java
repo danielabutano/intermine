@@ -3,10 +3,13 @@ package org.intermine.bio.webservice.model;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.intermine.webservice.model.JSONModel;
 import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -16,7 +19,8 @@ import javax.validation.constraints.*;
  */
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-08-04T21:58:55.348+05:30[Asia/Kolkata]")
-public class ListGenomicIntervals   {
+@JsonPropertyOrder({ "listName", "listSize", "type", "invalidSpans", "executionTime", "wasSuccessful", "error", "statusCode" })
+public class ListGenomicIntervals extends JSONModel {
   @JsonProperty("listName")
   private String listName = null;
 
@@ -28,19 +32,7 @@ public class ListGenomicIntervals   {
 
   @JsonProperty("invalidSpans")
   @Valid
-  private List<Object> invalidSpans = null;
-
-  @JsonProperty("executionTime")
-  private String executionTime = null;
-
-  @JsonProperty("wasSuccessful")
-  private Boolean wasSuccessful = null;
-
-  @JsonProperty("error")
-  private String error = null;
-
-  @JsonProperty("statusCode")
-  private Integer statusCode = null;
+  private List<String> invalidSpans = null;
 
   public ListGenomicIntervals listName(String listName) {
     this.listName = listName;
@@ -99,14 +91,14 @@ public class ListGenomicIntervals   {
     this.type = type;
   }
 
-  public ListGenomicIntervals invalidSpans(List<Object> invalidSpans) {
+  public ListGenomicIntervals invalidSpans(List<String> invalidSpans) {
     this.invalidSpans = invalidSpans;
     return this;
   }
 
-  public ListGenomicIntervals addInvalidSpansItem(Object invalidSpansItem) {
+  public ListGenomicIntervals addInvalidSpansItem(String invalidSpansItem) {
     if (this.invalidSpans == null) {
-      this.invalidSpans = new ArrayList<Object>();
+      this.invalidSpans = new ArrayList<String>();
     }
     this.invalidSpans.add(invalidSpansItem);
     return this;
@@ -118,90 +110,13 @@ public class ListGenomicIntervals   {
   **/
   @ApiModelProperty(value = "")
 
-  public List<Object> getInvalidSpans() {
+  public List<String> getInvalidSpans() {
     return invalidSpans;
   }
 
-  public void setInvalidSpans(List<Object> invalidSpans) {
+  public void setInvalidSpans(List<String> invalidSpans) {
     this.invalidSpans = invalidSpans;
   }
-
-  public ListGenomicIntervals executionTime(String executionTime) {
-    this.executionTime = executionTime;
-    return this;
-  }
-
-  /**
-   * Get executionTime
-   * @return executionTime
-  **/
-  @ApiModelProperty(value = "")
-
-  public String getExecutionTime() {
-    return executionTime;
-  }
-
-  public void setExecutionTime(String executionTime) {
-    this.executionTime = executionTime;
-  }
-
-  public ListGenomicIntervals wasSuccessful(Boolean wasSuccessful) {
-    this.wasSuccessful = wasSuccessful;
-    return this;
-  }
-
-  /**
-   * Get wasSuccessful
-   * @return wasSuccessful
-  **/
-  @ApiModelProperty(value = "")
-
-  public Boolean isWasSuccessful() {
-    return wasSuccessful;
-  }
-
-  public void setWasSuccessful(Boolean wasSuccessful) {
-    this.wasSuccessful = wasSuccessful;
-  }
-
-  public ListGenomicIntervals error(String error) {
-    this.error = error;
-    return this;
-  }
-
-  /**
-   * Get error
-   * @return error
-  **/
-  @ApiModelProperty(value = "")
-
-  public String getError() {
-    return error;
-  }
-
-  public void setError(String error) {
-    this.error = error;
-  }
-
-  public ListGenomicIntervals statusCode(Integer statusCode) {
-    this.statusCode = statusCode;
-    return this;
-  }
-
-  /**
-   * Get statusCode
-   * @return statusCode
-  **/
-  @ApiModelProperty(value = "")
-
-  public Integer getStatusCode() {
-    return statusCode;
-  }
-
-  public void setStatusCode(Integer statusCode) {
-    this.statusCode = statusCode;
-  }
-
 
   @Override
   public boolean equals(Object o) {

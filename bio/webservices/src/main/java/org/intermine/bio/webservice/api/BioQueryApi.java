@@ -23,13 +23,13 @@ import java.util.List;
 import java.util.Map;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-08-04T21:58:55.348+05:30[Asia/Kolkata]")
 @Api(value = "query", description = "the query API")
-public interface QueryApi {
+public interface BioQueryApi {
 
     @ApiOperation(value = "Query the Database for Locations.", nickname = "queryResultsBedGet", notes = "This service provides full access to arbitrary database queries. Queries are accepted in a serialised XML or JSON format, executed and returned in a streaming manner. The query format is a custom subset of the capabilities of SQL; see the InterMine documentation for a full description of the query XML and JSON syntax. <br/><br/> This endpoint specialises in dealing with queries for genomic locations, and returning results in [UCSC BED](http://genome.ucsc.edu/FAQ/FAQformat.html) format. The user is responsible for ensuring that the query contains only suitable types for export. <br/><br/> A suitable query is one where every view column references a field of a `SequenceFeature` (including all sub-classes). The particular field selected is not important, and the object itself will be selected.", response = String.class, tags={  })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = String.class) })
     @RequestMapping(value = "/query/results/bed",
-        produces = { "text/x-ucsc-bed" }, 
+        produces = { "*/*" },
         method = RequestMethod.GET)
     ResponseEntity<String> queryResultsBedGet(@NotNull @ApiParam(value = "A definition of the query to execute in Path-Query XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query);
 
@@ -38,7 +38,7 @@ public interface QueryApi {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = String.class) })
     @RequestMapping(value = "/query/results/bed",
-        produces = { "text/x-ucsc-bed" }, 
+        produces = { "*/*" },
         method = RequestMethod.POST)
     ResponseEntity<String> queryResultsBedPost(@NotNull @ApiParam(value = "A definition of the query to execute in Path-Query XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query);
 
@@ -47,7 +47,7 @@ public interface QueryApi {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = String.class) })
     @RequestMapping(value = "/query/results/fasta",
-        produces = { "text/x-fasta" }, 
+        produces = { "*/*" },
         method = RequestMethod.GET)
     ResponseEntity<String> queryResultsFastaGet(@NotNull @ApiParam(value = "A definition of the query to execute in Path-Query XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query, @ApiParam(value = "Extra columns to include as extra information in the ninth column.") @Valid @RequestParam(value = "view", required = false) List<String> view);
 
@@ -56,7 +56,7 @@ public interface QueryApi {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = String.class) })
     @RequestMapping(value = "/query/results/fasta",
-        produces = { "text/x-fasta" }, 
+        produces = { "*/*" },
         method = RequestMethod.POST)
     ResponseEntity<String> queryResultsFastaPost(@NotNull @ApiParam(value = "A definition of the query to execute in Path-Query XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query, @ApiParam(value = "Extra columns to include as extra information in the ninth column.") @Valid @RequestParam(value = "view", required = false) List<String> view);
 
@@ -65,7 +65,7 @@ public interface QueryApi {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = String.class) })
     @RequestMapping(value = "/query/results/gff3",
-        produces = { "text/x-gff3" }, 
+        produces = { "*/*" },
         method = RequestMethod.GET)
     ResponseEntity<String> queryResultsGff3Get(@NotNull @ApiParam(value = "A definition of the query to execute in Path-Query XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query, @ApiParam(value = "Extra columns to include as extra information in the ninth column.") @Valid @RequestParam(value = "view", required = false) List<String> view);
 
@@ -74,7 +74,7 @@ public interface QueryApi {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = String.class) })
     @RequestMapping(value = "/query/results/gff3",
-        produces = { "text/x-gff3" }, 
+        produces = { "*/*" },
         method = RequestMethod.POST)
     ResponseEntity<String> queryResultsGff3Post(@NotNull @ApiParam(value = "A definition of the query to execute in Path-Query XML or JSON format.", required = true) @Valid @RequestParam(value = "query", required = true) String query, @ApiParam(value = "Extra columns to include as extra information in the ninth column.") @Valid @RequestParam(value = "view", required = false) List<String> view);
 

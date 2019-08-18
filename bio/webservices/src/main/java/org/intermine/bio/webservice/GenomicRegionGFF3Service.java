@@ -19,6 +19,7 @@ import org.intermine.bio.web.export.GFF3Exporter;
 import org.intermine.bio.web.logic.SequenceFeatureExportUtil;
 import org.intermine.bio.web.logic.SequenceFeatureExportUtil.InvalidQueryException;
 import org.intermine.pathquery.PathQuery;
+import org.intermine.web.logic.export.ExporterSpring;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 
@@ -41,7 +42,7 @@ public class GenomicRegionGFF3Service extends AbstractRegionExportService
      * @param pq pathquery
      * @return the exporter
      */
-    protected GFF3Exporter getExporter(PathQuery pq) {
+    protected ExporterSpring getExporter(PathQuery pq) {
         String sourceName = webProperties.getProperty("project.title");
         Set<String> organisms = null;
         List<Integer> indexes = new ArrayList<Integer>();
@@ -50,19 +51,8 @@ public class GenomicRegionGFF3Service extends AbstractRegionExportService
             indexes.add(Integer.valueOf(i));
         }
         GFFQueryService.removeFirstItemInPaths(viewColumns);
-        return new GFF3Exporter(
-            getPrintWriter(), indexes, GFFQueryService.getSoClassNames(),
+        return new GFF3Exporter(indexes, GFFQueryService.getSoClassNames(),
             viewColumns, sourceName, organisms, false);
-    }
-
-    @Override
-    protected String getSuffix() {
-        return ".gff3";
-    }
-
-    @Override
-    protected String getContentType() {
-        return "text/x-gff3";
     }
 
     @Override

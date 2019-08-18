@@ -30,7 +30,7 @@ public interface RegionsApi {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = String.class) })
     @RequestMapping(value = "/regions/bed",
-        produces = { "text/x-ucsc-bed" }, 
+        produces = { "*/*" },
         method = RequestMethod.GET)
     ResponseEntity<String> regionsBedGet(@NotNull @ApiParam(value = "The region search input.", required = true) @Valid @RequestParam(value = "query", required = true) String query);
 
@@ -39,7 +39,7 @@ public interface RegionsApi {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = String.class) })
     @RequestMapping(value = "/regions/bed",
-        produces = { "text/x-ucsc-bed" }, 
+        produces = { "*/*" },
         consumes = { "application/json" },
         method = RequestMethod.POST)
     ResponseEntity<String> regionsBedPost(@ApiParam(value = "A representation of the search request.", required = true) @Valid @RequestBody String body);
@@ -49,7 +49,7 @@ public interface RegionsApi {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = String.class) })
     @RequestMapping(value = "/regions/gff3",
-        produces = { "text/x-gff3" }, 
+        produces = { "*/*" },
         method = RequestMethod.GET)
     ResponseEntity<String> regionsGff3Get(@NotNull @ApiParam(value = "The region search input.", required = true) @Valid @RequestParam(value = "query", required = true) String query);
 
@@ -58,7 +58,7 @@ public interface RegionsApi {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = String.class) })
     @RequestMapping(value = "/regions/gff3",
-        produces = { "text/x-gff3" }, 
+        produces = { "*/*" },
         consumes = { "application/json" },
         method = RequestMethod.POST)
     ResponseEntity<String> regionsGff3Post(@ApiParam(value = "A representation of the search request.", required = true) @Valid @RequestBody String body);
@@ -93,7 +93,7 @@ public interface RegionsApi {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = String.class) })
     @RequestMapping(value = "/regions/sequence",
-        produces = { "text/x-fasta" }, 
+        produces = { "*/*" },
         method = RequestMethod.GET)
     ResponseEntity<String> regionsSequenceGet(@NotNull @ApiParam(value = "The region search input.", required = true) @Valid @RequestParam(value = "query", required = true) String query);
 
@@ -102,7 +102,7 @@ public interface RegionsApi {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = String.class) })
     @RequestMapping(value = "/regions/sequence",
-        produces = { "text/x-fasta" }, 
+        produces = { "*/*" },
         consumes = { "application/json" },
         method = RequestMethod.POST)
     ResponseEntity<String> regionsSequencePost(@ApiParam(value = "A representation of the search request.", required = true) @Valid @RequestBody String body);

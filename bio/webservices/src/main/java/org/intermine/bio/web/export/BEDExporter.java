@@ -28,15 +28,15 @@ import org.intermine.pathquery.Path;
 import org.intermine.util.IntPresentSet;
 import org.intermine.web.logic.export.ExportException;
 import org.intermine.web.logic.export.Exporter;
+import org.intermine.web.logic.export.ExporterSpring;
 
 /**
  * Exports LocatedSequenceFeature objects in UCSC BED format.
  *
  * @author Fengyuan Hu
  */
-public class BEDExporter implements Exporter
+public class BEDExporter extends ExporterSpring
 {
-    PrintWriter out;
     private boolean makeUcscCompatible = true;
     private int writtenResultsCount = 0;
     private boolean headerPrinted = false;
@@ -63,21 +63,19 @@ public class BEDExporter implements Exporter
 
     /**
      * Constructor.
-     * @param out output stream
      * @param featureIndexes index of column with exported sequence
      * @param sourceName name of Mine to put in GFF source column
      * @param organismString a comma separated string of organism short names
      * @param makeUcscCompatible true if chromosome ids should be prefixed by 'chr'
      * @param trackDescription track description in the header
      */
-    public BEDExporter(PrintWriter out, List<Integer> featureIndexes, String sourceName,
+    public BEDExporter(List<Integer> featureIndexes, String sourceName,
             String organismString, boolean makeUcscCompatible, String trackDescription) {
-
-        this.out = out;
         this.featureIndexes = featureIndexes;
         this.sourceName = sourceName;
         this.makeUcscCompatible = makeUcscCompatible;
         this.trackDescription = trackDescription;
+        this.outputString = "";
 
         if ("".equals(trackDescription) || trackDescription == null) {
             this.trackName = "track";
@@ -111,10 +109,8 @@ public class BEDExporter implements Exporter
             finishLastRow();
 
             if (writtenResultsCount == 0) {
-                out.println("Nothing was found for export");
+                outputString = outputString.concat("Nothing was found for export").concat("\n");
             }
-
-            out.flush();
         } catch (Exception ex) {
             throw new ExportException("Export failed", ex);
         }
@@ -217,11 +213,11 @@ public class BEDExporter implements Exporter
         if (bedRecord != null) {
             // have a chromosome ref and chromosomeLocation ref
             if (!headerPrinted) {
-                out.println(getHeader());
+                outputString = outputString.concat(getHeader()).concat("\n");
                 headerPrinted = true;
             }
 
-            out.println(bedRecord.toBED());
+            outputString = outputString.concat(bedRecord.toBED()).concat("\n");
             exportedIds.add(lastLsf.getId());
             writtenResultsCount++;
         }
@@ -247,11 +243,11 @@ public class BEDExporter implements Exporter
         if (bedRecord != null) {
             // have a chromsome ref and chromosomeLocation ref
             if (!headerPrinted) {
-                out.println(getHeader());
+                outputString = outputString.concat(getHeader()).concat("\n");
                 headerPrinted = true;
             }
 
-            out.println(bedRecord.toBED());
+            outputString = outputString.concat(bedRecord.toBED()).concat("\n");
             writtenResultsCount++;
         }
         lastLsfId = null;

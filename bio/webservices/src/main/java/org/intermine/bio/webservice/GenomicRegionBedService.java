@@ -20,6 +20,7 @@ import org.intermine.bio.web.logic.SequenceFeatureExportUtil;
 import org.intermine.bio.web.logic.SequenceFeatureExportUtil.InvalidQueryException;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.web.logic.export.Exporter;
+import org.intermine.web.logic.export.ExporterSpring;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 
@@ -30,7 +31,6 @@ import org.intermine.webservice.server.exceptions.BadRequestException;
  */
 public class GenomicRegionBedService extends AbstractRegionExportService
 {
-    protected static final String SUFFIX = ".fasta";
     private static final String UCSC_COMPATIBLE = "ucscCompatible";
     private static final String TRACK_DESCRIPTION = "trackDescription";
 
@@ -43,7 +43,7 @@ public class GenomicRegionBedService extends AbstractRegionExportService
     }
 
     @Override
-    protected Exporter getExporter(PathQuery pq) {
+    protected ExporterSpring getExporter(PathQuery pq) {
         boolean isUcsc = !"no".equalsIgnoreCase(getOptionalParameter(UCSC_COMPATIBLE, "yes"));
 
         // get the project title to be written in BED records
@@ -56,18 +56,8 @@ public class GenomicRegionBedService extends AbstractRegionExportService
             SequenceFeatureExportUtil.getOrganisms(pq, im, getPermission().getProfile()), ",");
         List<Integer> indexes = Arrays.asList(new Integer(0));
 
-        return new BEDExporter(getPrintWriter(), indexes, sourceName, organisms, isUcsc,
+        return new BEDExporter(indexes, sourceName, organisms, isUcsc,
                 trackDescription);
-    }
-
-    @Override
-    protected String getContentType() {
-        return "text/x-ucsc-bed";
-    }
-
-    @Override
-    protected String getSuffix() {
-        return ".bed";
     }
 
     @Override

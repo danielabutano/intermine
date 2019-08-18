@@ -19,6 +19,8 @@ import org.intermine.pathquery.PathQuery;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 
+import java.util.List;
+
 /**
  * Export a List as GFF3.
  * @author Alex Kalderimis
@@ -26,15 +28,15 @@ import org.intermine.webservice.server.exceptions.BadRequestException;
  */
 public class GFF3ListService extends GFFQueryService
 {
-
-    private static final String LIST_PARAM = "list";
+    private String listName ;
 
     /**
      *
      * @param im intermine API
      */
-    public GFF3ListService(InterMineAPI im, Format format) {
-        super(im, format);
+    public GFF3ListService(InterMineAPI im, Format format, String listName) {
+        super(im, format, null, null);
+        this.listName = listName;
     }
 
     @Override
@@ -47,7 +49,7 @@ public class GFF3ListService extends GFFQueryService
     }
 
     private InterMineBag getList() {
-        String listName = getRequiredParameter(LIST_PARAM);
+
         Profile p = getPermission().getProfile();
         InterMineBag list = im.getBagManager().getBag(p, listName);
         if (list == null) {

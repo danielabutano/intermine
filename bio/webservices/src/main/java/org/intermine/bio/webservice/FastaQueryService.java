@@ -18,8 +18,11 @@ import org.intermine.objectstore.ObjectStore;
 import org.intermine.pathquery.Path;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.web.logic.export.Exporter;
+import org.intermine.web.logic.export.ExporterSpring;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
+
+import java.util.List;
 
 /**
  * A service for exporting query results as fasta.
@@ -37,25 +40,15 @@ public class FastaQueryService extends BioQueryService
      * Constructor.
      * @param im A reference to an InterMine API settings bundle.
      */
-    public FastaQueryService(InterMineAPI im, Format format) {
-        super(im, format);
+    public FastaQueryService(InterMineAPI im, Format format, String queryString, List<String> views) {
+        super(im, format, queryString, views);
     }
 
     @Override
-    protected String getSuffix() {
-        return ".fa";
-    }
-
-    @Override
-    protected String getContentType() {
-        return "text/x-fasta";
-    }
-
-    @Override
-    protected Exporter getExporter(PathQuery pq) {
+    protected ExporterSpring getExporter(PathQuery pq) {
         int extension = parseExtension(getOptionalParameter(EXT, "0"));
         ObjectStore objStore = im.getObjectStore();
-        return new SequenceExporter(objStore, getOutputStream(), COLUMN,
+        return new SequenceExporter(objStore, COLUMN,
                 im.getClassKeys(), extension, getQueryPaths(pq));
     }
 

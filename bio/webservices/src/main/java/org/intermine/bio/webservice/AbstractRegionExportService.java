@@ -34,6 +34,7 @@ import org.intermine.pathquery.Constraints;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.metadata.StringUtil;
 import org.intermine.web.logic.export.Exporter;
+import org.intermine.web.logic.export.ExporterSpring;
 import org.intermine.web.logic.export.ResponseUtil;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.WebServiceRequestParser;
@@ -51,12 +52,19 @@ import org.intermine.webservice.server.output.StreamedOutput;
  */
 public abstract class AbstractRegionExportService extends GenomicRegionSearchService
 {
+    public String getOutputString() {
+        return outputString;
+    }
+
+    protected String outputString;
+
     /**
      * Constructor.
      * @param im The InterMine API settings object.
      */
     public AbstractRegionExportService(InterMineAPI im, Format format) {
         super(im, format);
+        this.outputString = "";
     }
 
     @Override
@@ -123,7 +131,7 @@ public abstract class AbstractRegionExportService extends GenomicRegionSearchSer
      * @param pq pathquery
      * @return the exporter
      */
-    protected abstract Exporter getExporter(PathQuery pq);
+    protected abstract ExporterSpring getExporter(PathQuery pq);
 
     /**
      * Method that carries out the logic for this exporter.
@@ -131,7 +139,7 @@ public abstract class AbstractRegionExportService extends GenomicRegionSearchSer
      * @param profile A profile to lookup saved bags in.
      */
     protected void export(PathQuery pq, Profile profile) {
-        Exporter exporter = getExporter(pq);
+        ExporterSpring exporter = getExporter(pq);
         ExportResultsIterator iter = null;
         try {
             PathQueryExecutor executor = this.im.getPathQueryExecutor(profile);
@@ -147,62 +155,9 @@ public abstract class AbstractRegionExportService extends GenomicRegionSearchSer
                 iter.releaseGoFaster();
             }
         }
+        outputString = exporter.getOutputString();
     }
 
-    /**
-     * @return The suffix for the file name.
-     */
-    protected abstract String getSuffix();
 
-    /*@Override
-    protected String getDefaultFileName() {
-        return "results" + StringUtil.uniqueString() + getSuffix();
-    }*/
-
-    private PrintWriter pw;
-    private OutputStream os;
-
-    /**
-     * @return printwriter
-     */
-    protected PrintWriter getPrintWriter() {
-        return pw;
-    }
-
-    /**
-     * @return outputstream
-     */
-    protected OutputStream getOutputStream() {
-        return os;
-    }
-
-    /**
-     * @return content type
-     */
-    protected abstract String getContentType();
-
-    /**
-     * @return formatter
-     */
-    protected Formatter getFormatter() {
-        return new PlainFormatter();
-    }
-
-    /*@Override
-    protected Output getDefaultOutput(PrintWriter out, OutputStream outputstream,
-            String separator) {
-        this.pw = out;
-        this.os = outputstream;
-        output = new StreamedOutput(out, getFormatter(), separator);
-        if (isUncompressed()) {
-            ResponseUtil.setCustomTypeHeader(response, getDefaultFileName(), getContentType());
-        }
-        return output;
-    }*/
-
-    @Override
-    public Format getDefaultFormat() {
-        return Format.UNKNOWN;
-    }
 
 }

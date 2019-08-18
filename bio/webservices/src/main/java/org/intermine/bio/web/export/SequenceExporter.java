@@ -50,6 +50,7 @@ import org.intermine.pathquery.Path;
 import org.intermine.util.IntPresentSet;
 import org.intermine.web.logic.export.ExportException;
 import org.intermine.web.logic.export.Exporter;
+import org.intermine.web.logic.export.ExporterSpring;
 
 /**
  * Export data in FASTA format. Select cell in each row that can be exported as
@@ -58,11 +59,10 @@ import org.intermine.web.logic.export.Exporter;
  * @author Kim Rutherford
  * @author Jakub Kulaviak
  **/
-public class SequenceExporter implements Exporter
+public class SequenceExporter extends ExporterSpring
 {
 
     private ObjectStore os;
-    private OutputStream out;
     private int featureIndex;
     private int writtenResultsCount = 0;
     private final Map<String, List<FieldDescriptor>> classKeys;
@@ -79,20 +79,18 @@ public class SequenceExporter implements Exporter
      *
      * @param os
      *            object store used for fetching sequence for exported object
-     * @param outputStream
-     *            output stream
      * @param featureIndex
      *            index of cell in row that contains object to be exported
      * @param classKeys for the model
      * @param extension extension
      */
-    public SequenceExporter(ObjectStore os, OutputStream outputStream,
+    public SequenceExporter(ObjectStore os,
             int featureIndex, Map<String, List<FieldDescriptor>> classKeys, int extension) {
         this.os = os;
-        this.out = outputStream;
         this.featureIndex = featureIndex;
         this.classKeys = classKeys;
         this.extension = extension;
+        this.outputString = "";
     }
 
     /**
@@ -100,19 +98,16 @@ public class SequenceExporter implements Exporter
      *
      * @param os
      *            object store used for fetching sequence for exported object
-     * @param outputStream
-     *            output stream
      * @param featureIndex
      *            index of cell in row that contains object to be exported
      * @param classKeys for the model
      * @param extension extension
      * @param paths paths to include
      */
-    public SequenceExporter(ObjectStore os, OutputStream outputStream,
+    public SequenceExporter(ObjectStore os,
             int featureIndex, Map<String, List<FieldDescriptor>> classKeys, int extension,
             List<Path> paths) {
         this.os = os;
-        this.out = outputStream;
         this.featureIndex = featureIndex;
         this.classKeys = classKeys;
         this.extension = extension;
@@ -204,16 +199,17 @@ public class SequenceExporter implements Exporter
                     }
                 }
 
-                FastaWriterHelper.writeSequence(out, bioSequence);
+                //FastaWriterHelper.writeSequence(out, bioSequence);
+                outputString = outputString.concat(bioSequence.getSequenceAsString()).concat("\n");
+
                 writtenResultsCount++;
                 exportedIDs.add(objectId);
             }
 
             if (writtenResultsCount == 0) {
-                out.write("Nothing was found for export".getBytes(Charset.forName("UTF-8")));
+                outputString = outputString.concat("Nothing was found for export");
             }
 
-            out.flush();
         } catch (Exception e) {
             throw new ExportException("Export failed.", e);
         }

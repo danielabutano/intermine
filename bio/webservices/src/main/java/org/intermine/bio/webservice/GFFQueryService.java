@@ -36,18 +36,8 @@ public class GFFQueryService extends BioQueryService
      * Constructor.
      * @param im A reference to an InterMine API settings bundle.
      */
-    public GFFQueryService(InterMineAPI im, Format format) {
-        super(im, format);
-    }
-
-    @Override
-    protected String getSuffix() {
-        return ".gff3";
-    }
-
-    @Override
-    protected String getContentType() {
-        return "text/x-gff3";
+    public GFFQueryService(InterMineAPI im, Format format, String query, List<String> views) {
+        super(im, format, query, views);
     }
 
     /**
@@ -64,8 +54,7 @@ public class GFFQueryService extends BioQueryService
             indexes.add(Integer.valueOf(i));
         }
         removeFirstItemInPaths(viewColumns);
-        return new GFF3Exporter(
-            getPrintWriter(), indexes, getSoClassNames(),
+        return new GFF3Exporter( indexes, getSoClassNames(),
             viewColumns, sourceName, organisms, false, getQueryPaths(pq));
     }
 
@@ -75,7 +64,7 @@ public class GFFQueryService extends BioQueryService
      */
     static Map<String, String> getSoClassNames() {
         return new HashMap<String, String>(
-            (Map) InterMineContext.getAttribute(GFF3QueryServlet.SO_CLASS_NAMES));
+            (Map) InterMineContext.getAttribute(SO_CLASS_NAMES));
     }
 
     /**

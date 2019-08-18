@@ -39,13 +39,14 @@ import org.intermine.util.IntPresentSet;
 import org.intermine.util.PropertiesUtil;
 import org.intermine.web.logic.export.ExportException;
 import org.intermine.web.logic.export.Exporter;
+import org.intermine.web.logic.export.ExporterSpring;
 
 /**
  * Exports LocatedSequenceFeature objects in GFF3 format.
  * @author Kim Rutherford
  * @author Jakub Kulaviak
  */
-public class GFF3Exporter implements Exporter
+public class GFF3Exporter extends ExporterSpring
 {
     private static final Logger LOG = Logger.getLogger(GFF3Exporter.class);
     /**
@@ -65,7 +66,6 @@ public class GFF3Exporter implements Exporter
     public static final String FLY_LINK =
         "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=7227";
 
-    PrintWriter out;
     private List<Integer> featureIndexes;
     private Map<String, String> soClassNames;
     private int writtenResultsCount = 0;
@@ -82,7 +82,6 @@ public class GFF3Exporter implements Exporter
 
     /**
      * Constructor.
-     * @param out output stream
      * @param indexes index of column with exported sequence
      * @param soClassNames mapping
      * @param attributesNames names of attributes that are printed in record,
@@ -92,16 +91,16 @@ public class GFF3Exporter implements Exporter
      * @param organisms taxon id of the organisms
      * @param makeUcscCompatible true if chromosome ids should be prefixed by 'chr'
      */
-    public GFF3Exporter(PrintWriter out, List<Integer> indexes, Map<String, String> soClassNames,
+    public GFF3Exporter(List<Integer> indexes, Map<String, String> soClassNames,
             List<String> attributesNames, String sourceName, Set<String> organisms,
             boolean makeUcscCompatible) {
-        this.out = out;
         this.featureIndexes = indexes;
         this.soClassNames = soClassNames;
         this.attributesNames = attributesNames;
         this.sourceName = sourceName;
         this.organisms = organisms;
         this.makeUcscCompatible = makeUcscCompatible;
+        this.outputString = "";
 
         for (String s : soClassNames.keySet()) {
             this.cNames.add(s.toLowerCase());
@@ -110,7 +109,6 @@ public class GFF3Exporter implements Exporter
 
     /**
      * Constructor.
-     * @param out output stream
      * @param indexes index of column with exported sequence
      * @param soClassNames mapping
      * @param attributesNames names of attributes that are printed in record,
@@ -121,10 +119,9 @@ public class GFF3Exporter implements Exporter
      * @param makeUcscCompatible true if chromosome ids should be prefixed by 'chr'
      * @param paths paths
      */
-    public GFF3Exporter(PrintWriter out, List<Integer> indexes, Map<String, String> soClassNames,
+    public GFF3Exporter(List<Integer> indexes, Map<String, String> soClassNames,
             List<String> attributesNames, String sourceName, Set<String> organisms,
             boolean makeUcscCompatible, List<Path> paths) {
-        this.out = out;
         this.featureIndexes = indexes;
         this.soClassNames = soClassNames;
         this.attributesNames = attributesNames;
@@ -199,11 +196,9 @@ public class GFF3Exporter implements Exporter
             }
 
             if (writtenResultsCount == 0) {
-                out.println("Nothing to export. Sequence features might miss some information, "
+                outputString = outputString.concat("Nothing to export. Sequence features might miss some information, "
                         + "e.g. chromosome location, etc.");
             }
-
-            out.flush();
         } catch (Exception ex) {
             throw new ExportException("Export failed", ex);
         }
@@ -442,11 +437,11 @@ public class GFF3Exporter implements Exporter
         if (gff3Record != null) {
             // have a chromosome ref and chromosomeLocation ref
             if (!headerPrinted) {
-                out.println(getHeader());
+                outputString = outputString.concat(getHeader()).concat("\n");
                 headerPrinted = true;
             }
 
-            out.println(gff3Record.toGFF3());
+            outputString = outputString.concat(gff3Record.toGFF3()).concat("\n");
             exportedIds.add(lastLsf.getId());
             writtenResultsCount++;
         }

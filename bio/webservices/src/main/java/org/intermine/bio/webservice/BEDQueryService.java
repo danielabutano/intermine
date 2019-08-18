@@ -20,6 +20,7 @@ import org.intermine.bio.web.export.BEDExporter;
 import org.intermine.bio.web.logic.SequenceFeatureExportUtil;
 import org.intermine.bio.web.logic.SequenceFeatureExportUtil.InvalidQueryException;
 import org.intermine.pathquery.PathQuery;
+import org.intermine.web.logic.export.ExporterSpring;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 
@@ -39,22 +40,13 @@ public class BEDQueryService extends BioQueryService
      *
      * @param im A reference to an InterMine API settings bundle.
      */
-    public BEDQueryService(InterMineAPI im, Format format) {
-        super(im, format);
+    public BEDQueryService(InterMineAPI im, Format format, String queryString, List<String> views) {
+        super(im, format, queryString, views);
     }
 
-    @Override
-    protected String getSuffix() {
-        return ".bed";
-    }
 
     @Override
-    protected String getContentType() {
-        return "text/x-ucsc-bed";
-    }
-
-    @Override
-    protected BEDExporter getExporter(PathQuery pq) {
+    protected ExporterSpring getExporter(PathQuery pq) {
         String sourceName = webProperties.getProperty("project.title");
         String sourceReleaseVersion = webProperties.getProperty("project.releaseVersion");
         boolean makeUcscCompatible = !"no".equalsIgnoreCase(
@@ -69,7 +61,7 @@ public class BEDQueryService extends BioQueryService
             indexes.add(Integer.valueOf(i));
         }
 
-        return new BEDExporter(getPrintWriter(), indexes, sourceName,
+        return new BEDExporter(indexes, sourceName,
             StringUtils.join(orgs, ","), makeUcscCompatible, trackDescription);
     }
 

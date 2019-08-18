@@ -11,6 +11,7 @@ package org.intermine.bio.webservice;
  */
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,6 +26,7 @@ import org.intermine.bio.web.logic.GenomicRegionSearchCoreUtil;
 import org.intermine.bio.web.logic.GenomicRegionSearchQueryRunner;
 import org.intermine.bio.web.model.GenomicRegion;
 import org.intermine.bio.webservice.GenomicRegionSearchListInput.GenomicRegionSearchInfo;
+import org.intermine.bio.webservice.model.ListGenomicIntervals;
 import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.objectstore.query.Query;
 import org.intermine.webservice.server.Format;
@@ -42,18 +44,48 @@ import org.json.JSONException;
 public class GenomicRegionSearchService extends ListMakerService
 {
 
+    public ListGenomicIntervals getListGenomicIntervals() {
+        return listGenomicIntervals;
+    }
+
+    private ListGenomicIntervals listGenomicIntervals;
+
     /**
      * Constructor.
      * @param im The InterMine state and settings object.
      */
     public GenomicRegionSearchService(InterMineAPI im, Format format) {
         super(im, format);
+        this.listGenomicIntervals = new ListGenomicIntervals();
     }
 
     @Override
     protected String getNewListType(ListInput input) {
         GenomicRegionSearchListInput searchInput = (GenomicRegionSearchListInput) input;
         return ListServiceUtils.findCommonSuperTypeOf(searchInput.getSearchInfo().getFeatureCds());
+    }
+
+    @Override
+    protected void execute() throws Exception {
+        final Profile profile = getPermission().getProfile();
+        final ListInput input = getInput();
+
+        listGenomicIntervals.setListName(input.getListName());
+
+        final String type = getNewListType(input);
+        if (type != null) {
+            listGenomicIntervals.setType(type);
+        }
+
+        final Set<String> rubbishbin = new HashSet<String>();
+        initialiseDelendumAccumulator(rubbishbin, input);
+        try {
+            makeList(input, type, profile, rubbishbin);
+        } finally {
+            for (final String delendum: rubbishbin) {
+                ListServiceUtils.ensureBagIsDeleted(profile, delendum);
+            }
+        }
     }
 
     @Override
@@ -76,10 +108,10 @@ public class GenomicRegionSearchService extends ListMakerService
             throw new BadRequestException(e.getMessage(), e);
         }
 
-        //addOutputInfo(LIST_SIZE_KEY, tempBag.getSize() + "");
+        listGenomicIntervals.setListSize(tempBag.getSize());
 
         List<String> row = new ArrayList<String>(searchInput.getSearchInfo().getInvalidSpans());
-        //output.addResultItem(row);
+        listGenomicIntervals.setInvalidSpans(row);
         if (!input.getTags().isEmpty()) {
             im.getBagManager().addTagsToBag(input.getTags(), tempBag, profile);
         }

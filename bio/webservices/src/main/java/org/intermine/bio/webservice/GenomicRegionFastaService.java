@@ -16,6 +16,7 @@ import org.intermine.bio.web.logic.SequenceFeatureExportUtil;
 import org.intermine.bio.web.logic.SequenceFeatureExportUtil.InvalidQueryException;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.web.logic.export.Exporter;
+import org.intermine.web.logic.export.ExporterSpring;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 
@@ -27,7 +28,6 @@ import org.intermine.webservice.server.exceptions.BadRequestException;
 public class GenomicRegionFastaService extends AbstractRegionExportService
 {
 
-    protected static final String SUFFIX = ".fasta";
 
     /**
      * Constructor.
@@ -37,21 +37,13 @@ public class GenomicRegionFastaService extends AbstractRegionExportService
         super(im, format);
     }
 
-    @Override
-    protected String getContentType() {
-        return "text/x-fasta";
-    }
 
     @Override
-    protected Exporter getExporter(PathQuery pq) {
-        return new SequenceExporter(im.getObjectStore(), getOutputStream(), 0,
+    protected ExporterSpring getExporter(PathQuery pq) {
+        return new SequenceExporter(im.getObjectStore(), 0,
                 im.getClassKeys(), 0);
     }
 
-    @Override
-    protected String getSuffix() {
-        return SUFFIX;
-    }
 
     @Override
     protected void checkPathQuery(PathQuery pq) throws Exception {

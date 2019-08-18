@@ -18,6 +18,8 @@ import org.intermine.pathquery.PathQuery;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 
+import java.util.List;
+
 /**
  * Export a list as FASTA.
  * @author alex
@@ -26,14 +28,15 @@ import org.intermine.webservice.server.exceptions.BadRequestException;
 public class FastaListService extends FastaQueryService
 {
 
-    private static final String LIST_PARAM = "list";
+    private String listName;
 
     /**
      *
      * @param im intermine API
      */
-    public FastaListService(InterMineAPI im, Format format) {
-        super(im, format);
+    public FastaListService(InterMineAPI im, Format format, String listName) {
+        super(im, format, null, null);
+        this.listName = listName;
     }
 
     @Override
@@ -46,7 +49,7 @@ public class FastaListService extends FastaQueryService
     }
 
     private InterMineBag getList() {
-        String listName = getRequiredParameter(LIST_PARAM);
+
         Profile p = getPermission().getProfile();
         InterMineBag list = im.getBagManager().getBag(p, listName);
         if (list == null) {
