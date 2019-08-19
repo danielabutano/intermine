@@ -53,11 +53,11 @@ public class QueryResultServlet extends HttpServlet
         final InterMineAPI im = InterMineContext.getInterMineAPI();
         WebService ws;
         if (pathInfo != null && pathInfo.endsWith("tablerows")) {
-            ws = new TableRowService(im);
+            //ws = new TableRowService(im);
         } else {
-            ws = new QueryResultService(im);
+            //ws = new QueryResultService(im);
         }
 
-        ws.service(request, response);
+        //ws.service(request, response);
     }
 }

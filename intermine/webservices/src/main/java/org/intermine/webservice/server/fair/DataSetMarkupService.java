@@ -12,32 +12,46 @@ package org.intermine.webservice.server.fair;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.web.fair.SemanticMarkupUtil;
-import org.intermine.webservice.server.core.JSONService;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.SemanticMarkup;
+import org.intermine.webservice.server.Format;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 /**
  * Serve dataset markup to be added to the report page
  * @author Daniela Butano
  *
  */
-public class DataSetMarkupService extends JSONService
+public class DataSetMarkupService extends JSONServiceSpring
 {
+    public SemanticMarkup getSemanticMarkup() {
+        return semanticMarkup;
+    }
+
+    private SemanticMarkup semanticMarkup;
+
     /**
      * Constructor
      * @param im The InterMine state object.
+     * @param format
      **/
-    public DataSetMarkupService(InterMineAPI im) {
-        super(im);
+    public DataSetMarkupService(InterMineAPI im, Format format) {
+        super(im, format);
+        semanticMarkup = new SemanticMarkup();
     }
 
     @Override
     protected void execute() throws Exception {
         String dataSetName = getRequiredParameter("name");
+        String description = getOptionalParameter("description");
         String url = getOptionalParameter("url");
-        addResultItem(SemanticMarkupUtil.getDataSetMarkup(request, dataSetName, url), false);
+        semanticMarkup.setProperties(SemanticMarkupUtil.getDataSetMarkup(request, dataSetName, description, url));
     }
 
     @Override
     public String getResultsKey() {
         return "properties";
     }
+
 }

@@ -11,6 +11,7 @@ package org.intermine.webservice.server.widget;
  */
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +24,9 @@ import org.intermine.web.context.InterMineContext;
 import org.intermine.web.logic.config.WebConfig;
 import org.intermine.web.logic.export.ResponseUtil;
 import org.intermine.web.logic.widget.config.WidgetConfig;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.Widgets;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.JSONService;
 import org.intermine.webservice.server.output.JSONFormatter;
 import org.intermine.webservice.server.output.Output;
@@ -34,15 +38,22 @@ import org.intermine.webservice.server.output.XMLFormatter;
  * @author Alex Kalderimis
  *
  */
-public class AvailableWidgetsService extends JSONService
+public class AvailableWidgetsService extends JSONServiceSpring
 {
+
+    public Widgets getWidgetsModel() {
+        return widgetsModel;
+    }
+
+    private Widgets widgetsModel;
 
     /**
      * Constructor
      * @param im The InterMine application object.
      */
-    public AvailableWidgetsService(InterMineAPI im) {
-        super(im);
+    public AvailableWidgetsService(InterMineAPI im, Format format) {
+        super(im, format);
+        widgetsModel = new Widgets();
     }
 
     @Override
@@ -52,25 +63,12 @@ public class AvailableWidgetsService extends JSONService
 
         WidgetProcessor processor = getProcessor();
         Iterator<Entry<String, WidgetConfig>> it = widgetDetails.entrySet().iterator();
+        List<Object> resultList = new ArrayList<>();
         while (it.hasNext()) {
             Entry<String, WidgetConfig> pair = it.next();
-            List<String> row = processor.process(pair.getKey(), pair.getValue());
-            if (!formatIsFlatFile() && it.hasNext()) {
-                row.add("");
-            }
-            output.addResultItem(row);
+            resultList.add(processor.processSpring(pair.getKey(), pair.getValue()));
         }
-    }
-
-    @Override
-    protected Map<String, Object> getHeaderAttributes() {
-        final Map<String, Object> attributes = new HashMap<String, Object>();
-        attributes.putAll(super.getHeaderAttributes());
-        if (formatIsJSON()) {
-            attributes.put(JSONFormatter.KEY_INTRO, "\"widgets\":[");
-            attributes.put(JSONFormatter.KEY_OUTRO, "]");
-        }
-        return attributes;
+        widgetsModel.setWidgets(resultList);
     }
 
     private WidgetProcessor getProcessor() {
@@ -81,21 +79,6 @@ public class AvailableWidgetsService extends JSONService
         } else {
             return FlatWidgetProcessor.instance();
         }
-    }
-
-    @Override
-    protected Output makeXMLOutput(PrintWriter out, String separator) {
-        ResponseUtil.setXMLHeader(response, "result.xml");
-        return new StreamedOutput(out, new WidgetXMLFormatter());
-    }
-
-    private class WidgetXMLFormatter extends XMLFormatter
-    {
-        @Override
-        public String formatResult(List<String> resultRow) {
-            return StringUtils.join(resultRow, "");
-        }
-
     }
 
 

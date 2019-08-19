@@ -29,6 +29,7 @@ import org.intermine.objectstore.ObjectStore;
 import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.pathquery.Constraints;
 import org.intermine.pathquery.PathQuery;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.ListManager;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
@@ -58,8 +59,8 @@ public class ListsService extends AvailableListsService
      * Constructor
      * @param im The InterMine API
      */
-    public ListsService(final InterMineAPI im) {
-        super(im);
+    public ListsService(final InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     /**

@@ -15,9 +15,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -37,55 +34,47 @@ import org.intermine.api.tag.TagNames;
 import org.intermine.api.tag.TagTypes;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.web.logic.Constants;
-import org.intermine.web.logic.export.ResponseUtil;
 import org.intermine.web.util.URLGenerator;
+import org.intermine.webservice.model.GeneratedCode;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
-import org.intermine.webservice.server.output.JSONFormatter;
 import org.intermine.webservice.server.query.result.PathQueryBuilder;
 import org.json.JSONObject;
+import org.springframework.http.HttpHeaders;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 /**
  * A service for generating code based on a query.
  * @author Alex Kalderimis
  *
  */
-public class CodeService extends AbstractQueryService
+public class CodeService extends AbstractQueryServiceSpring
 {
     protected static final Logger LOG = Logger.getLogger(CodeService.class);
     private String perlModuleVersion;
     private static final String PERL_MODULE_URI =
             "http://api.metacpan.org/v0/module/Webservice::InterMine";
 
+    public GeneratedCode getGeneratedCode() {
+        return generatedCode;
+    }
+
+    private GeneratedCode generatedCode;
+
+    protected HttpHeaders httpHeaders;
+
     /**
      * Constructor.
      * @param im The InterMine application object.
+     * @param format
      */
-    public CodeService(InterMineAPI im) {
-        super(im);
+    public CodeService(InterMineAPI im, HttpHeaders httpHeaders, Format format) {
+        super(im, format);
+        generatedCode = new GeneratedCode();
+        this.httpHeaders = httpHeaders;
     }
 
-    @Override
-    protected Format getDefaultFormat() {
-        return Format.TEXT;
-    }
-
-    @Override
-    protected boolean canServe(Format format) {
-        switch (format) {
-            case JSON:
-                return true;
-            case TEXT:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    @Override
-    protected String getDefaultFileName() {
-        return "query";
-    }
 
     @Override
     protected String getExtension() {
@@ -141,7 +130,7 @@ public class CodeService extends AbstractQueryService
         String name = pq.getTitle() != null ? pq.getTitle() : "query";
         String fileName = name.replaceAll("[^a-zA-Z0-9_,.()-]", "_") + getExtension();
 
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+        httpHeaders.setContentDispositionFormData("attachment",fileName);
 
         WebserviceCodeGenInfo info = new WebserviceCodeGenInfo(
                         pq,
@@ -155,24 +144,10 @@ public class CodeService extends AbstractQueryService
         WebserviceCodeGenerator codeGen = getCodeGenerator(lang);
         String sc = codeGen.generate(info);
         if (formatIsJSON()) {
-            ResponseUtil.setJSONHeader(response, "querycode.json");
-            Map<String, Object> attributes = new HashMap<String, Object>();
-            if (formatIsJSONP()) {
-                String callback = getCallback();
-                if (callback == null || "".equals(callback)) {
-                    callback = DEFAULT_CALLBACK;
-                }
-                attributes.put(JSONFormatter.KEY_CALLBACK, callback);
-            }
-            attributes.put(JSONFormatter.KEY_INTRO, "\"code\":");
-            attributes.put(JSONFormatter.KEY_OUTRO, "");
-            output.setHeaderAttributes(attributes);
-            // Oddly, here escape Java is correct, not escapeJavaScript.
-            // This is due to syntax errors thrown by escaped single quotes.
             sc = "\"" + StringEscapeUtils.escapeJava(sc) + "\"";
         }
 
-        output.addResultItem(Arrays.asList(sc));
+        generatedCode.setCode(sc);
     }
 
     private String getPerlModuleVersion() {
@@ -240,5 +215,6 @@ public class CodeService extends AbstractQueryService
         PathQuery query = pqb.getQuery();
         return query;
     }
+
 
 }

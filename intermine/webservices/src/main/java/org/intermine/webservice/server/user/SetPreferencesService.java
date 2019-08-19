@@ -19,6 +19,7 @@ import java.util.Set;
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.DuplicateMappingException;
 import org.intermine.api.profile.Profile;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 
 /**
@@ -30,8 +31,8 @@ public class SetPreferencesService extends ReadPreferencesService
 {
 
     /** @param im The InterMine state object. **/
-    public SetPreferencesService(InterMineAPI im) {
-        super(im);
+    public SetPreferencesService(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     private static final Set<String> BLACKLISTED_NAMES

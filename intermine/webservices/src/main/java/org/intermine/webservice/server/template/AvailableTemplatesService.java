@@ -24,6 +24,8 @@ import org.intermine.api.template.TemplateHelper;
 import org.intermine.api.template.TemplateManager;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.web.logic.export.ResponseUtil;
+import org.intermine.webservice.WebServiceSpring;
+import org.intermine.webservice.model.Templates;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.WebService;
 import org.intermine.webservice.server.exceptions.NotAcceptableException;
@@ -37,33 +39,22 @@ import org.intermine.webservice.server.output.StreamedOutput;
  * Fetch the names of public template queries for use with the Templates web service.
  * @author Richard Smith
  */
-public class AvailableTemplatesService extends WebService
+public class AvailableTemplatesService extends WebServiceSpring
 {
 
-    private static final String FILE_BASE_NAME = "templates";
+    public Templates getTemplatesResponse() {
+        return templatesResponse;
+    }
+
+    private Templates templatesResponse;
 
     /**
      * Constructor.
      * @param im The InterMineAPI for this webservice
      */
-    public AvailableTemplatesService(InterMineAPI im) {
-        super(im);
-    }
-
-    @Override
-    protected Output makeXMLOutput(PrintWriter out, String separator) {
-        ResponseUtil.setXMLHeader(response, FILE_BASE_NAME + ".xml");
-        return new StreamedOutput(out, new PlainFormatter(), separator);
-    }
-
-    @Override
-    protected Format getDefaultFormat() {
-        return Format.XML;
-    }
-
-    @Override
-    protected boolean canServe(Format format) {
-        return Format.BASIC_FORMATS.contains(format);
+    public AvailableTemplatesService(InterMineAPI im, Format format) {
+        super(im, format);
+        templatesResponse = new Templates();
     }
 
     @Override
@@ -71,13 +62,13 @@ public class AvailableTemplatesService extends WebService
 
         TemplateManager templateManager = im.getTemplateManager();
         Map<String, ApiTemplate> templates;
+        Profile profile = null;
         boolean includeBroken = Boolean.parseBoolean(request.getParameter("includeBroken"));
         if (isAuthenticated()) {
-            Profile profile = getPermission().getProfile();
+            profile = getPermission().getProfile();
             templates = (includeBroken)
                             ? templateManager.getUserAndGlobalTemplates(profile)
                             : templateManager.getWorkingTemplates(profile);
-
         } else {
             templates = (includeBroken)
                             ? templateManager.getGlobalTemplates()
@@ -86,24 +77,24 @@ public class AvailableTemplatesService extends WebService
 
         switch (getFormat()) {
             case XML:
-                output.addResultItem(Arrays.asList(TemplateHelper.apiTemplateMapToXml(templates,
-                        PathQuery.USERPROFILE_VERSION)));
+                templatesResponse.setTemplates(TemplateHelper.apiTemplateMapToXml(templates,
+                        PathQuery.USERPROFILE_VERSION));
                 break;
             case JSON:
-                Map<String, Object> attributes = new HashMap<String, Object>();
+                /*Map<String, Object> attributes = new HashMap<String, Object>();
                 if (formatIsJSONP()) {
                     attributes.put(JSONFormatter.KEY_CALLBACK, getCallback());
                 }
-                attributes.put(JSONFormatter.KEY_INTRO, "\"templates\":");
-                output.setHeaderAttributes(attributes);
-                output.addResultItem(Arrays.asList(
-                        TemplateHelper.apiTemplateMapToJson(im, templates)));
+                templatesResponse.setTemplates(TemplateHelper.apiTemplateMapToJson(im, templates, profile));
+                */
+                templatesResponse.setTemplates(TemplateHelper.apiTemplateMapToJsonSpring(im, templates, profile));
                 break;
             case TEXT:
                 Set<String> templateNames = new TreeSet<String>(templates.keySet());
-                for (String templateName : templateNames) {
+                /*for (String templateName : templateNames) {
                     output.addResultItem(Arrays.asList(templateName));
-                }
+                }*/
+                templatesResponse.setTemplates(templateNames);
             case HTML:
                 throw new ServiceException("Not implemented: " + Format.HTML);
             default:

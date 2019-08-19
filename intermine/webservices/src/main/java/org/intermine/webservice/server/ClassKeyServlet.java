@@ -31,8 +31,8 @@ public class ClassKeyServlet extends HttpServlet
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) {
-        WebService s = new ClassKeysService(InterMineContext.getInterMineAPI());
-        s.service(request, response);
+        //WebService s = new ClassKeysService(InterMineContext.getInterMineAPI());
+        //s.service(request, response);
     }
 
 }

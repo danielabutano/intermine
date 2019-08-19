@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.Profile;
+import org.intermine.webservice.model.ListsPost;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
 import org.intermine.webservice.server.output.JSONFormatter;
@@ -29,14 +30,13 @@ import org.intermine.webservice.server.output.JSONFormatter;
 public abstract class ListMakerService extends AuthenticatedListService
 {
 
-    protected static final String LIST_TYPE_KEY = "type";
 
     /**
      * Constructor.
      * @param api The InterMine settings bundle.
      */
-    public ListMakerService(final InterMineAPI api) {
-        super(api);
+    public ListMakerService(final InterMineAPI api, Format format) {
+        super(api, format);
     }
 
     @Override
@@ -48,25 +48,6 @@ public abstract class ListMakerService extends AuthenticatedListService
         }
     }
 
-    @Override
-    protected Map<String, Object> getHeaderAttributes() {
-        final Map<String, Object> attributes = new HashMap<String, Object>();
-        attributes.putAll(super.getHeaderAttributes());
-        if (formatIsJSON()) {
-            attributes.put(JSONFormatter.KEY_INTRO, "\"" + LIST_SIZE_KEY + "\":");
-        }
-        return attributes;
-    }
-
-    @Override
-    protected Format getDefaultFormat() {
-        return Format.JSON;
-    }
-
-    @Override
-    protected boolean canServe(Format format) {
-        return format == Format.JSON || format == Format.TEXT;
-    }
 
     /**
      * Initialise the accumulator that builds up the list of temporary lists to delete.
@@ -84,29 +65,6 @@ public abstract class ListMakerService extends AuthenticatedListService
      * @return The type name.
      */
     protected abstract String getNewListType(ListInput input);
-
-    @Override
-    protected void execute() throws Exception {
-        final Profile profile = getPermission().getProfile();
-        final ListInput input = getInput();
-
-        addOutputInfo(LIST_NAME_KEY, input.getListName());
-
-        final String type = getNewListType(input);
-        if (type != null) {
-            addOutputInfo(LIST_TYPE_KEY, type);
-        }
-
-        final Set<String> rubbishbin = new HashSet<String>();
-        initialiseDelendumAccumulator(rubbishbin, input);
-        try {
-            makeList(input, type, profile, rubbishbin);
-        } finally {
-            for (final String delendum: rubbishbin) {
-                ListServiceUtils.ensureBagIsDeleted(profile, delendum);
-            }
-        }
-    }
 
     /**
      * Make the list requested by the user.

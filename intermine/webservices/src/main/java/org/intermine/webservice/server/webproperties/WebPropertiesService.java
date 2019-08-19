@@ -19,7 +19,11 @@ import java.util.Queue;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.util.PropertiesUtil;
-import org.intermine.webservice.server.core.JSONService;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.WebProperties;
+import org.intermine.webservice.server.Format;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 
 /**
@@ -27,15 +31,24 @@ import org.intermine.webservice.server.core.JSONService;
  *
  * @author Julie
  */
-public class WebPropertiesService extends JSONService
+public class WebPropertiesService extends JSONServiceSpring
 {
     //private static final Logger LOG = Logger.getLogger(WebPropertiesService.class);
     // if there is a parent property with an additional child value, we need a key
     private static final String DEFAULT_PATH = "default";
 
-    /** @param im The InterMine state object. **/
-    public WebPropertiesService(InterMineAPI im) {
-        super(im);
+    public WebProperties getWebPropertiesModel() {
+        return webPropertiesModel;
+    }
+
+    private WebProperties webPropertiesModel;
+
+    /**
+     * @param im The InterMine state object.
+     * @param format **/
+    public WebPropertiesService(InterMineAPI im, Format format) {
+        super(im, format);
+        webPropertiesModel = new WebProperties();
     }
 
     @Override
@@ -60,7 +73,7 @@ public class WebPropertiesService extends JSONService
         // defaults for iodocs, only setting default query right now
         appendProperties(webPropertiesMap, "services");
 
-        addResultItem(webPropertiesMap, false);
+        webPropertiesModel.setWebProperties(webPropertiesMap);
     }
 
     @Override
@@ -112,5 +125,6 @@ public class WebPropertiesService extends JSONService
             setProperty(thisLevel, path, value);
         }
     }
+
 
 }

@@ -23,7 +23,8 @@ public class WhoAmIServlet extends WebServiceServlet
     @Override
     public WebService getService(Method method) throws NoServiceException {
         if (Method.GET == method) {
-            return new WhoAmIService(api);
+            return null;
+            //return new WhoAmIService(api);
         } else {
             throw new NoServiceException();
         }

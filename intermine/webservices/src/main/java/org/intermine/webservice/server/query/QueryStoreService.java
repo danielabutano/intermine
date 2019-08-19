@@ -12,6 +12,9 @@ package org.intermine.webservice.server.query;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.query.BadQueryException;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.QueryStore;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.JSONService;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 
@@ -20,17 +23,19 @@ import org.intermine.webservice.server.exceptions.BadRequestException;
  * @author Alex Kalderimis
  *
  */
-public class QueryStoreService extends JSONService
+public class QueryStoreService extends JSONServiceSpring
 {
 
-    /** @param im The InterMine state object **/
-    public QueryStoreService(InterMineAPI im) {
-        super(im);
+    public QueryStore getQueryStoreModel() {
+        return queryStoreModel;
     }
 
-    @Override
-    protected String getResultsKey() {
-        return "id";
+    private QueryStore queryStoreModel;
+
+    /** @param im The InterMine state object **/
+    public QueryStoreService(InterMineAPI im, Format format) {
+        super(im, format);
+        queryStoreModel = new QueryStore();
     }
 
     @Override
@@ -42,7 +47,7 @@ public class QueryStoreService extends JSONService
         } catch (BadQueryException e) {
             throw new BadRequestException(e.getMessage());
         }
-        this.addResultValue(id, false);
+        queryStoreModel.setId(id);
     }
 
 }

@@ -13,6 +13,9 @@ package org.intermine.webservice.server.user;
 import java.util.HashMap;
 
 import org.intermine.api.InterMineAPI;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.Preferences;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.ReadWriteJSONService;
 
 /**
@@ -20,12 +23,19 @@ import org.intermine.webservice.server.core.ReadWriteJSONService;
  * @author Alex Kalderimis
  *
  */
-public class ReadPreferencesService extends ReadWriteJSONService
+public class ReadPreferencesService extends JSONServiceSpring
 {
 
+    public Preferences getPreferencesModel() {
+        return preferencesModel;
+    }
+
+    private Preferences preferencesModel;
+
     /** @param im The InterMine state object **/
-    public ReadPreferencesService(InterMineAPI im) {
-        super(im);
+    public ReadPreferencesService(InterMineAPI im, Format format) {
+        super(im, format);
+        preferencesModel = new Preferences();
     }
 
     @Override
@@ -35,8 +45,8 @@ public class ReadPreferencesService extends ReadWriteJSONService
 
     @Override
     protected void execute() {
-        addResultItem(new HashMap<String, Object>(
-                getPermission().getProfile().getPreferences()), false);
+        preferencesModel.setPreferences(new HashMap<String, Object>(
+                getPermission().getProfile().getPreferences()));
     }
 
 }

@@ -12,6 +12,7 @@ package org.intermine.webservice.server.lists;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.bag.operations.SymmetricDifference;
+import org.intermine.webservice.server.Format;
 
 /**
  * A service for performing a symmetric difference operation on a collection
@@ -26,8 +27,8 @@ public class ListDifferenceService extends ListOperationService
      * Constructor
      * @param im The InterMine application object.
      */
-    public ListDifferenceService(InterMineAPI im) {
-        super(im);
+    public ListDifferenceService(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     @Override

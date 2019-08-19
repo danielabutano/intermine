@@ -28,7 +28,6 @@ import org.intermine.web.logic.RequestUtil;
 import org.intermine.web.logic.WebUtil;
 import org.intermine.web.logic.config.WebConfig;
 import org.intermine.web.logic.export.ExportException;
-import org.intermine.web.logic.export.ExportHelper;
 import org.intermine.web.logic.export.Exporter;
 import org.intermine.web.logic.results.PagedTable;
 import org.intermine.web.logic.session.SessionMethods;
@@ -156,7 +155,11 @@ public abstract class StandardHttpExporter extends HttpExporterBase implements T
      */
     @Override
     public List<Path> getInitialExportPaths(final PagedTable pt) {
-        return ExportHelper.getColumnPaths(pt);
+        List<Path> paths = new ArrayList<Path>();
+        for (Column col: pt.getColumns()) {
+            paths.add(col.getPath());
+        }
+        return paths;
     }
 
     /**

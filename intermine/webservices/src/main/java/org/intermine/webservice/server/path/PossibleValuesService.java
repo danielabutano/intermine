@@ -12,6 +12,7 @@ package org.intermine.webservice.server.path;
 
 import static org.apache.commons.lang.StringUtils.split;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +28,9 @@ import org.intermine.objectstore.query.QueryFunction;
 import org.intermine.objectstore.query.Results;
 import org.intermine.pathquery.Path;
 import org.intermine.pathquery.PathException;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.PossibleValues;
+import org.intermine.webservice.model.SavedQueries;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.WebServiceRequestParser;
 import org.intermine.webservice.server.core.JSONService;
@@ -40,8 +44,17 @@ import org.json.JSONObject;
  * @author Alex Kalderimis
  *
  */
-public class PossibleValuesService extends JSONService
+public class PossibleValuesService extends JSONServiceSpring
 {
+    public PossibleValues getPossibleValues() {
+        return possibleValues;
+    }
+
+    private PossibleValues possibleValues;
+
+    private String pathString;
+
+    private String typeConstraintStr;
 
     private static final String TYPE_CONSTRAINTS_SHOULD_BE_JSON =
             "The value of 'typeConstraints' should be a json string";
@@ -59,25 +72,11 @@ public class PossibleValuesService extends JSONService
      *
      * @param im A reference to the InterMine API bundle.
      */
-    public PossibleValuesService(InterMineAPI im) {
-        super(im);
-    }
-
-    @Override
-    protected Format getDefaultFormat() {
-        return Format.OBJECTS;
-    }
-
-    @Override
-    protected boolean canServe(Format format) {
-        switch (format) {
-            case OBJECTS:
-            case JSON:
-            case TEXT:
-                return true;
-            default:
-                return false;
-        }
+    public PossibleValuesService(InterMineAPI im, Format format, String pathString, String typeConstraintStr) {
+        super(im, format);
+        this.pathString = pathString;
+        this.typeConstraintStr = typeConstraintStr;
+        possibleValues = new PossibleValues();
     }
 
     private boolean count = false;
@@ -90,26 +89,10 @@ public class PossibleValuesService extends JSONService
     }
 
     @Override
-    protected Map<String, Object> getHeaderAttributes() {
-        Map<String, Object> attrs = super.getHeaderAttributes();
-        if (count) {
-            attrs.put(JSONFormatter.KEY_INTRO, "\"count\":");
-        } else {
-            attrs.put(JSONFormatter.KEY_INTRO, "\"results\":[");
-            attrs.put(JSONFormatter.KEY_OUTRO, "]");
-        }
-        return attrs;
-    }
+    protected void execute() throws Exception {
 
-    @Override
-    protected void postInit() {
-        super.postInit();
+        possibleValues.setPath(pathString);
 
-        String pathString = getRequiredParameter("path").trim();
-
-        addOutputInfo("path", pathString);
-
-        String typeConstraintStr = getOptionalParameter("typeConstraints", "{}");
         Map<String, String> typeMap = new HashMap<String, String>();
 
         JSONObject typeJO;
@@ -141,20 +124,14 @@ public class PossibleValuesService extends JSONService
         } catch (PathException e) {
             throw new BadRequestException("Bad path given: " + pathString, e);
         }
-
-    }
-
-    @Override
-    protected void execute() throws Exception {
-
         Query q = new Query();
 
-        addOutputInfo("class", path.getLastClassDescriptor().getUnqualifiedName());
-        addOutputInfo("field", path.getLastElement());
+        possibleValues.setPropertyClass(path.getLastClassDescriptor().getUnqualifiedName());
+        possibleValues.setField(path.getLastElement());
 
         String type = ((AttributeDescriptor) path.getEndFieldDescriptor()).getType();
         String[] parts = split(type, '.');
-        addOutputInfo("type", parts[parts.length - 1]);
+        possibleValues.setType(parts[parts.length - 1]);
 
         QueryClass qc = new QueryClass(path.getPrefix().getEndType());
         q.addFrom(qc);
@@ -169,21 +146,23 @@ public class PossibleValuesService extends JSONService
         int total = im.getObjectStore().count(q, ObjectStore.SEQUENCE_IGNORE);
 
         if (count) {
-            addResultValue(total, false);
+            possibleValues.setCount(total);
         } else {
-            addOutputInfo("count", Integer.toString(total));
+            possibleValues.setCount(total);
 
             Results results = im.getObjectStore().execute(q, DEFAULT_BATCH_SIZE, true, true, false);
             Iterator<Object> iter = results.iterator();
 
+            List< Object > resultList = new ArrayList<>();
             while (iter.hasNext()) {
                 @SuppressWarnings("rawtypes")
                 List row = (List) iter.next();
                 Map<String, Object> jsonMap = new HashMap<String, Object>();
                 jsonMap.put("value", row.get(0));
                 jsonMap.put("count", row.get(1));
-                addResultItem(jsonMap, iter.hasNext());
+                resultList.add(jsonMap);
             }
+            possibleValues.setResults(resultList);
         }
 
     }

@@ -11,7 +11,6 @@ include ':intermine-model',
 ':intermine-webservices',
 ':intermine-webapp', 
 ':intermine-webtasks',
-':intermine-webservices-spring',
 ':intermine-jbrowse-endpoint'
 //':intermine-webservice-client', ':intermine-webservice-test'
 
@@ -25,7 +24,6 @@ project(':intermine-api').projectDir = new File(settingsDir, './api')
 project(':intermine-webcore').projectDir = new File(settingsDir, './webcore')
 project(':intermine-webapp').projectDir = new File(settingsDir, './webapp')
 project(':intermine-webservices').projectDir = new File(settingsDir, './webservices')
-project(':intermine-webservices-spring').projectDir = new File(settingsDir, './webservices-spring')
 project(':intermine-resources').projectDir = new File(settingsDir, './resources')
 project(':intermine-webtasks').projectDir = new File(settingsDir, './webtasks')
 project(':intermine-jbrowse-endpoint').projectDir = new File(settingsDir, './jbrowse-endpoint')

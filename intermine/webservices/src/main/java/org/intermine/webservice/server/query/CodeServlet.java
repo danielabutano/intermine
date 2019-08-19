@@ -48,6 +48,6 @@ public class CodeServlet extends HttpServlet
 
     private void runService(HttpServletRequest request, HttpServletResponse response) {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
-        new CodeService(im).service(request, response);
+       // new CodeService(im).service(request, response);
     }
 }

@@ -43,6 +43,12 @@ import org.intermine.objectstore.ObjectStore;
 import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.objectstore.ObjectStoreWriter;
 import org.intermine.pathquery.PathQuery;
+import org.json.JSONObject;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * Class to represent a user of the webapp
@@ -873,9 +879,31 @@ public class Profile
      */
     public String getDayToken() {
         if (dayToken == null || !manager.tokenHasMoreUses(dayToken)) {
-            dayToken = getProfileManager().generate24hrKey(this);
+            Client client = ClientBuilder.newClient();
+            try {
+                Response response = client.target(
+                        "http://localhost:8080/biotestmine/service/session")
+                        .request(MediaType.APPLICATION_JSON).get();
+                if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+                    JSONObject result = new JSONObject(response.readEntity(String.class));
+                    dayToken = result.getString("token");
+                    manager.addTokenForProfile(this, dayToken);
+                }
+            } catch (RuntimeException ex) {
+                LOG.error("Problems connecting to session token web service");
+            }
+            //dayToken = getProfileManager().generate24hrKey(this);
         }
         return dayToken;
+    }
+
+    /**
+     * Set a token. called by the webservices during login
+     */
+    public void setDayToken(String dayToken) {
+        if (dayToken != null && manager.tokenHasMoreUses(dayToken)) {
+            this.dayToken = dayToken;
+        }
     }
 
     /**

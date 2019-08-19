@@ -18,6 +18,7 @@ import java.util.Map.Entry;
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.SavedQuery;
 import org.intermine.pathquery.PathQuery;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.ServiceException;
 
 /**
@@ -31,8 +32,8 @@ public class QueryUpdateService extends QueryUploadService
 {
 
     /** @param im The InterMine state object **/
-    public QueryUpdateService(InterMineAPI im) {
-        super(im);
+    public QueryUpdateService(InterMineAPI im, Format format, String body) {
+        super(im, format, body);
     }
 
     @Override

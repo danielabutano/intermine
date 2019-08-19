@@ -61,6 +61,25 @@ public final class XMLWidgetProcessor extends WidgetProcessorImpl
         return new LinkedList<String>(Arrays.asList(sb.toString()));
     }
 
+    @Override
+    public Object processSpring(String name, WidgetConfig widgetConfig) {
+        StringBuilder sb = new StringBuilder("<widget>");
+        sb.append(formatCell("name", name));
+        sb.append(formatCell("title", widgetConfig.getTitle()));
+        sb.append(formatCell("description", widgetConfig.getDescription()));
+        WidgetType widgetType = getWidgetType(widgetConfig);
+        sb.append(formatCell("widgetType", widgetType.name().toLowerCase()));
+        if (widgetType == WidgetType.CHART) {
+            sb.append(formatCell("chartType",
+                    ((GraphWidgetConfig) widgetConfig).getGraphType()));
+            sb.append(formatCell("labels", getLabels((GraphWidgetConfig) widgetConfig)));
+        }
+        sb.append(formatCell("target", getClasses(widgetConfig.getTypeClass())));
+        sb.append(formatCell("filter", widgetConfig.getFilters()));
+        sb.append("</widget>");
+        return sb.toString();
+    }
+
     @SuppressWarnings("rawtypes")
     private String formatCell(String name, Object contents) {
         StringBuffer sb = new StringBuffer();

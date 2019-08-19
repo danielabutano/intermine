@@ -13,24 +13,34 @@ package org.intermine.webservice.server.idresolution;
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.idresolution.IDResolver;
 import org.intermine.api.idresolution.Job;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.IdResolutionResults;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.JSONService;
 import org.intermine.webservice.server.exceptions.NoContentException;
 import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
 import org.intermine.webservice.server.exceptions.ServiceException;
 
 /** @author Alex Kalderimis **/
-public class JobResultsService extends JSONService
+public class JobResultsService extends JSONServiceSpring
 {
     private final String jobId;
+
+    public IdResolutionResults getIdResolutionResults() {
+        return idResolutionResults;
+    }
+
+    private IdResolutionResults idResolutionResults;
 
     /**
      * Construct a jobs service handler.
      * @param im The InterMine state object.
      * @param jobId The job we are interested in.
      */
-    public JobResultsService(InterMineAPI im, String jobId) {
-        super(im);
+    public JobResultsService(InterMineAPI im, Format format, String jobId) {
+        super(im, format);
         this.jobId = jobId;
+        idResolutionResults = new IdResolutionResults();
     }
 
     @Override
@@ -47,22 +57,17 @@ public class JobResultsService extends JSONService
                 ServiceException se;
                 if (job.getStatus() == Job.JobStatus.ERROR) {
                     se = new NoContentException("Job failed: " +  job.getError().getMessage());
-                    this.addOutputInfo("message", job.getError().getMessage());
+                    idResolutionResults.setMessage(job.getError().getMessage());
                 } else {
                     se = new NoContentException("Job not ready");
                 }
                 throw se;
             }
 
-            addResultItem(formatter.format(job), false);
+            idResolutionResults.setResults(formatter.format(job));
         } else {
             throw new ResourceNotFoundException("No such job");
         }
-    }
-
-    @Override
-    protected String getResultsKey() {
-        return "results";
     }
 
 }

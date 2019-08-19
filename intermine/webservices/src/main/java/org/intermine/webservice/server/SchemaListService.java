@@ -14,22 +14,33 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.intermine.api.InterMineAPI;
-import org.intermine.webservice.server.core.JSONService;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.Schema;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 /**
  * Serve up the list of schemata that we have.
  * @author Alexis Kalderimis
  *
  */
-public class SchemaListService extends JSONService
+public class SchemaListService extends JSONServiceSpring
 {
+
+    public Schema getSchema() {
+        return schema;
+    }
+
+    private Schema schema;
 
     /**
      * Constructor
      * @param im InterMine settings
+     * @param format
      */
-    public SchemaListService(InterMineAPI im) {
-        super(im);
+    public SchemaListService(InterMineAPI im, Format format) {
+        super(im, format);
+        schema = new Schema();
     }
 
     /*
@@ -40,8 +51,7 @@ public class SchemaListService extends JSONService
     protected void execute() throws Exception {
         List<String> schemata =
             Arrays.asList(webProperties.getProperty("schema.filenames", "").split(","));
-
-        addResultItem(schemata, false);
+        schema.setSchemata(schemata);
     }
 
     @Override
@@ -49,9 +59,5 @@ public class SchemaListService extends JSONService
         return "schemata";
     }
 
-    @Override
-    protected String getDefaultFileName() {
-        return "schemata.json";
-    }
 
 }

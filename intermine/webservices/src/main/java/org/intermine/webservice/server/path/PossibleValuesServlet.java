@@ -56,6 +56,6 @@ public class PossibleValuesServlet extends HttpServlet
     private void runService(HttpServletRequest request,
             HttpServletResponse response) {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
-        new PossibleValuesService(im).service(request, response);
+        //new PossibleValuesService(im).service(request, response);
     }
 }

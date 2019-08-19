@@ -34,6 +34,7 @@ import org.intermine.objectstore.query.QuerySelectable;
 import org.intermine.pathquery.Path;
 import org.intermine.pathquery.PathException;
 import org.intermine.pathquery.PathQuery;
+import org.intermine.webservice.model.ToList;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.ServiceException;
@@ -56,13 +57,23 @@ public class QueryToListService extends AbstractQueryService
 
     protected final BagManager bagManager;
 
+    private String listName;
+
+    public ToList getToList() {
+        return toList;
+    }
+
+    protected ToList toList;
+
     /**
      * Constructor.
      * @param im The intermine settings bundle
      */
-    public QueryToListService(InterMineAPI im) {
-        super(im);
+    public QueryToListService(InterMineAPI im, Format format, String listName) {
+        super(im, format);
         bagManager = im.getBagManager();
+        toList = new ToList();
+        this.listName = listName;
     }
 
     @Override
@@ -93,7 +104,7 @@ public class QueryToListService extends AbstractQueryService
 
         generateListFromQuery(
                 pq,
-                input.getListName(),
+                listName,
                 input.getDescription(),
                 input.getTags(),
                 profile);
@@ -160,13 +171,11 @@ public class QueryToListService extends AbstractQueryService
             }
             profile.renameBag(tempName, name);
 
-            output.addResultItem(Arrays.asList("" + newList.size()));
+            toList.setListSize(newList.size());
 
         } catch (CompletelyFalseException e) {
-            output.addResultItem(Arrays.asList("0"));
             throw new BadRequestException("List not created - it would be of size 0");
         } catch (UnknownBagTypeException e) {
-            output.addResultItem(Arrays.asList("0"));
             throw new ServiceException(e.getMessage(), e);
         } catch (ClassKeysNotFoundException cke) {
             throw new BadRequestException("Bag has not class key set", cke);
@@ -203,18 +212,8 @@ public class QueryToListService extends AbstractQueryService
      * @param id intermine id for list
      */
     protected void setHeaderAttributes(String name, Integer id) {
-        Map<String, Object> attributes = new HashMap<String, Object>();
-        if (formatIsJSONP()) {
-            attributes.put(JSONFormatter.KEY_CALLBACK, getCallback());
-        }
-        if (formatIsJSON()) {
-            attributes.put(JSONFormatter.KEY_INTRO, "\"listSize\":");
-        }
-        Map<String, String> kvPairs = new HashMap<String, String>();
-        kvPairs.put("listName", name);
-        kvPairs.put("listId", "" + id);
-        attributes.put(JSONFormatter.KEY_KV_PAIRS, kvPairs);
-        output.setHeaderAttributes(attributes);
+        toList.setListName(name);
+        toList.setListId(id);
     }
 
 }

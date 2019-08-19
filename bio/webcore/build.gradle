@@ -14,5 +14,7 @@ dependencies {
     compile project(':bio-model')
     compile group: "org.intermine", name: "intermine-webcore", version: System.getProperty("imVersion")
     compile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.0.1'
+    compile group: "org.biojava", name: "biojava-core", version: "4.2.0"
+    compile group: "org.biojava", name: "biojava-ontology", version: "4.2.0"
 }
 

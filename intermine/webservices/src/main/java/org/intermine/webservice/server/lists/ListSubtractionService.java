@@ -12,6 +12,7 @@ package org.intermine.webservice.server.lists;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.bag.operations.RelativeComplement;
+import org.intermine.webservice.server.Format;
 
 /**
  * A service for subtracting one group of lists from another group of lists to produce a new
@@ -26,8 +27,8 @@ public class ListSubtractionService extends ListOperationService
      * Constructor
      * @param im A reference to the main settings bundle.
      */
-    public ListSubtractionService(InterMineAPI im) {
-        super(im);
+    public ListSubtractionService(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     @Override

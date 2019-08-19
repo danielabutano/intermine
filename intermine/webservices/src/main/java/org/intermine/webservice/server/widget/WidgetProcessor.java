@@ -11,6 +11,7 @@ package org.intermine.webservice.server.widget;
  */
 
 import java.util.List;
+import java.util.Map;
 
 import org.intermine.web.logic.widget.config.WidgetConfig;
 
@@ -27,4 +28,7 @@ public interface WidgetProcessor
      * @return A list of strings to output.
      */
     List<String> process(String name, WidgetConfig widgetConfig);
+
+    Object processSpring(String name, WidgetConfig widgetConfig);
+
 }

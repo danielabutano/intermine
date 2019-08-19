@@ -16,7 +16,8 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.api.searchengine.KeywordSearchFacet;
 import org.intermine.api.searchengine.KeywordSearchHandler;
 import org.intermine.api.searchengine.solr.SolrKeywordSearchHandler;
-import org.intermine.webservice.server.core.JSONService;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.FacetList;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,23 +25,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
+
 
 /**
  * A web service for returning all the facet list
  * @author arunans23
  *
  */
-public class FacetListService extends JSONService
+public class FacetListService extends JSONServiceSpring
 {
 
     private static final Logger LOG = Logger.getLogger(FacetService.class);
 
+    public FacetList getFacetList() {
+        return facetList;
+    }
+
+    private FacetList facetList;
+
     /**
      * Constructor
      * @param im InterMine settings
+     * @param format
      */
-    public FacetListService(InterMineAPI im) {
-        super(im);
+    public FacetListService(InterMineAPI im, Format format) {
+        super(im, format);
+        facetList = new FacetList();
     }
 
     @Override
@@ -54,8 +65,6 @@ public class FacetListService extends JSONService
         Collection<KeywordSearchFacet> keywordSearchFacets
                 = searchHandler.doFacetSearch(im, "*:*", facetValues);
 
-        output.setHeaderAttributes(getHeaderAttributes());
-
         Map<String, List<String>> ckData = new HashMap<String, List<String>>();
 
         for (KeywordSearchFacet<FacetField.Count> keywordSearchFacet : keywordSearchFacets) {
@@ -68,13 +77,13 @@ public class FacetListService extends JSONService
             ckData.put(keywordSearchFacet.getName(), facetInnerList);
         }
 
-        addResultItem(ckData, false);
-
+        facetList.setFacetlist(ckData);
     }
 
     @Override
     protected String getResultsKey() {
         return "facet-list";
     }
+
 
 }

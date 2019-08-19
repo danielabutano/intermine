@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.web.context.InterMineContext;
+import org.intermine.webservice.WebServiceSpring;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.WebService;
 import org.intermine.webservice.server.core.ListManager;
@@ -30,7 +31,7 @@ import org.intermine.webservice.server.query.result.PathQueryBuilderForJSONObj;
  * @author Alex Kalderimis
  *
  */
-public abstract class AbstractQueryService extends WebService
+public abstract class AbstractQueryService extends WebServiceSpring
 {
 
     private static final String XML_SCHEMA_LOCATION = "webservice/query.xsd";
@@ -40,8 +41,8 @@ public abstract class AbstractQueryService extends WebService
      * Constructor.
      * @param im The InterMine application object.
      */
-    public AbstractQueryService(InterMineAPI im) {
-        super(im);
+    public AbstractQueryService(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     /**
@@ -66,7 +67,7 @@ public abstract class AbstractQueryService extends WebService
             final Properties webProperties = InterMineContext.getWebProperties();
             String baseUrl = webProperties.getProperty("webapp.baseurl");
             String path = webProperties.getProperty("webapp.path");
-            String relPath = path + "/" + schemaLocation;
+            String relPath = path + "/service/" + schemaLocation;
             URL url = new URL(baseUrl + "/" + relPath);
             return url.toString();
         } catch (MalformedURLException e) {

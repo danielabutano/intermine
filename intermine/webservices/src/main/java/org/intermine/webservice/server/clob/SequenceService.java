@@ -26,14 +26,17 @@ import org.intermine.objectstore.query.QuerySelectable;
 import org.intermine.pathquery.Path;
 import org.intermine.pathquery.PathException;
 import org.intermine.pathquery.PathQuery;
-import org.intermine.webservice.server.core.JSONService;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.Sequence;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.NotImplementedException;
 import org.intermine.webservice.server.exceptions.ServiceException;
-import org.intermine.webservice.server.output.JSONFormatter;
-import org.intermine.webservice.server.query.AbstractQueryService;
+import org.intermine.webservice.server.query.AbstractQueryServiceSpring;
 import org.intermine.webservice.server.query.QueryRequestParser;
 import org.intermine.webservice.server.query.result.PathQueryBuilder;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 /**
  * <p>A service to provide access to substrings of <code>ClobAccess</code> data. Ideally this
@@ -52,33 +55,24 @@ import org.intermine.webservice.server.query.result.PathQueryBuilder;
  * @author Alex Kalderimis
  *
  */
-public class SequenceService extends JSONService
+public class SequenceService extends JSONServiceSpring
 {
 
     private static final String EXPECTED_CHAR_SEQUENCE
         = "Expected the column to provide a CharSequence value, got: ";
 
-    /** @param im The InterMine state object. **/
-    public SequenceService(InterMineAPI im) {
-        super(im);
+    public Sequence getSequence() {
+        return sequence;
     }
 
+    private Sequence sequence;
+
     /**
-     * Why is the results key "features", pray? and not something more sensible, like,
-     * "results", say. Well, this it just seemed sensible to make this service
-     * directly consumable by <em>jbrowse</em>, which is obviously the whole point of this
-     * service. <em>Sigh</em>.
-     * @return The header attributes.
-     */
-    @Override
-    protected Map<String, Object> getHeaderAttributes() {
-        final Map<String, Object> attributes = new HashMap<String, Object>();
-        attributes.putAll(super.getHeaderAttributes());
-        if (formatIsJSON()) {
-            attributes.put(JSONFormatter.KEY_INTRO, "\"features\":[");
-            attributes.put(JSONFormatter.KEY_OUTRO, "]");
-        }
-        return attributes;
+     * @param im The InterMine state object.
+     * @param format **/
+    public SequenceService(InterMineAPI im, Format format) {
+        super(im, format);
+        sequence = new Sequence();
     }
 
     @Override
@@ -86,12 +80,14 @@ public class SequenceService extends JSONService
         Integer start = getIntParameter("start", 0);
         Integer end = getIntParameter("end", null);
         PathQuery pq = getQuery();
-
+        CharSequence chars = "";
         Iterator<CharSequence> sequences = getSequences(pq);
         while (sequences.hasNext()) {
-            CharSequence chars = sequences.next();
-            addResultItem(makeFeature(chars, start, end), sequences.hasNext());
+            ((String) chars).concat(sequences.next().toString());
+            //CharSequence chars = sequences.next();
+            //addResultItem(makeFeature(chars, start, end), sequences.hasNext());
         }
+        sequence.setFeatures(makeFeature(chars,start,end));
     }
 
     private Iterator<CharSequence> getSequences(final PathQuery pq) {
@@ -180,12 +176,11 @@ public class SequenceService extends JSONService
 
     private PathQuery getQuery() {
         String query = new QueryRequestParser(im.getQueryStore(), request).getQueryXml();
-        String schemaUrl = AbstractQueryService.getSchemaLocation(request, "XML");
+        String schemaUrl = AbstractQueryServiceSpring.getSchemaLocation(request, "XML");
         if (!query.startsWith("<")) {
-            schemaUrl = AbstractQueryService.getSchemaLocation(request, "JSON");
+            schemaUrl = AbstractQueryServiceSpring.getSchemaLocation(request, "JSON");
         }
         PathQueryBuilder bdr = new PathQueryBuilder(im, query, schemaUrl, getListManager());
         return bdr.getQuery();
     }
-
 }

@@ -11,6 +11,7 @@ package org.intermine.webservice.server.lists;
  */
 
 import java.util.List;
+import java.util.Map;
 
 import org.intermine.api.profile.InterMineBag;
 
@@ -28,6 +29,8 @@ public interface ListFormatter
      * @return A list of strings.
      */
     List<String> format(InterMineBag list);
+
+    Map<String, Object> formatSpring(InterMineBag list);
 
     /**
      * set the size of the list.

@@ -15,6 +15,7 @@ import org.intermine.api.profile.Profile;
 import org.intermine.api.profile.TagManager;
 import org.intermine.api.template.ApiTemplate;
 import org.intermine.api.userprofile.Tag;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
 import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
@@ -44,13 +45,12 @@ public class TemplateTagAddingService extends TemplateTagService
      * Constructor.
      * @param im The InterMine API settings.
      */
-    public TemplateTagAddingService(InterMineAPI im) {
-        super(im);
+    public TemplateTagAddingService(InterMineAPI im, Format format, String name) {
+        super(im, format, name);
     }
 
     @Override
     protected void execute() throws Exception {
-        String templateName = getRequiredParameter("name");
         Set<String> tags = getTags();
 
         Profile profile = getPermission().getProfile();
@@ -68,7 +68,7 @@ public class TemplateTagAddingService extends TemplateTagService
         List<Tag> allTags = im.getTagManager().getObjectTags(template, profile);
         List<String> tagNames = (List<String>) collect(allTags, invokerTransformer(
                 "getTagName"));
-        output.addResultItem(tagNames);
+        templateTags.setTags(tagNames);
     }
 
     /**

@@ -26,11 +26,11 @@ public class ListShareServlet extends WebServiceServlet
     protected WebService getService(Method method) throws NoServiceException {
         switch (method) {
             case GET:
-                return new ListShareDetailsService(api);
+                //return new ListShareDetailsService(api);
             case POST:
-                return new ListShareCreationService(api);
+                //return new ListShareCreationService(api);
             case DELETE:
-                return new ListShareDeletionService(api);
+                //return new ListShareDeletionService(api);
             default:
                 throw new NoServiceException();
         }

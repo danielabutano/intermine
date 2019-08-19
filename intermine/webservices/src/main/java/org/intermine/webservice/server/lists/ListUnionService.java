@@ -12,6 +12,7 @@ package org.intermine.webservice.server.lists;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.bag.operations.Union;
+import org.intermine.webservice.server.Format;
 
 /**
  * A class for exposing creating unions of lists as a resource.
@@ -23,8 +24,8 @@ public class ListUnionService extends ListOperationService
      * Constructor.
      * @param im The InterMine magic sauce.
      */
-    public ListUnionService(InterMineAPI im) {
-        super(im);
+    public ListUnionService(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     @Override

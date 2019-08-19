@@ -25,12 +25,14 @@ import org.intermine.pathquery.Constraints;
 import org.intermine.pathquery.OrderDirection;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.util.PropertiesUtil;
+import org.intermine.web.context.InterMineContext;
 import org.intermine.web.logic.PermanentURIHelper;
 import org.intermine.web.util.URLGenerator;
 import org.json.JSONObject;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
@@ -55,7 +57,7 @@ public final class SemanticMarkupUtil
     private static final String PROTEIN_ENTITY_TYPE = "Protein";
     private static final String GENE_ENTITY_TYPE = "Gene";
     private static final String INTERMINE_CITE = "http://www.ncbi.nlm.nih.gov/pubmed/23023984";
-    private static final String INTERMINE_REGISTRY = "http://test-registry.herokuapp.com/";
+    private static final String INTERMINE_REGISTRY = "https://registry.intermine.org/";
     private static final Logger LOG = Logger.getLogger(SemanticMarkupUtil.class);
 
     private SemanticMarkupUtil() {
@@ -68,30 +70,43 @@ public final class SemanticMarkupUtil
      * @return the identifier
      */
     private static String getMineIdentifier(HttpServletRequest request) {
-        ServletContext context = request.getSession().getServletContext();
-        if (context.getAttribute("mineIdentifier") != null) {
-            return (String) context.getAttribute("mineIdentifier");
-        } else {
-            String mineIdentifier = null;
-            String namespace = null;
-            String mineURL = new URLGenerator(request).getPermanentBaseURL();
-            Client client = ClientBuilder.newClient();
-            try {
-                Response response = client.target(INTERMINE_REGISTRY
-                        + "service/namespace?url=" + mineURL).request().get();
-                if (response.getStatus() == Response.Status.OK.getStatusCode()) {
-                    JSONObject result = new JSONObject(response.readEntity(String.class));
-                    namespace = result.getString("namespace");
-                }
-            } catch (RuntimeException ex) {
-                LOG.error("Problems connecting to InterMine registry");
-            }
-            mineIdentifier = (namespace != null && !namespace.trim().isEmpty())
-                    ? INTERMINE_REGISTRY + namespace
-                    : mineURL;
-            context.setAttribute("mineIdentifier", mineIdentifier);
-            return mineIdentifier;
+        HttpSession session = null;
+        ServletContext context = null;
+        try {
+            session = request.getSession();
+        } catch (RuntimeException ex) {
+        //if request.getSession() is call via ws it will throw an exception
+        //in that case we do not cache the mineIdentifier in the context
         }
+        if (session != null) {
+            context = session.getServletContext();
+            if (context != null && context.getAttribute("mineIdentifier") != null) {
+                return (String) context.getAttribute("mineIdentifier");
+            }
+        }
+
+        String mineIdentifier = null;
+        String namespace = null;
+        String mineURL = new URLGenerator(request).getPermanentBaseURL();
+        Client client = ClientBuilder.newClient();
+        try {
+            Response response = client.target(INTERMINE_REGISTRY
+                    + "service/namespace?url=" + mineURL).request().get();
+            if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+                JSONObject result = new JSONObject(response.readEntity(String.class));
+                namespace = result.getString("namespace");
+            }
+        } catch (RuntimeException ex) {
+            LOG.error("Problems connecting to InterMine registry");
+        }
+        mineIdentifier = (namespace != null && !namespace.trim().isEmpty())
+                ? INTERMINE_REGISTRY + namespace
+                : mineURL;
+        if (context != null) {
+            context.setAttribute("mineIdentifier", mineIdentifier);
+        }
+        LOG.info("Mine identifier is: " + mineIdentifier);
+        return mineIdentifier;
     }
 
     /**
@@ -102,7 +117,7 @@ public final class SemanticMarkupUtil
     private static List<Map<String, Object>> getDatSets(HttpServletRequest request) {
         List<Map<String, Object>> dataSets = new ArrayList<>();
         PathQuery pathQuery = new PathQuery(Model.getInstanceByName("genomic"));
-        pathQuery.addViews("DataSet.name", "DataSet.url");
+        pathQuery.addViews("DataSet.name", "DataSet.description", "DataSet.url");
         pathQuery.addOrderBy("DataSet.name", OrderDirection.ASC);
         PathQueryExecutor executor = new PathQueryExecutor(PathQueryAPI.getObjectStore(),
                 PathQueryAPI.getProfile(), null, PathQueryAPI.getBagManager());
@@ -112,17 +127,10 @@ public final class SemanticMarkupUtil
             while (iterator.hasNext()) {
                 dataset = new LinkedHashMap<>();
                 List<ResultElement> elem = iterator.next();
-                dataset.put("@type", DATASET_TYPE);
                 String name = (String) elem.get(0).getField();
-                dataset.put("name", name);
-                PermanentURIHelper helper = new PermanentURIHelper(request);
-                String imUrlPage = helper.getPermanentURL(new InterMineLUI("DataSet", name));
-                if (elem.get(1).getField() != null
-                        && !elem.get(1).getField().toString().equals("")) {
-                    dataset.put("url", (String) elem.get(1).getField());
-                } else {
-                    dataset.put("url", imUrlPage);
-                }
+                String description = (String) elem.get(1).getField();
+                String url = (String) elem.get(2).getField();
+                buildDataSetMarkup(dataset, name, description, url, request);
                 dataSets.add(dataset);
             }
         } catch (ObjectStoreException ex) {
@@ -152,13 +160,35 @@ public final class SemanticMarkupUtil
         semanticMarkup.put("identifier", getMineIdentifier(request));
         semanticMarkup.put("url", new URLGenerator(request).getPermanentBaseURL());
 
+        //citation
         Map<String, String> citation = new LinkedHashMap<>();
         citation.put("@type", "CreativeWork");
         citation.put("identifier", INTERMINE_CITE);
         semanticMarkup.put("citation", citation);
 
-        semanticMarkup.put("dataset", getDatSets(request));
+        //providers
+        Map<String, String> support = new LinkedHashMap<>();
+        support.put("@type", "Person");
+        support.put("name", "InterMine support");
+        support.put("email", "support@intermine.org");
+        Map<String, String> organization = new LinkedHashMap<>();
+        organization.put("@type", "Organization");
+        organization.put("name", "InterMine");
+        organization.put("url", "http://intermine.org");
+        List<Map<String, String>> providers = new ArrayList<>();
+        providers.add(support);
+        providers.add(organization);
+        semanticMarkup.put("provider", providers);
 
+        //sourceOrganization
+        Map<String, String> sourceOrganization = new LinkedHashMap<>();
+        sourceOrganization.put("@type", "Organization");
+        sourceOrganization.put("name", "University of Cambridge");
+        sourceOrganization.put("url", "https://www.gen.cam.ac.uk/");
+        semanticMarkup.put("sourceOrganization", sourceOrganization);
+
+        //datasets
+        semanticMarkup.put("dataset", getDatSets(request));
         return semanticMarkup;
     }
 
@@ -166,28 +196,18 @@ public final class SemanticMarkupUtil
      * Returns schema.org markups to be added to the dataset report page
      * @param request the HttpServletRequest
      * @param name the dataset name
+     * @param description the dataset description
      * @param url the dataset url
      *
      * @return the map containing the markups
      */
     public static Map<String, Object> getDataSetMarkup(HttpServletRequest request, String name,
-                                                       String url) {
+                                                       String description, String url) {
         if (!isEnabled()) {
             return null;
         }
         Map<String, Object> semanticMarkup = new LinkedHashMap<>();
-        semanticMarkup.put("@context", SCHEMA);
-        semanticMarkup.put("@type", DATASET_TYPE);
-        semanticMarkup.put("name", name);
-
-        PermanentURIHelper helper = new PermanentURIHelper(request);
-        String imUrlPage = helper.getPermanentURL(new InterMineLUI("DataSet", name));
-        if (url != null && !url.trim().equals("")) {
-            semanticMarkup.put("url", url);
-        } else {
-            semanticMarkup.put("url", imUrlPage);
-        }
-        semanticMarkup.put("mainEntityOfPage", imUrlPage);
+        buildDataSetMarkup(semanticMarkup, name, description, url, request);
 
         Map<String, String> dataCatalog = new LinkedHashMap<>();
         dataCatalog.put("@type", DATACATALOG_TYPE);
@@ -195,6 +215,34 @@ public final class SemanticMarkupUtil
         semanticMarkup.put("includedInDataCatalog", dataCatalog);
 
         return semanticMarkup;
+    }
+
+    /**
+     * Build the dataset schema.org markups
+     * @param semanticMarkup the map where the markup are added
+     * @param name the dataset name
+     * @param description the dataset description
+     * @param url the dataset url
+     * @param request the HttpServletRequest
+     *
+     */
+    private static void buildDataSetMarkup(Map<String, Object> semanticMarkup, String name,
+                String description, String url, HttpServletRequest request) {
+        semanticMarkup.put("@context", SCHEMA);
+        semanticMarkup.put("@type", DATASET_TYPE);
+        semanticMarkup.put("name", name);
+        semanticMarkup.put("description", description);
+
+        PermanentURIHelper helper = new PermanentURIHelper(request);
+        String imUrlPage = helper.getPermanentURL(new InterMineLUI("DataSet", name));
+        semanticMarkup.put("url", imUrlPage);
+
+        //we use the dataset's url to set the identifier
+        if (url != null && !url.trim().equals("")) {
+            semanticMarkup.put("identifier", url);
+        } else {
+            semanticMarkup.put("identifier", imUrlPage);
+        }
     }
 
     /**
@@ -293,7 +341,7 @@ public final class SemanticMarkupUtil
      * @return true if markup are enabled
      */
     public static boolean isEnabled() {
-        Properties props = PropertiesUtil.getProperties();
+        Properties props = InterMineContext.getWebProperties();
         if (props.containsKey("markup.webpages.enable")
                 && "true".equals(props.getProperty("markup.webpages.enable").trim())) {
             return true;

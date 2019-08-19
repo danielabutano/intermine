@@ -15,22 +15,27 @@ import org.intermine.api.profile.Profile;
 import org.intermine.api.profile.ProfileManager;
 import org.intermine.api.userprofile.PermanentToken;
 import org.intermine.api.userprofile.UserProfile;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.SimpleJsonModel;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.ReadWriteJSONService;
 import org.intermine.webservice.server.exceptions.ServiceException;
+import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
 
 /**
  * Service which ensures that the authenticating user has no tokens.
  * When finished executing, the profile will have no permanent tokens.
  * @author Alex Kalderimis
  */
-public class DeleteTokensService extends ReadWriteJSONService
-{
+public class DeleteTokensService extends JSONServiceSpring {
+
+    private static final String DENIAL_MSG = "Access denied.";
 
     /**
      * @param im The InterMine state object.
      */
-    public DeleteTokensService(InterMineAPI im) {
-        super(im);
+    public DeleteTokensService(InterMineAPI im, Format format) {
+        super(im, format);
     }
 
     @Override
@@ -50,4 +55,10 @@ public class DeleteTokensService extends ReadWriteJSONService
         }
     }
 
+    @Override
+    protected void validateState() {
+        if (!isAuthenticated() || getPermission().isRO()) {
+            throw new ServiceForbiddenException(DENIAL_MSG);
+        }
+    }
 }

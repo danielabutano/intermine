@@ -30,7 +30,7 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.api.config.ClassKeyHelper;
 import org.intermine.api.util.PathUtil;
 import org.intermine.metadata.ClassDescriptor;
-import org.intermine.metadata.MetaDataException;
+//import org.intermine.metadata.MetaDataException;
 import org.intermine.metadata.FieldDescriptor;
 import org.intermine.metadata.ReferenceDescriptor;
 import org.intermine.metadata.StringUtil;
@@ -377,17 +377,21 @@ public class ReportObject
         }
         if ("DataSet".equals(objectType)) {
             String name =  (String) getFieldValue("name");
+            String description =  (String) getFieldValue("description");
             String url =  (String) getFieldValue("url");
-            Map<String, Object> markup = SemanticMarkupUtil.getDataSetMarkup(request, name, url);
+            Map<String, Object> markup = SemanticMarkupUtil.getDataSetMarkup(request, name,
+                    description, url);
             return new JSONObject(markup).toString(2);
         }
-        try {
+        return null;
+        //BioChemEntity, Gene and Protein markup temporary disable untile they are more stable
+/*        try {
             Map<String, Object> markup = SemanticMarkupUtil.getBioEntityMarkup(request, objectType,
                     getId());
             return new JSONObject(markup).toString(2);
         } catch (MetaDataException ex) {
             return null;
-        }
+        }*/
     }
 
     /**

@@ -13,6 +13,8 @@ package org.intermine.webservice.server.lists;
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.InterMineBag;
 import org.intermine.api.profile.Profile;
+import org.intermine.webservice.model.ListRename;
+import org.intermine.webservice.server.Format;
 
 /**
  * A service for renaming lists.
@@ -22,24 +24,19 @@ import org.intermine.api.profile.Profile;
 public class ListRenameService extends AuthenticatedListService
 {
 
-    /**
-     * Usage information to help users who provide incorrect input.
-     */
-    public static final String USAGE =
-          "List Renaming Service\n"
-        + "=====================\n"
-        + "Rename a list\n"
-        + "Parameters:\n"
-        + "oldname: the old name of the list\n"
-        + "newname: the new name of the list\n"
-        + "NOTE: All requests to this service must authenticate to a valid user account\n";
+    public ListRename getListRename() {
+        return listRename;
+    }
+
+    private ListRename listRename;
 
     /**
      * Constructor.
      * @param im The InterMine API settings.
      */
-    public ListRenameService(InterMineAPI im) {
-        super(im);
+    public ListRenameService(InterMineAPI im, Format format) {
+        super(im, format);
+        listRename = new ListRename();
     }
 
     @Override
@@ -48,13 +45,11 @@ public class ListRenameService extends AuthenticatedListService
 
         ListRenameInput input = new ListRenameInput(request, bagManager, profile);
 
-        output.setHeaderAttributes(getHeaderAttributes());
-
         profile.renameBag(input.getOldName(), input.getNewName());
         InterMineBag list = profile.getSavedBags().get(input.getNewName());
 
-        addOutputInfo(LIST_NAME_KEY, list.getName());
-        addOutputInfo(LIST_SIZE_KEY, "" + list.size());
-        addOutputInfo(LIST_ID_KEY, "" + list.getSavedBagId());
+        listRename.setListName(list.getName());
+        listRename.setListSize(list.size());
+        listRename.setListId(list.getSavedBagId());
     }
 }

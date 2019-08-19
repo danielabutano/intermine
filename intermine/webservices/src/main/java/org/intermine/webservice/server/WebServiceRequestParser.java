@@ -222,7 +222,7 @@ public class WebServiceRequestParser
      * @param format The format as provided by the user.
      * @return A real Format.
      */
-    protected static Format interpretFormat(String format) {
+    public static Format interpretFormat(String format) {
         if (StringUtils.isBlank(format)) {
             return Format.EMPTY;
         }

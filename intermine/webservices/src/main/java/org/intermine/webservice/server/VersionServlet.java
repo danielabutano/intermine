@@ -42,6 +42,6 @@ public class VersionServlet extends HttpServlet
 
     private void runService(HttpServletRequest request, HttpServletResponse response) {
         final InterMineAPI api = InterMineContext.getInterMineAPI();
-        new VersionService(api).service(request, response);
+        //new VersionService(api).service(request, response);
     }
 }

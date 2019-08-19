@@ -12,32 +12,45 @@ package org.intermine.webservice.server.fair;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.web.fair.SemanticMarkupUtil;
-import org.intermine.webservice.server.core.JSONService;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.SemanticMarkup;
+import org.intermine.webservice.server.Format;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 /**
  * Serve bioentity markup to be added to the report page
  * @author Daniela Butano
  *
  */
-public class BioEntityMarkupService extends JSONService
+public class BioEntityMarkupService extends JSONServiceSpring
 {
+    public SemanticMarkup getSemanticMarkup() {
+        return semanticMarkup;
+    }
+
+    private SemanticMarkup semanticMarkup;
+
     /**
      * Constructor
      * @param im The InterMine state object.
+     * @param format
      **/
-    public BioEntityMarkupService(InterMineAPI im) {
-        super(im);
+    public BioEntityMarkupService(InterMineAPI im, Format format) {
+        super(im, format);
+        semanticMarkup = new SemanticMarkup();
     }
 
     @Override
     protected void execute() throws Exception {
         String entityType = getRequiredParameter("type");
         int id = Integer.parseInt(getRequiredParameter("id"));
-        addResultItem(SemanticMarkupUtil.getBioEntityMarkup(request, entityType, id), false);
+        semanticMarkup.setProperties(SemanticMarkupUtil.getBioEntityMarkup(request, entityType, id));
     }
 
     @Override
     public String getResultsKey() {
         return "properties";
     }
+
 }

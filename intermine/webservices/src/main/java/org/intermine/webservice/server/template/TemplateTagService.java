@@ -16,9 +16,10 @@ import org.intermine.api.tag.TagTypes;
 import org.intermine.api.template.ApiTemplate;
 import org.intermine.api.userprofile.Tag;
 import org.intermine.api.util.AnonProfile;
-import org.intermine.webservice.server.core.JSONService;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.Tags;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
-import org.intermine.webservice.server.output.JSONFormatter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,31 +37,29 @@ import static org.apache.commons.collections.TransformerUtils.invokerTransformer
  * @author Julie Sullivan
  *
  */
-public class TemplateTagService extends JSONService
-{
+public class TemplateTagService extends JSONServiceSpring {
+
+    public Tags getTemplateTags() {
+        return templateTags;
+    }
+
+    protected Tags templateTags;
+
+    protected String templateName;
 
     /**
      * Constructor.
      * @param im The InterMine application object.
      */
-    public TemplateTagService(InterMineAPI im) {
-        super(im);
-    }
-
-    @Override
-    protected Map<String, Object> getHeaderAttributes() {
-        Map<String, Object> attributes = super.getHeaderAttributes();
-        attributes.put(JSONFormatter.KEY_INTRO, "\"tags\":[");
-        attributes.put(JSONFormatter.KEY_OUTRO, "]");
-        attributes.put(JSONFormatter.KEY_QUOTE, true);
-        return attributes;
+    public TemplateTagService(InterMineAPI im, Format format, String templateName) {
+        super(im, format);
+        templateTags = new Tags();
+        this.templateName = templateName;
     }
 
     @Override
     protected void execute() throws Exception {
         Profile profile = getPermission().getProfile();
-        String templateName = getOptionalParameter("name", null);
-
 
         Set<String> tags = new HashSet<String>();
         // if not logged in, return empty. See #1222
@@ -72,7 +71,7 @@ public class TemplateTagService extends JSONService
             }
         }
 
-        output.addResultItem(new ArrayList<String>(tags));
+        templateTags.setTags(new ArrayList<>(tags));
     }
 
     private Set<String> getTagsForSingleTemplate(String name, Profile profile) {

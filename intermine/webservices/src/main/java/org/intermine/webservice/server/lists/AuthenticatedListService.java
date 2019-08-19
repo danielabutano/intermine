@@ -11,6 +11,7 @@ package org.intermine.webservice.server.lists;
  */
 
 import org.intermine.api.InterMineAPI;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.UnauthorizedException;
 
 /**
@@ -24,8 +25,8 @@ public abstract class AuthenticatedListService extends AbstractListService
      * Constructor.
      * @param api The InterMine application object.
      */
-    public AuthenticatedListService(InterMineAPI api) {
-        super(api);
+    public AuthenticatedListService(InterMineAPI api, Format format) {
+        super(api, format);
     }
 
     @Override

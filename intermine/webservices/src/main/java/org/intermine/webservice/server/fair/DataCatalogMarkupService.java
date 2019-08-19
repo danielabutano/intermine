@@ -12,27 +12,39 @@ package org.intermine.webservice.server.fair;
 
 import org.intermine.api.InterMineAPI;
 import org.intermine.web.fair.SemanticMarkupUtil;
-import org.intermine.webservice.server.core.JSONService;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.SemanticMarkup;
+import org.intermine.webservice.server.Format;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 /**
  * Serve datacatalog markup to be added to the home page
  * @author Daniela Butano
  *
  */
-public class DataCatalogMarkupService extends JSONService
+public class DataCatalogMarkupService extends JSONServiceSpring
 {
+    public SemanticMarkup getSemanticMarkup() {
+        return semanticMarkup;
+    }
+
+    private SemanticMarkup semanticMarkup;
+
     /**
      * Constructor
      * @param im The InterMine state object.
+     * @param format
      **/
-    public DataCatalogMarkupService(InterMineAPI im) {
-        super(im);
+    public DataCatalogMarkupService(InterMineAPI im, Format format) {
+        super(im, format);
+        semanticMarkup = new SemanticMarkup();
     }
 
     @Override
     protected void execute() throws Exception {
         if (SemanticMarkupUtil.isEnabled()) {
-            addResultItem(SemanticMarkupUtil.getDataCatalogMarkup(request), false);
+            semanticMarkup.setProperties(SemanticMarkupUtil.getDataCatalogMarkup(request));
         }
     }
 
@@ -40,4 +52,5 @@ public class DataCatalogMarkupService extends JSONService
     public String getResultsKey() {
         return "properties";
     }
+
 }

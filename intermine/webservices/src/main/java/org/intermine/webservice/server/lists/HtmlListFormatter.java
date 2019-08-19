@@ -12,6 +12,7 @@ package org.intermine.webservice.server.lists;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.intermine.api.profile.InterMineBag;
 import org.intermine.objectstore.ObjectStoreException;
@@ -36,6 +37,11 @@ public class HtmlListFormatter implements ListFormatter
             String.valueOf(list.getSavedBagId()), list.getName(), list.getType(),
             list.getDescription(), size
         );
+    }
+
+    @Override
+    public Map<String, Object> formatSpring(InterMineBag list) {
+        return null;
     }
 
     @Override

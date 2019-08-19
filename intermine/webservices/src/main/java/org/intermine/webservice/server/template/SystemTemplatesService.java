@@ -10,9 +10,6 @@ package org.intermine.webservice.server.template;
  *
  */
 
-import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -22,48 +19,35 @@ import org.intermine.api.template.ApiTemplate;
 import org.intermine.api.template.TemplateHelper;
 import org.intermine.api.template.TemplateManager;
 import org.intermine.pathquery.PathQuery;
-import org.intermine.web.logic.export.ResponseUtil;
+import org.intermine.webservice.WebServiceSpring;
+import org.intermine.webservice.model.TemplatesSystem;
 import org.intermine.webservice.server.Format;
-import org.intermine.webservice.server.WebService;
 import org.intermine.webservice.server.exceptions.NotAcceptableException;
 import org.intermine.webservice.server.exceptions.ServiceException;
-import org.intermine.webservice.server.output.JSONFormatter;
-import org.intermine.webservice.server.output.Output;
-import org.intermine.webservice.server.output.PlainFormatter;
-import org.intermine.webservice.server.output.StreamedOutput;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 /**
  * Fetch the names of public template queries tagged with "im:converter"
  * for use with the System Templates web service.
  * @author Julie Sullivan
  */
-public class SystemTemplatesService extends WebService
+public class SystemTemplatesService extends WebServiceSpring
 {
+    public TemplatesSystem getTemplatesSystem() {
+        return templatesSystem;
+    }
 
-    private static final String FILE_BASE_NAME = "templates";
+    private TemplatesSystem templatesSystem;
 
     /**
      * Constructor.
      * @param im The InterMineAPI for this webservice
+     * @param format
      */
-    public SystemTemplatesService(InterMineAPI im) {
-        super(im);
-    }
-
-    @Override
-    protected Output makeXMLOutput(PrintWriter out, String separator) {
-        ResponseUtil.setXMLHeader(response, FILE_BASE_NAME + ".xml");
-        return new StreamedOutput(out, new PlainFormatter(), separator);
-    }
-
-    @Override
-    protected Format getDefaultFormat() {
-        return Format.XML;
-    }
-
-    @Override
-    protected boolean canServe(Format format) {
-        return Format.BASIC_FORMATS.contains(format);
+    public SystemTemplatesService(InterMineAPI im, Format format) {
+        super(im, format);
+        templatesSystem = new TemplatesSystem();
     }
 
     @Override
@@ -74,23 +58,17 @@ public class SystemTemplatesService extends WebService
 
         switch (getFormat()) {
             case XML:
-                output.addResultItem(Arrays.asList(TemplateHelper.apiTemplateMapToXml(templates,
-                        PathQuery.USERPROFILE_VERSION)));
+                templatesSystem.setTemplates(TemplateHelper.apiTemplateMapToXml(templates,
+                        PathQuery.USERPROFILE_VERSION));
                 break;
             case JSON:
-                Map<String, Object> attributes = new HashMap<String, Object>();
-                if (formatIsJSONP()) {
-                    attributes.put(JSONFormatter.KEY_CALLBACK, getCallback());
-                }
-                attributes.put(JSONFormatter.KEY_INTRO, "\"templates\":");
-                output.setHeaderAttributes(attributes);
-                output.addResultItem(Arrays.asList(
-                        TemplateHelper.apiTemplateMapToJson(im, templates)));
+                templatesSystem.setTemplates(
+                        TemplateHelper.apiTemplateMapToJson(im, templates, null));
                 break;
             case TEXT:
                 Set<String> templateNames = new TreeSet<String>(templates.keySet());
                 for (String templateName : templateNames) {
-                    output.addResultItem(Arrays.asList(templateName));
+                    templatesSystem.setTemplates(templateName);
                 }
             case HTML:
                 throw new ServiceException("Not implemented: " + Format.HTML);
@@ -98,4 +76,5 @@ public class SystemTemplatesService extends WebService
                 throw new NotAcceptableException();
         }
     }
+
 }

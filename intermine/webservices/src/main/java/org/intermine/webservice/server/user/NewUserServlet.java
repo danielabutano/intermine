@@ -27,7 +27,7 @@ public class NewUserServlet extends WebServiceServlet
     protected WebService getService(Method method) throws NoServiceException {
         switch (method) {
             case POST:
-                return new NewUserService(api);
+                //return new NewUserService(api);
             default:
                 throw new NoServiceException();
         }

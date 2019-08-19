@@ -40,6 +40,8 @@ import org.intermine.api.bag.BagQueryRunner;
 import org.intermine.api.profile.InterMineBag;
 import org.intermine.api.profile.Profile;
 import org.intermine.objectstore.ObjectStoreException;
+import org.intermine.webservice.model.ListsPost;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.ServiceException;
 import org.intermine.webservice.server.output.JSONFormatter;
@@ -51,6 +53,14 @@ import org.intermine.webservice.server.output.JSONFormatter;
  */
 public class ListUploadService extends ListMakerService
 {
+
+    public ListsPost getListsPost() {
+        return listsPost;
+    }
+
+    private ListsPost listsPost;
+
+    private String body;
 
     /**
      * A usage string to return for bad requests.
@@ -80,24 +90,11 @@ public class ListUploadService extends ListMakerService
      * Constructor
      * @param im A reference to the main settings bundle
      */
-    public ListUploadService(final InterMineAPI im) {
-        super(im);
+    public ListUploadService(final InterMineAPI im, Format format, String body) {
+        super(im, format);
         runner = im.getBagQueryRunner();
-    }
-
-    /**
-     * Gets the header attributes on the output object.
-     * @return A map of header attributes for JSON output.
-     */
-    @Override
-    protected Map<String, Object> getHeaderAttributes() {
-        final Map<String, Object> attributes = super.getHeaderAttributes();
-        if (formatIsJSON()) {
-            attributes.put(JSONFormatter.KEY_INTRO, "\"unmatchedIdentifiers\":[");
-            attributes.put(JSONFormatter.KEY_OUTRO, "]");
-            attributes.put(JSONFormatter.KEY_QUOTE, Boolean.TRUE);
-        }
-        return attributes;
+        listsPost = new ListsPost();
+        this.body = body;
     }
 
     /**
@@ -105,7 +102,7 @@ public class ListUploadService extends ListMakerService
      * @param size The size of the newly created list.
      */
     protected void setListSize(final Integer size) {
-        addOutputInfo(LIST_SIZE_KEY, size + "");
+        listsPost.setListSize(size);
     }
 
     /**
@@ -113,7 +110,7 @@ public class ListUploadService extends ListMakerService
      * @param id The id of the newly created list.
      */
     protected void setListId(final Integer id) {
-        addOutputInfo(LIST_ID_KEY, id + "");
+        listsPost.setListId(id);
     }
 
     /**
@@ -125,6 +122,31 @@ public class ListUploadService extends ListMakerService
         final StrMatcher matcher = StrMatcher.charSetMatcher(bagUploadDelims);
         return matcher;
     }
+
+
+    @Override
+    protected void execute() throws Exception {
+        final Profile profile = getPermission().getProfile();
+        final ListInput input = getInput();
+
+        listsPost.setListName(input.getListName());
+
+        final String type = getNewListType(input);
+        if (type != null) {
+            listsPost.setType(type);
+        }
+
+        final Set<String> rubbishbin = new HashSet<String>();
+        initialiseDelendumAccumulator(rubbishbin, input);
+        try {
+            makeList(input, type, profile, rubbishbin);
+        } finally {
+            for (final String delendum: rubbishbin) {
+                ListServiceUtils.ensureBagIsDeleted(profile, delendum);
+            }
+        }
+    }
+
 
     @Override
     protected String getNewListType(final ListInput input) {
@@ -172,13 +194,14 @@ public class ListUploadService extends ListMakerService
         setListSize(tempBag.size());
         setListId(tempBag.getSavedBagId());
 
-        for (final Iterator<String> i = unmatchedIds.iterator(); i.hasNext();) {
+        listsPost.setUnmatchedIdentifiers(new ArrayList<>(unmatchedIds));
+        /*for (final Iterator<String> i = unmatchedIds.iterator(); i.hasNext();) {
             final List<String> row = new ArrayList<String>(Arrays.asList(i.next()));
             if (i.hasNext()) {
                 row.add("");
             }
             output.addResultItem(row);
-        }
+        }*/
 
         if (!input.getTags().isEmpty()) {
             im.getBagManager().addTagsToBag(input.getTags(), tempBag, profile);
@@ -206,28 +229,32 @@ public class ListUploadService extends ListMakerService
             final InterMineBag tempBag)
         throws IOException, ClassNotFoundException, InterMineException, ObjectStoreException {
         final Collection<String> addIssues = input.getAddIssues();
-        String line;
+        //String line;
         final StrMatcher matcher = getMatcher();
-        final BufferedReader r = getReader(request);
-        try {
-            while ((line = r.readLine()) != null) {
-                final StrTokenizer st =
+        //final BufferedReader r = getReader(request);
+        //try {
+            //while ((line = r.readLine()) != null) {
+        List<String> bodyList = new ArrayList<String>(Arrays.asList(body.split("\n")));
+        for(String line : bodyList){
+            final StrTokenizer st =
                     new StrTokenizer(line, matcher, StrMatcher.doubleQuoteMatcher());
-                while (st.hasNext()) {
-                    final String token = st.nextToken();
-                    ids.add(token);
-                }
-                if (ids.size() >= BAG_QUERY_MAX_BATCH_SIZE) {
-                    addIdsToList(ids, tempBag, type, input.getExtraValue(),
-                            unmatchedIds, addIssues);
-                    ids.clear();
-                }
+            while (st.hasNext()) {
+                final String token = st.nextToken();
+                ids.add(token);
             }
-        } finally {
+            if (ids.size() >= BAG_QUERY_MAX_BATCH_SIZE) {
+                addIdsToList(ids, tempBag, type, input.getExtraValue(),
+                        unmatchedIds, addIssues);
+                ids.clear();
+            }
+        }
+
+            //}
+        /*} finally {
             if (r != null) {
                 r.close();
             }
-        }
+        }*/
         if (ids.size() > 0) {
             addIdsToList(ids, tempBag, type, input.getExtraValue(), unmatchedIds, addIssues);
         }

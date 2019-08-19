@@ -25,7 +25,8 @@ public class ListRenameServlet extends WebServiceServlet
         if (Method.DELETE == method) {
             throw new NoServiceException();
         }
-        return new ListRenameService(api);
+        //return new ListRenameService(api);
+        return null;
     }
 
 }

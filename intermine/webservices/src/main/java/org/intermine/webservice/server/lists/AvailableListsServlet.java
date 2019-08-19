@@ -23,11 +23,11 @@ public class AvailableListsServlet extends WebServiceServlet
     protected WebService getService(Method method) throws NoServiceException {
         switch (method) {
             case GET:
-                return new AvailableListsService(api);
+                //return new AvailableListsService(api);
             case POST:
-                return new ListUploadService(api);
+                //return new ListUploadService(api);
             case DELETE:
-                return new ListDeletionService(api);
+                //return new ListDeletionService(api);
             default:
                 throw new NoServiceException();
         }

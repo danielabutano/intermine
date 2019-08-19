@@ -14,30 +14,47 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.Profile;
 import org.intermine.api.profile.ProfileManager;
 import org.intermine.objectstore.ObjectStoreException;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.Token;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.ReadWriteJSONService;
 import org.intermine.webservice.server.exceptions.BadRequestException;
+import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
 
 /**
  * A service that issues new tokens to a user.
  * @author Alex Kalderimis
  *
  */
-public class TokenService extends ReadWriteJSONService
+public class TokenService extends JSONServiceSpring
 {
 
+    private static final String DENIAL_MSG = "Access denied.";
+
+    public Token getToken() {
+        return token;
+    }
+
+    private Token token;
+
+    private String tokenType;
+
+    private String message;
+
     /** @param im The InterMine state object **/
-    public TokenService(InterMineAPI im) {
-        super(im);
+    public TokenService(InterMineAPI im, Format format, String tokenType, String message) {
+        super(im, format);
+        token = new Token();
+        this.tokenType = tokenType;
+        this.message = message;
     }
 
     @Override
     protected void execute() throws Exception {
         final ProfileManager pm = im.getProfileManager();
         Profile profile = getPermission().getProfile();
-        String tokenType = getOptionalParameter("type", "day").toLowerCase();
-        String message = getOptionalParameter("message");
-        String token = getToken(pm, profile, tokenType, message);
-        addResultValue(token, false);
+        String responseToken = getToken(pm, profile, tokenType, message);
+        token.setToken(responseToken);
     }
 
     private String getToken(
@@ -65,5 +82,12 @@ public class TokenService extends ReadWriteJSONService
     @Override
     protected String getResultsKey() {
         return "token";
+    }
+
+    @Override
+    protected void validateState() {
+        if (!isAuthenticated() || getPermission().isRO()) {
+            throw new ServiceForbiddenException(DENIAL_MSG);
+        }
     }
 }

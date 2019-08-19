@@ -24,6 +24,8 @@ import org.intermine.api.profile.Profile;
 import org.intermine.api.template.ApiTemplate;
 import org.intermine.template.TemplateQuery;
 import org.intermine.template.xml.TemplateQueryBinding;
+import org.intermine.webservice.WebServiceSpring;
+import org.intermine.webservice.model.SimpleJsonModel;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.WebService;
 import org.intermine.webservice.server.exceptions.BadRequestException;
@@ -35,7 +37,7 @@ import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
  * @author Alexis Kalderimis
  *
  */
-public class TemplateUploadService extends WebService
+public class TemplateUploadService extends WebServiceSpring
 {
 
     /** The key for the templates parameter **/
@@ -43,12 +45,36 @@ public class TemplateUploadService extends WebService
     /** The key for the version parameter **/
     public static final String VERSION_PARAMETER = "version";
 
+    private String body;
+
+    public SimpleJsonModel getSimpleJsonModel() {
+        return simpleJsonModel;
+    }
+
+    private SimpleJsonModel simpleJsonModel;
+
+    private Boolean templateInQuery;
+
     /**
      * Constructor.
      * @param im A reference to the API configuration and settings bundle.
      */
-    public TemplateUploadService(InterMineAPI im) {
-        super(im);
+    public TemplateUploadService(InterMineAPI im, Format format, String body) {
+        super(im, format);
+        simpleJsonModel = new SimpleJsonModel();
+        this.body = body;
+        templateInQuery = false;
+    }
+
+    /**
+     * Constructor.
+     * @param im A reference to the API configuration and settings bundle.
+     */
+    public TemplateUploadService(InterMineAPI im, Format format) {
+        super(im, format);
+        simpleJsonModel = new SimpleJsonModel();
+        this.body = "";
+        templateInQuery = true;
     }
 
     @Override
@@ -62,19 +88,6 @@ public class TemplateUploadService extends WebService
     }
 
     @Override
-    protected boolean canServe(Format format) {
-        switch (format) {
-            case TEXT:
-            case JSON:
-            case HTML:
-            case XML:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    @Override
     protected void execute() throws Exception {
 
         String templatesXML = "";
@@ -83,7 +96,12 @@ public class TemplateUploadService extends WebService
                 || "GET".equalsIgnoreCase(request.getMethod())) {
             templatesXML = getRequiredParameter(TEMPLATES_PARAMETER);
         } else {
-            templatesXML = IOUtils.toString(request.getInputStream());
+            if(templateInQuery){
+                templatesXML = getRequiredParameter(TEMPLATES_PARAMETER);
+            }
+            else{
+                templatesXML = body;
+            }
         }
         Profile profile = getPermission().getProfile();
 

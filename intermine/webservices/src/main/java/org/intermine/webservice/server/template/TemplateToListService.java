@@ -29,6 +29,7 @@ import org.intermine.template.TemplateValue;
 import org.intermine.web.logic.template.TemplateResultInput;
 import org.intermine.web.logic.template.Templates;
 import org.intermine.web.logic.template.Templates.TemplateValueParseException;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.query.QueryToListService;
 import org.intermine.webservice.server.template.result.TemplateResultRequestParser;
@@ -58,8 +59,8 @@ public class TemplateToListService extends QueryToListService
      * Constructor
      * @param im API settings bundle
      */
-    public TemplateToListService(InterMineAPI im) {
-        super(im);
+    public TemplateToListService(InterMineAPI im, Format format, String listName) {
+        super(im, format, listName);
         templateManager = im.getTemplateManager();
     }
 

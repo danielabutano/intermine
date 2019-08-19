@@ -15,15 +15,19 @@ import java.util.Collections;
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.userprofile.PermanentToken;
 import org.intermine.objectstore.ObjectStoreWriter;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.ReadWriteJSONService;
 import org.intermine.webservice.server.exceptions.ResourceNotFoundException;
+import org.intermine.webservice.server.exceptions.ServiceForbiddenException;
 
 /**
  * Does what it says on the tin.
  * @author Alex Kalderimis
  */
-public class PermaTokenDeletionService extends ReadWriteJSONService
-{
+public class PermaTokenDeletionService extends JSONServiceSpring {
+
+    private static final String DENIAL_MSG = "Access denied.";
 
     private String uuid;
 
@@ -32,8 +36,8 @@ public class PermaTokenDeletionService extends ReadWriteJSONService
      * @param im The InterMine state object.
      * @param uuid The token we dislike so much.
      */
-    public PermaTokenDeletionService(InterMineAPI im, String uuid) {
-        super(im);
+    public PermaTokenDeletionService(InterMineAPI im, Format format, String uuid) {
+        super(im, format);
         this.uuid = uuid;
     }
 
@@ -50,4 +54,10 @@ public class PermaTokenDeletionService extends ReadWriteJSONService
         im.getProfileManager().removePermanentToken(token);
     }
 
+    @Override
+    protected void validateState() {
+        if (!isAuthenticated() || getPermission().isRO()) {
+            throw new ServiceForbiddenException(DENIAL_MSG);
+        }
+    }
 }

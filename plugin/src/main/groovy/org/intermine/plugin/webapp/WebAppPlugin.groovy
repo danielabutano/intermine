@@ -99,6 +99,21 @@ class WebAppPlugin implements Plugin<Project> {
             }
         }
 
+        project.task('mergeWebFiles') {
+            description "Append the web-bio.xml file to the web.xml"
+            dependsOn 'processResources','unwarWebServices'
+
+            doLast {
+                // web.xml
+                File webXml = new File(project.buildDir.absolutePath + "/explodedWebApp/WEB-INF/web.xml")
+                File webBio = new File(project.buildDir.absolutePath + "/explodedWebApp/WEB-INF/web-bio.xml")
+                String content = webXml.text
+                webXml.withWriter { w ->
+                    w << content.replace("<!--@MODEL_INCLUDE@-->", webBio.text)
+                }
+            }
+        }
+
         // this plugin requires a database to exist and be populated. However this plugin is run at compile time, not runtime.
         // We have no guarantee there will be a database. Hence the try/catch
         project.task('summariseObjectStore') {

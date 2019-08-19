@@ -25,29 +25,39 @@ import org.intermine.web.context.InterMineContext;
 import org.intermine.web.logic.config.FieldConfig;
 import org.intermine.web.logic.config.FieldConfigHelper;
 import org.intermine.web.logic.config.WebConfig;
-import org.intermine.webservice.server.core.JSONService;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.SummaryFields;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 /**
  * Serve up the paths used to summarise each class.
  * @author Alexis Kalderimis
  *
  */
-public class SummaryService extends JSONService
+public class SummaryService extends JSONServiceSpring
 {
 
     private static final Logger LOG = Logger.getLogger(SummaryService.class);
 
+    public SummaryFields getSummaryFields() {
+        return summaryFields;
+    }
+
+    protected SummaryFields summaryFields;
+
     /**
      * Constructor
      * @param im InterMine settings
+     * @param format
      */
-    public SummaryService(InterMineAPI im) {
-        super(im);
+    public SummaryService(InterMineAPI im, Format format) {
+        super(im, format);
+        summaryFields = new SummaryFields();
     }
 
     /**
-     * @see org.intermine.webservice.server.WebService#execute(
-     * javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     * @see org.intermine.webservice.WebServiceSpring#execute()
      * @throws Exception if anything goes wrong
      */
     @Override
@@ -55,9 +65,8 @@ public class SummaryService extends JSONService
         Boolean refsAllowed = !Boolean.valueOf(getOptionalParameter("norefs", "false"));
         WebConfig webConfig = InterMineContext.getWebConfig();
 
-        Map<String, Object> summaryFieldsForCd = getMapping(refsAllowed, webConfig);
+        summaryFields.setClasses(getMapping(refsAllowed, webConfig));
 
-        addResultItem(summaryFieldsForCd, false);
     }
 
     private Map<String, Object> getMapping(Boolean refsAllowed, WebConfig webConfig) {
@@ -86,11 +95,6 @@ public class SummaryService extends JSONService
     @Override
     protected String getResultsKey() {
         return "classes";
-    }
-
-    @Override
-    protected String getDefaultFileName() {
-        return "summary_fields.json";
     }
 
 }

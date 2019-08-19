@@ -28,9 +28,9 @@ public class TemplateResultServlet extends WebServiceServlet
     protected WebService getService(Method method) throws NoServiceException {
         switch (method) {
             case GET:
-                return new TemplateResultService(api);
+                //return new TemplateResultService(api);
             case POST:
-                return new TemplateResultService(api);
+                //return new TemplateResultService(api);
             default:
                 throw new NoServiceException();
         }

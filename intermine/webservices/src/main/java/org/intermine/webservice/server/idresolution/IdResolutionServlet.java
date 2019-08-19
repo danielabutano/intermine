@@ -90,9 +90,9 @@ public class IdResolutionServlet extends WebServiceServlet
     private WebService getGetter(String uid, String command) {
         WebService ws = null;
         if ("status".equalsIgnoreCase(command)) {
-            ws = new JobStatusService(api, uid);
+            //ws = new JobStatusService(api, uid);
         } else if ("result".equalsIgnoreCase(command) || "results".equalsIgnoreCase(command)) {
-            ws = new JobResultsService(api, uid);
+            //ws = new JobResultsService(api, uid);
         }
         return ws;
     }
@@ -101,9 +101,9 @@ public class IdResolutionServlet extends WebServiceServlet
     protected WebService getService(Method method) throws NoServiceException {
         switch (method) {
             case POST:
-                return new IdResolutionService(api);
+                //return new IdResolutionService(api);
             case DELETE:
-                return new JobRemovalService(api);
+                //return new JobRemovalService(api);
             default:
                 throw new NoServiceException();
         }

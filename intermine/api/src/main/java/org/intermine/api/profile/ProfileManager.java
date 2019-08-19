@@ -55,6 +55,7 @@ import org.intermine.objectstore.ObjectStore;
 import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.objectstore.ObjectStoreWriter;
 import org.intermine.objectstore.intermine.ObjectStoreInterMineImpl;
+import org.intermine.objectstore.intermine.ObjectStoreWriterInterMineImpl;
 import org.intermine.objectstore.proxy.ProxyReference;
 import org.intermine.objectstore.query.Constraint;
 import org.intermine.objectstore.query.ContainsConstraint;
@@ -298,6 +299,7 @@ public class ProfileManager
         }
         return null;
     }
+
     /**
      * Get a user's Profile using a username and password.
      * @param username the username
@@ -343,7 +345,7 @@ public class ProfileManager
         if (up != null && profileCache.containsKey(up.getUsername())) {
             return profileCache.get(up.getUsername());
         }
-        return wrapUserProfile(up, classKeys);
+        return wrapUserProfile(up, classKeys, false);
     }
 
     /**
@@ -418,7 +420,7 @@ public class ProfileManager
     }
 
     /**
-     * Get a user's Profile using a username
+     * Get a user's Profile from the cache or from the db using a username
      * @param username the username
      * @param classKeys the classkeys
      * @return the Profile, or null if one doesn't exist
@@ -431,6 +433,20 @@ public class ProfileManager
         Profile profile = profileCache.get(username);
         if (profile != null) {
             return profile;
+        }
+        return getUpdatedProfile(username, classKeys, false);
+    }
+
+    /**
+     * Get a user's Profile from the db using a username
+     * @param username the username
+     * @param classKeys the classkeys
+     * @return the Profile, or null if one doesn't exist
+     */
+    private synchronized Profile getUpdatedProfile(String username, Map<String,
+            List<FieldDescriptor>> classKeys, boolean flushProfile) {
+        if (username == null) {
+            return null;
         }
 
         UserProfile userProfile = getUserProfile(username);
@@ -454,16 +470,18 @@ public class ProfileManager
             return null;
         }
 
-        return wrapUserProfile(userProfile, classKeys);
+        return wrapUserProfile(userProfile, classKeys, flushProfile);
     }
 
     private synchronized Profile wrapUserProfile(UserProfile userProfile,
-            Map<String, List<FieldDescriptor>> classKeys) {
+            Map<String, List<FieldDescriptor>> classKeys, boolean flushProfile) {
         if (userProfile == null) {
             return null;
         }
+
         Map<String, InterMineBag> savedBags = new HashMap<String, InterMineBag>();
         Map<String, InvalidBag> savedInvalidBags = new HashMap<String, InvalidBag>();
+
         Query q = new Query();
         QueryClass qc = new QueryClass(SavedBag.class);
         q.addFrom(qc);
@@ -477,6 +495,11 @@ public class ProfileManager
             // will cause this to fail. Allow three retries.
             ConcurrentModificationException lastError = null;
             boolean succeeded = false;
+            if(flushProfile) {
+                if (uosw instanceof ObjectStoreWriterInterMineImpl) {
+                    ((ObjectStoreWriterInterMineImpl) uosw).flushCache();
+                }
+            }
             for (int attemptsRemaining = 3; attemptsRemaining >= 0; attemptsRemaining--) {
                 try {
                     Results bags = uosw.execute(q, 1000, false, false, true);
@@ -795,6 +818,20 @@ public class ProfileManager
         LimitedAccessToken token = new DayToken(profile);
         limitedAccessTokens.put(key, token);
         return key;
+    }
+
+    /**
+     * Add auth tokens for a specified users.
+     *
+     * @param profile users profile
+     * @param token the token
+     */
+    public void addTokenForProfile(Profile profile, String token) {
+        if (profile == null) {
+            throw new NullPointerException("profile should not be null.");
+        }
+        LimitedAccessToken accessToken = new DayToken(profile);
+        limitedAccessTokens.put(token, accessToken);
     }
 
     /**
@@ -1117,6 +1154,15 @@ public class ProfileManager
      */
     public void evictFromCache(Profile profile) {
         profileCache.remove(profile.getUsername());
+    }
+
+    /**
+     * Update the profile stored in the cache
+     * @param username the profile's username to update
+     */
+    public void updateCache(String username, Map<String, List<FieldDescriptor>> classKeys) {
+        //this calls wrapUserProfile which updates the profileCache
+        getUpdatedProfile(username, classKeys, true);
     }
 
     /**

@@ -19,33 +19,42 @@ import org.intermine.api.searchengine.KeywordSearchFacetData;
 import org.intermine.api.searchengine.KeywordSearchHandler;
 import org.intermine.api.searchengine.KeywordSearchPropertiesManager;
 import org.intermine.api.searchengine.solr.SolrKeywordSearchHandler;
-import org.intermine.webservice.server.core.JSONService;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.FacetSearch;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 /**
  * A web service for returning facet related to particular query
  * @author arunans23
  *
  */
-public class FacetService extends JSONService
+public class FacetService extends JSONServiceSpring
 {
 
     private static final Logger LOG = Logger.getLogger(FacetService.class);
 
+    public FacetSearch getFacetSearch() {
+        return facetSearch;
+    }
+
+    private FacetSearch facetSearch;
+
     /**
      * Constructor
      * @param im InterMine settings
+     * @param format
      */
-    public FacetService(InterMineAPI im) {
-        super(im);
+    public FacetService(InterMineAPI im, Format format) {
+        super(im, format);
+        facetSearch = new FacetSearch();
     }
 
     @Override
@@ -70,35 +79,26 @@ public class FacetService extends JSONService
         Collection<KeywordSearchFacet> keywordSearchFacets
                 = searchHandler.doFacetSearch(im, searchTerm, facetValues);
 
-        output.setHeaderAttributes(getHeaderAttributes());
-
-        Map<String, Map<String, Long>> ckData = new HashMap<String, Map<String, Long>>();
-
-        JSONArray rootArray = new JSONArray();
+        ArrayList< Map<String, Object>> rootArray = new ArrayList<>();
 
         for (KeywordSearchFacet<FacetField.Count> keywordSearchFacet : keywordSearchFacets) {
-            Map<String, Long> temp = new HashMap<String, Long>();
 
-            JSONArray innerArray = new JSONArray();
+            ArrayList< Map<String, Object>> innerArray = new ArrayList<>();
             for (FacetField.Count count : keywordSearchFacet.getItems()) {
-                temp.put(count.getName(), count.getCount());
-                JSONObject innerObject = new JSONObject();
+                Map<String, Object> innerObject = new HashMap<>();
                 innerObject.put("name", count.getName());
                 innerObject.put("value", count.getCount());
-
-                innerArray.put(innerObject);
+                innerArray.add(innerObject);
             }
 
-            ckData.put(keywordSearchFacet.getName(), temp);
-            JSONObject outerObject  = new JSONObject();
+            Map<String, Object> outerObject = new HashMap<>();
             outerObject.put(keywordSearchFacet.getName(), innerArray);
-            rootArray.put(outerObject);
+            rootArray.add(outerObject);
         }
 
-        JSONObject jo = new JSONObject();
-        jo.put("results", rootArray);
-
-        output.addResultItem(Collections.singletonList(jo.toString()));
+        Map<String, Object> result = new HashMap<>();
+        result.put("results", rootArray);
+        facetSearch.setFacets(result);
 
     }
 
@@ -114,10 +114,10 @@ public class FacetService extends JSONService
             // value, add them to map
             for (Map.Entry<String, String[]> requestParameter
                     : ((Map<String, String[]>) request.getParameterMap()).entrySet()) {
-                if (requestParameter.getKey().startsWith("facet_")
+                if (requestParameter.getKey().startsWith("facet")
                         && requestParameter.getValue().length > 0
                         && !StringUtils.isBlank(requestParameter.getValue()[0])) {
-                    String facetField = requestParameter.getKey().substring("facet_".length());
+                    String facetField = requestParameter.getKey().substring("facet".length());
                     boolean found = false;
                     for (KeywordSearchFacetData keywordSearchFacetData : facets) {
                         if (facetField.equals(keywordSearchFacetData.getField())) {
@@ -137,4 +137,5 @@ public class FacetService extends JSONService
         }
         return facetValues;
     }
+
 }

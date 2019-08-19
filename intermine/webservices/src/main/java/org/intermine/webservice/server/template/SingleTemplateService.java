@@ -19,6 +19,8 @@ import org.intermine.api.profile.Profile;
 import org.intermine.api.template.TemplateManager;
 import org.intermine.template.TemplateQuery;
 import org.intermine.web.logic.export.ResponseUtil;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.SavedTemplate;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.JSONService;
 import org.intermine.webservice.server.exceptions.BadRequestException;
@@ -31,35 +33,25 @@ import org.intermine.webservice.server.output.StreamedOutput;
  * Service that responds with a single template.
  * @author Alex Kalderimis
  */
-public class SingleTemplateService extends JSONService
-{
+public class SingleTemplateService extends JSONServiceSpring {
+
+    private String name;
+
+    public SavedTemplate getSavedTemplate() {
+        return savedTemplate;
+    }
+
+    private SavedTemplate savedTemplate;
 
     /** @param im The InterMine state object **/
-    public SingleTemplateService(InterMineAPI im) {
-        super(im);
-    }
-
-    @Override
-    protected boolean canServe(Format format) {
-        switch (format) {
-            case XML:
-            case JSON:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    @Override
-    protected Output makeXMLOutput(PrintWriter out, String separator) {
-        ResponseUtil.setXMLHeader(response, "template.xml");
-        return new StreamedOutput(out, new PlainFormatter(), separator);
+    public SingleTemplateService(InterMineAPI im, Format format, String name) {
+        super(im, format);
+        savedTemplate = new SavedTemplate();
+        this.name = name;
     }
 
     @Override
     protected void execute() {
-        String name = StringUtils.defaultString(request.getPathInfo(), "");
-        name = name.replaceAll("^/", "");
         if (StringUtils.isBlank(name)) {
             throw new BadRequestException("No name provided");
         }
@@ -70,10 +62,9 @@ public class SingleTemplateService extends JSONService
             throw new ResourceNotFoundException("No template found called " + name);
         }
         if (Format.JSON == getFormat()) {
-            output.addResultItem(Arrays.asList(t.toJSON()));
+            savedTemplate.setTemplate(t.toJSONSpring());
         } else {
-            ResponseUtil.setXMLHeader(response, name + ".xml");
-            output.addResultItem(Arrays.asList(t.toXml()));
+            savedTemplate.setTemplate(t.toXml());
         }
     }
 

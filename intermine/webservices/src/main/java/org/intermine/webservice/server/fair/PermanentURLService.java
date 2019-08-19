@@ -13,7 +13,11 @@ package org.intermine.webservice.server.fair;
 import org.apache.commons.lang.StringUtils;
 import org.intermine.api.InterMineAPI;
 import org.intermine.web.logic.PermanentURIHelper;
-import org.intermine.webservice.server.core.JSONService;
+import org.intermine.webservice.JSONServiceSpring;
+import org.intermine.webservice.model.PermanentUrl;
+import org.intermine.webservice.server.Format;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeJava;
 
 /**
  * Generate a permanent URL given a type and internal InterMine ID
@@ -26,15 +30,23 @@ import org.intermine.webservice.server.core.JSONService;
  *
  * @author Daniela Butano
  */
-public class PermanentURLService extends JSONService
+public class PermanentURLService extends JSONServiceSpring
 {
+
+    public PermanentUrl getPermanentUrl() {
+        return permanentUrl;
+    }
+
+    private PermanentUrl permanentUrl;
 
     /**
      * The constructor
      * @param im the intermine api
+     * @param format
      */
-    public PermanentURLService(InterMineAPI im) {
-        super(im);
+    public PermanentURLService(InterMineAPI im, Format format) {
+        super(im, format);
+        permanentUrl = new PermanentUrl();
     }
 
     @Override
@@ -44,9 +56,10 @@ public class PermanentURLService extends JSONService
         String url = (new PermanentURIHelper(request)).getPermanentURL(type,
                 Integer.parseInt(id));
         if (url == null) {
-            addOutputInfo("url", StringUtils.EMPTY);
+            permanentUrl.setUrl(StringUtils.EMPTY);
         } else {
-            addOutputInfo("url", url);
+            permanentUrl.setUrl(url);
         }
     }
+
 }

@@ -79,7 +79,7 @@ public class InterMineLUI
      * Given a type, which might not contain capital letters, return the class name as it is
      * defined in the model
      * @param className which might not contain capital letters (e.g. dataset)
-     * @return he class name as it is defined in the model
+     * @return the class name as it is defined in the model (e.g. DataSet)
      */
     protected static String getSimpleClassName(String className) {
         Model model = Model.getInstanceByName("genomic");
@@ -134,8 +134,12 @@ public class InterMineLUI
      */
     public String toString() {
         try {
-            return className.toLowerCase() + LOCAL_ID_SEPARATOR + URLEncoder.encode(identifier,
-                    "UTF-8");
+            String encodedIdentifier = URLEncoder.encode(identifier, "UTF-8");
+            // The URLEncoder class is based on RFC 2396, and there are few differences
+            // between the unreserved characters in case of RFC 2396 and RFC 3986
+            encodedIdentifier = encodedIdentifier.replaceAll("%3A", ":")
+                    .replaceAll("\\+", "%20");
+            return className.toLowerCase() + LOCAL_ID_SEPARATOR + encodedIdentifier;
         } catch (UnsupportedEncodingException ex) {
             return className.toLowerCase() + LOCAL_ID_SEPARATOR + identifier;
         }

@@ -35,9 +35,9 @@ public class PermaTokensServlet extends WebServiceServlet
         String uid = getUid(request);
         WebService service = null;
         if (Method.GET == method && uid != null) {
-            service = new PermaTokenInfoService(api, uid);
+            //service = new PermaTokenInfoService(api, uid);
         } else if (Method.DELETE == method && uid != null) {
-            service = new PermaTokenDeletionService(api, uid);
+            //service = new PermaTokenDeletionService(api, uid);
         }
         if (service != null) {
             service.service(request, response);

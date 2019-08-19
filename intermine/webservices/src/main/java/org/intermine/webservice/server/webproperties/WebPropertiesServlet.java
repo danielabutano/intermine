@@ -47,6 +47,6 @@ public class WebPropertiesServlet extends HttpServlet
     private void runService(HttpServletRequest request,
             HttpServletResponse response) {
         final InterMineAPI im = InterMineContext.getInterMineAPI();
-        new WebPropertiesService(im).service(request, response);
+        //new WebPropertiesService(im).service(request, response);
     }
 }
