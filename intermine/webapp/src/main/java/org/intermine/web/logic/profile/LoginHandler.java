@@ -10,33 +10,35 @@ package org.intermine.web.logic.profile;
  *
  */
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionMessage;
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.BadTemplateException;
-import org.intermine.api.profile.BagState;
 import org.intermine.api.profile.InterMineBag;
 import org.intermine.api.profile.Profile;
 import org.intermine.api.profile.ProfileManager;
-import org.intermine.api.profile.ProfileManager.ApiPermission;
 import org.intermine.api.profile.SavedQuery;
 import org.intermine.api.template.ApiTemplate;
 import org.intermine.api.util.NameUtil;
 import org.intermine.objectstore.ObjectStoreException;
-import org.intermine.objectstore.intermine.ObjectStoreWriterInterMineImpl;
-import org.intermine.sql.DatabaseUtil;
 import org.intermine.web.logic.Constants;
 import org.intermine.web.logic.session.SessionMethods;
 import org.intermine.web.struts.InterMineAction;
+import org.json.JSONObject;
 
 /**
  * @author Xavier Watkins
@@ -152,15 +154,36 @@ public abstract class LoginHandler extends InterMineAction
         // Merge current history into loaded profile
 
         Profile currentProfile = SessionMethods.getProfile(request.getSession());
-        HttpSession session = request.getSession();
-        Profile profile = setUpProfile(session, username, password);
-        ProfileMergeIssues issues = new ProfileMergeIssues();
 
+        ProfileMergeIssues issues = new ProfileMergeIssues();
+/*
         if (currentProfile != null && StringUtils.isEmpty(currentProfile.getUsername())) {
             // The current profile was for an anonymous guest.
             issues = mergeProfiles(currentProfile, profile);
-        }
+        }*/
 
+        //call login webservice so same profile will be created in pm.limitatedaccesstoken
+        Client client = ClientBuilder.newClient();
+        try {
+            WebTarget target = client.target(
+                    "http://localhost:8080/biotestmine/service/login");
+            Form form = new Form();
+            form.param("username", username);
+            form.param("password", password);
+            String authToken = "Token " + currentProfile.getDayToken();
+            Response response = target.request(MediaType.APPLICATION_JSON)
+                    .header("Authorization", authToken).post(Entity.form(form));
+            if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+                JSONObject result = new JSONObject(response.readEntity(String.class));
+                String token = result.getString("token");
+                //setUp in the session the new profile (loaded from db)
+                Profile profile = setUpProfile(request.getSession(), username, password);
+                profile.getProfileManager().addTokenForProfile(profile, token);
+                profile.setDayToken(token);
+            }
+        } catch (RuntimeException ex) {
+            LOG.error("Problems connecting to login web service");
+        }
         return issues;
     }
 
@@ -177,6 +200,7 @@ public abstract class LoginHandler extends InterMineAction
         Profile profile;
         ProfileManager pm = SessionMethods.getInterMineAPI(session).getProfileManager();
         if (pm.hasProfile(username)) {
+            pm.updateCache(username, im.getClassKeys());
             profile = pm.getProfile(username, password, im.getClassKeys());
         } else {
             throw new LoginException("There is no profile for " + username);
@@ -184,63 +208,7 @@ public abstract class LoginHandler extends InterMineAction
         return setUpProfile(session, profile);
     }
 
-    /**
-     * Does whatever needs to be done to a permissions object to get it ready
-     * for a life cyle in a web service request. At the moment, this just means
-     * determining if this is the super user, and running the bag upgrade
-     * thread.
-     *
-     * @param api
-     *            The InterMine API object.
-     * @param permission
-     *            The permission that needs setting up.
-     */
-    public static void setUpPermission(InterMineAPI api,
-            ApiPermission permission) {
-        final ProfileManager pm = api.getProfileManager();
-        final Profile profile = permission.getProfile();
-        final String userName = profile.getUsername();
-        if (profile.isSuperuser() || (userName != null && userName.equals(pm.getSuperuser()))) {
-            permission.addRole("SUPERUSER");
-        }
-        if (!api.getBagManager().isAnyBagInState(profile, BagState.UPGRADING)) {
-            UpgradeBagList upgrade = new UpgradeBagList(profile, api.getBagQueryRunner());
-            runBagUpgrade(upgrade, api, profile);
-        }
-    }
 
-    /**
-     * Kick off a bag upgrade for current user.
-     * @param procedure The bag upgrade routine.
-     * @param api The InterMine state object.
-     * @param profile The current user's profile.
-     */
-    public static void runBagUpgrade(
-            UpgradeBagList procedure,
-            InterMineAPI api,
-            Profile profile) {
-        Connection con = null;
-        try {
-            con = ((ObjectStoreWriterInterMineImpl) api.getProfileManager()
-                    .getProfileObjectStoreWriter()).getDatabase()
-                    .getConnection();
-            if (api.getBagManager().isAnyBagNotCurrent(profile)
-                    && !DatabaseUtil.isBagValuesEmpty(con)) {
-                Thread upgrade = new Thread(procedure);
-                upgrade.setDaemon(true);
-                upgrade.start();
-            }
-        } catch (SQLException sqle) {
-            LOG.error("Problems retrieving the connection", sqle);
-        } finally {
-            try {
-                if (con != null) {
-                    con.close();
-                }
-            } catch (SQLException sqle) {
-            }
-        }
-    }
     /**
      * Sets up a profile ready for a session in InterMine.
      *
@@ -255,7 +223,7 @@ public abstract class LoginHandler extends InterMineAction
             session.setAttribute(Constants.IS_SUPERUSER, Boolean.TRUE);
         }
         UpgradeBagList upgrade = new UpgradeBagList(profile, im.getBagQueryRunner());
-        runBagUpgrade(upgrade, im, profile);
+        UpgradeBagRunner.runBagUpgrade(upgrade, im, profile);
         return profile;
     }
 

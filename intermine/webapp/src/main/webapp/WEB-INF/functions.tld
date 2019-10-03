@@ -7,7 +7,7 @@
 
 <function>
   <name>formatPath</name>
-  <function-class>org.intermine.web.logic.WebUtil</function-class>
+  <function-class>org.intermine.web.logic.WebCoreUtil</function-class>
   <function-signature>java.lang.String formatPath( org.intermine.pathquery.Path, org.intermine.web.logic.config.WebConfig )</function-signature>
 </function>
 
@@ -19,13 +19,13 @@
 
 <function>
   <name>formatQueryPath</name>
-  <function-class>org.intermine.web.logic.WebUtil</function-class>
+  <function-class>org.intermine.web.logic.WebCoreUtil</function-class>
   <function-signature>java.lang.String formatPath( java.lang.String, org.intermine.pathquery.PathQuery, org.intermine.web.logic.config.WebConfig )</function-signature>
 </function>
 
 <function>
   <name>formatField</name>
-  <function-class>org.intermine.web.logic.WebUtil</function-class>
+  <function-class>org.intermine.web.logic.WebCoreUtil</function-class>
   <function-signature>java.lang.String formatField( org.intermine.pathquery.Path, org.intermine.web.logic.config.WebConfig )</function-signature>
 </function>
 
@@ -43,13 +43,13 @@
 
 <function>
   <name>formatViewElement</name>
-  <function-class>org.intermine.web.logic.WebUtil</function-class>
+  <function-class>org.intermine.web.logic.WebCoreUtil</function-class>
   <function-signature>java.lang.String formatPathDescription( org.intermine.pathquery.Path, org.intermine.pathquery.PathQuery, org.intermine.web.logic.config.WebConfig )</function-signature>
 </function>
 
 <function>
   <name>formatViewElementStr</name>
-  <function-class>org.intermine.web.logic.WebUtil</function-class>
+  <function-class>org.intermine.web.logic.WebCoreUtil</function-class>
   <function-signature>java.lang.String formatPathDescription( java.lang.String, org.intermine.pathquery.PathQuery, org.intermine.web.logic.config.WebConfig )</function-signature>
 </function>
 
@@ -78,13 +78,13 @@
   
   <function>
       <name>contains</name>
-      <function-class>org.intermine.web.logic.WebUtil</function-class>
+      <function-class>org.intermine.web.logic.WebCoreUtil</function-class>
       <function-signature>boolean contains(java.util.Collection, java.lang.Object)</function-signature>
   </function>
   
   <function>
       <name>containsKey</name>
-      <function-class>org.intermine.web.logic.WebUtil</function-class>
+      <function-class>org.intermine.web.logic.WebCoreUtil</function-class>
       <function-signature>boolean containsKey(java.util.Map, java.lang.Object)</function-signature>
   </function>
 

@@ -4,6 +4,7 @@
         className: "im-list-event-notification topBar messages",
         appendContent: function() {
             if (this.options.change == null) {
+                this.notifyWebAppOfCreation();
                 this.notifyOfCreation();
             } else {
                 this.notifyOfUpdate();
@@ -15,6 +16,11 @@
             var encoded = encodeURIComponent(this.options.list.name);
             a.attr('href', this.options.list.service.root.replace('service/', 'bagDetails.do?bagName=' + encoded));
             this.$('p').append(a);
+        },
+        notifyWebAppOfCreation: function() {
+            var encodedName = encodeURIComponent(this.options.list.name);
+            jQuery.post(this.options.list.service.root.replace('service/', 'updateProfileWithBag.do?name=' + encodedName
+            + "&id=" + this.options.list.id + "&type=" + this.options.list.type + "&osId=" + this.options.list.osId));
         },
         notifyOfCreation: function() {
             this.$('p').append('<span>Created a new list</span>');

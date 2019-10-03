@@ -44,7 +44,7 @@ import org.intermine.web.context.InterMineContext;
 import org.intermine.web.logic.RequestUtil;
 import org.intermine.web.logic.export.Exporter;
 import org.intermine.web.logic.export.ResponseUtil;
-import org.intermine.web.logic.profile.LoginHandler;
+import org.intermine.web.logic.profile.PermissionHandler;
 import org.intermine.web.security.KeyStorePublicKeySource;
 import org.intermine.web.security.PublicKeySource;
 import org.intermine.webservice.server.core.ListManager;
@@ -574,7 +574,7 @@ public abstract class WebService
             throw new UnauthorizedException(e.getMessage());
         }
 
-        LoginHandler.setUpPermission(im, permission);
+        PermissionHandler.setUpPermission(im, permission);
     }
 
     private void sendError(Throwable t, HttpServletResponse response) {

@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
@@ -31,7 +32,7 @@ import org.intermine.pathquery.Path;
 import org.intermine.pathquery.PathException;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.util.DynamicUtil;
-import org.intermine.web.logic.session.SessionMethods;
+import org.intermine.web.logic.Constants;
 
 /**
  * Utility methods for LocatedSequenceFeature exporting.
@@ -92,8 +93,10 @@ public final class SequenceFeatureExportUtil
      */
     public static Set<String> getOrganisms(PathQuery pathQuery, HttpSession session) {
 
-        final InterMineAPI im = SessionMethods.getInterMineAPI(session);
-        Profile profile = SessionMethods.getProfile(session);
+        final ServletContext servletContext = session.getServletContext();
+        final InterMineAPI im = (InterMineAPI) servletContext.getAttribute(
+                Constants.INTERMINE_API);
+        Profile profile = (Profile) session.getAttribute(Constants.PROFILE);
         return getOrganisms(pathQuery, im, profile);
     }
 
@@ -207,8 +210,10 @@ public final class SequenceFeatureExportUtil
      * @return set of organism taxon ids
      */
     public static Set<String> getTaxonIds(PathQuery pathQuery, HttpSession session) {
-        final InterMineAPI im = SessionMethods.getInterMineAPI(session);
-        Profile profile = SessionMethods.getProfile(session);
+        final ServletContext servletContext = session.getServletContext();
+        final InterMineAPI im = (InterMineAPI) servletContext.getAttribute(
+                Constants.INTERMINE_API);
+        Profile profile = (Profile) session.getAttribute(Constants.PROFILE);
         return getTaxonIds(pathQuery, im, profile);
     }
 

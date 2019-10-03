@@ -1,0 +1,49 @@
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+        resources {
+            srcDirs = ['src/test/resources']
+        }
+    }
+}
+
+tasks.test.dependsOn(':intermine-testresources:buildDB')
+
+dependencies {
+    compile project(':intermine-api')
+    compile group: 'org.apache.lucene', name: 'lucene-core', version: '3.0.2'
+    compile group: 'org.apache.solr', name: 'solr-solrj', version: '7.2.1'
+    compile group: 'javax.mail', name: 'mail', version: '1.4'
+    compile group: "javax.servlet", name: "servlet-api", version: "2.4"
+    compile group: 'commons-fileupload', name: 'commons-fileupload', version: '1.2.2'
+    compile group: 'commons-httpclient', name: 'commons-httpclient', version: '3.0'
+    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.0'
+    compile group: 'org.everit.json', name: 'org.everit.json.schema', version: '1.5.1'
+    compile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.0.1'
+
+    compile group: 'org.apache.oltu.oauth2', name: 'org.apache.oltu.oauth2.common', version: '1.0.0'
+    compile group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.50'
+
+    runtime group: 'commons-io', name: 'commons-io', version: '2.0.1'
+    runtime group: 'commons-collections', name: 'commons-collections', version: '3.2'
+    runtime group: 'commons-lang', name: 'commons-lang', version: '2.6'
+    runtime group: 'commons-codec', name: 'commons-codec', version: '1.9'
+    runtime group: 'fastutil', name: 'fastutil', version: '5.0.9'
+
+    testCompile project(path: ':intermine-testresources', configuration: 'testArtifacts')
+    testCompile project(':intermine-objectstore').sourceSets.test.output
+    testCompile project(':intermine-api').sourceSets.test.output
+    testCompile group: 'xmlunit', name: 'xmlunit', version: '1.0'
+    testCompile group: 'org.easymock', name: 'easymock', version: '3.2'
+}
+

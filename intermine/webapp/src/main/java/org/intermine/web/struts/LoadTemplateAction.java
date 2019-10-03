@@ -37,7 +37,7 @@ import org.intermine.web.logic.export.http.TableExporterFactory;
 import org.intermine.web.logic.export.http.TableHttpExporter;
 import org.intermine.web.logic.results.PagedTable;
 import org.intermine.web.logic.session.SessionMethods;
-import org.intermine.web.logic.template.TemplateResultInput;
+import org.intermine.web.logic.template.TemplateInput;
 import org.intermine.web.logic.template.Templates;
 import org.intermine.web.logic.template.Templates.TemplateValueParseException;
 
@@ -54,7 +54,7 @@ public class LoadTemplateAction extends DispatchAction
         // template name
         String name = request.getParameter("name");
 
-        TemplateResultInput input = new TemplateResultInput();
+        TemplateInput input = new TemplateInput();
         // parse constraints from request
         try {
             input.setConstraints(Templates.parseConstraints(request));

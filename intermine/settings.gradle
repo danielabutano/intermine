@@ -7,6 +7,8 @@ include ':intermine-model',
 ':intermine-integrate',
 ':intermine-api',
 ':intermine-resources',
+':intermine-webcore',
+':intermine-webservices',
 ':intermine-webapp', 
 ':intermine-webtasks', 
 ':intermine-jbrowse-endpoint' 
@@ -19,7 +21,9 @@ project(':intermine-objectstore').projectDir = new File(settingsDir, './objectst
 
 project(':intermine-integrate').projectDir = new File(settingsDir, './integrate')
 project(':intermine-api').projectDir = new File(settingsDir, './api')
+project(':intermine-webcore').projectDir = new File(settingsDir, './webcore')
 project(':intermine-webapp').projectDir = new File(settingsDir, './webapp')
+project(':intermine-webservices').projectDir = new File(settingsDir, './webservices')
 project(':intermine-resources').projectDir = new File(settingsDir, './resources')
 project(':intermine-webtasks').projectDir = new File(settingsDir, './webtasks')
 project(':intermine-jbrowse-endpoint').projectDir = new File(settingsDir, './jbrowse-endpoint')

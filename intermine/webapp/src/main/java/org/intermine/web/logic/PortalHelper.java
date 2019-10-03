@@ -23,8 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.config.ClassKeyHelper;
-import org.intermine.api.results.ResultCell;
-import org.intermine.api.results.ResultElement;
 import org.intermine.metadata.FieldDescriptor;
 import org.intermine.model.FastPathObject;
 import org.intermine.util.DynamicUtil;
@@ -41,8 +39,6 @@ public final class PortalHelper
 //    private static final Logger LOG = Logger.getLogger(PortalHelper.class);
     private static Map<String, BagConverter> bagConverters = new HashMap<String, BagConverter>();
     private static String portalBaseUrl = null;
-
-    private static final String INTERNAL_REPORT_PAGE = "report.do";
     private static final String EXTERNAL_PORTAL_PAGE = "portal.do";
 
     private PortalHelper() {
@@ -178,34 +174,6 @@ public final class PortalHelper
             sb.append(encode(externalId.toString()));
             url = sb.toString();
         }
-        return url;
-    }
-
-
-    /**
-     * Generate a link to the object details page using the internal id. This does not produce
-     * a link suitable for use as a permalink.
-     * @param elem a result element
-     * @param baseUrl The base URL to use to create the link.
-     * @return The URL.
-     */
-    public static String generateReportLink(ResultElement elem, String baseUrl) {
-        return baseUrl + generateReportPath(elem);
-    }
-
-    /**
-     * Get the path fragment (starting with "/") for the report page for an object in the mine.
-     * @param elem The element containing data related to this object.
-     * @return A path fragment suitable for appending to a base URL.
-     * The generated path is not suitable for permanent
-     * links, as it will include the internal id, which is liable to change between releases.
-     */
-    public static String generateReportPath(ResultCell elem) {
-        String url;
-        StringBuilder sb = new StringBuilder();
-        sb.append("/").append(INTERNAL_REPORT_PAGE).append("?id=");
-        sb.append(String.valueOf(elem.getId()));
-        url = sb.toString();
         return url;
     }
 

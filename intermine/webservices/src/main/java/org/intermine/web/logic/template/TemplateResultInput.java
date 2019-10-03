@@ -19,7 +19,7 @@ import org.intermine.webservice.server.WebServiceInput;
  * TemplateResultService web service.
  * @author Jakub Kulaviak
  **/
-public class TemplateResultInput extends WebServiceInput
+public class TemplateResultInput extends WebServiceInput implements TemplateInputInterface
 {
     private String name;
 
@@ -42,32 +42,28 @@ public class TemplateResultInput extends WebServiceInput
     }
 
     /**
-     * Returns template name.
-     * @return name
+     *  {@inheritDoc}
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Sets template name.
-     * @param name name
+     * {@inheritDoc}
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * Sets constraints.
-     * @param constraints constraints
+     * {@inheritDoc}
      */
     public void setConstraints(Map<String, List<ConstraintInput>> constraints) {
         this.constraints = constraints;
     }
 
     /**
-     * Returns constraints.
-     * @return constraints
+     * {@inheritDoc}
      */
     public Map<String, List<ConstraintInput>> getConstraints() {
         return constraints;

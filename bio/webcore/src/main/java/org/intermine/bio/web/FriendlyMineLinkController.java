@@ -16,7 +16,6 @@ import java.util.Properties;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts.action.ActionForm;
@@ -31,9 +30,8 @@ import org.intermine.api.profile.InterMineBag;
 import org.intermine.bio.util.BioUtil;
 import org.intermine.metadata.StringUtil;
 import org.intermine.metadata.TypeUtil;
+import org.intermine.web.logic.Constants;
 import org.intermine.web.logic.bag.BagHelper;
-import org.intermine.web.logic.session.SessionMethods;
-
 
 /**
  * Gets list of friendly intermines to show on list analysis page.
@@ -53,7 +51,9 @@ public class FriendlyMineLinkController  extends TilesAction
     public ActionForward execute(ComponentContext context, ActionMapping mapping, ActionForm form,
             HttpServletRequest request, HttpServletResponse response) {
         InterMineBag bag = (InterMineBag) request.getAttribute("bag");
-        final InterMineAPI im = SessionMethods.getInterMineAPI(request.getSession());
+        final ServletContext servletContext = request.getSession().getServletContext();
+        final InterMineAPI im = (InterMineAPI) servletContext.getAttribute(
+                Constants.INTERMINE_API);
         Collection<String> organismsInBag = BioUtil.getOrganisms(im.getObjectStore(), bag.getType(),
                 bag.getContentsAsIds(), false, "shortName");
         String organisms = null;
@@ -67,9 +67,8 @@ public class FriendlyMineLinkController  extends TilesAction
         if (StringUtils.isNotEmpty(organisms)) {
             request.setAttribute("organisms", organisms);
         }
-        HttpSession session = request.getSession();
-        ServletContext servletContext = session.getServletContext();
-        final Properties webProperties = SessionMethods.getWebProperties(servletContext);
+        final Properties webProperties = (Properties) servletContext.getAttribute(
+                Constants.WEB_PROPERTIES);
         final FriendlyMineManager linkManager = FriendlyMineManager.getInstance(im, webProperties);
         Collection<Mine> mines = linkManager.getFriendlyMines();
         Mine localMine = linkManager.getLocalMine();

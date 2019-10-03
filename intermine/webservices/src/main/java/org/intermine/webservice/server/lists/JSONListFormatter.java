@@ -57,6 +57,7 @@ public class JSONListFormatter implements ListFormatter
     Map<String, Object> bagToMap(InterMineBag list) {
         Map<String, Object> listMap = new HashMap<String, Object>();
         listMap.put("id", list.getSavedBagId());
+        listMap.put("osId", list.getOsb().getBagId());
         listMap.put("name", list.getName());
         listMap.put("type", list.getType());
         listMap.put("title", list.getTitle());
