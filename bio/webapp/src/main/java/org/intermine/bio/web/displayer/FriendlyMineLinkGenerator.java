@@ -30,7 +30,7 @@ import org.intermine.pathquery.OrderDirection;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.metadata.Util;
 import org.intermine.web.displayer.InterMineLinkGenerator;
-import org.intermine.webservice.server.core.Predicate;
+import org.intermine.web.util.Predicate;
 
 /**
  * Helper class for intermine links generated on report and lists pages

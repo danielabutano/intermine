@@ -10,6 +10,8 @@ package org.intermine.webservice.server.core;
  *
  */
 
+import org.intermine.web.util.Predicate;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;

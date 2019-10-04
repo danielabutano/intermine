@@ -10,6 +10,8 @@ package org.intermine.webservice.server.core;
  *
  */
 
+import org.intermine.web.util.Function;
+
 /**
  * A type for a function from A -> B.
  * @author Alex Kalderimis

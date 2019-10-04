@@ -10,6 +10,8 @@ package org.intermine.webservice.server.core;
  *
  */
 
+import org.intermine.web.util.Function;
+
 import java.util.LinkedList;
 import java.util.List;
 

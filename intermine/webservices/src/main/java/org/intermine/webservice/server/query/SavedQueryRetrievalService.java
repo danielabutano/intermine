@@ -29,7 +29,7 @@ import org.intermine.pathquery.PathQueryBinding;
 import org.intermine.web.logic.export.ResponseUtil;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.core.JSONService;
-import org.intermine.webservice.server.core.Predicate;
+import org.intermine.web.util.Predicate;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.exceptions.ServiceException;
 import org.intermine.webservice.server.output.Output;
