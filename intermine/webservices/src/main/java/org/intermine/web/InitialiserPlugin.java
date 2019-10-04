@@ -88,7 +88,7 @@ import org.intermine.web.logic.config.FieldConfigHelper;
 import org.intermine.web.logic.config.WebConfig;
 import org.intermine.web.logic.profile.UpgradeBagList;
 import org.intermine.web.logic.profile.UpgradeBagRunner;
-import org.intermine.webservice.server.query.result.XMLValidator;
+import org.intermine.web.validator.XMLValidator;
 
 /**
  * Initialiser for the InterMine web services.
