@@ -39,7 +39,7 @@ import org.intermine.pathquery.Path;
 import org.intermine.pathquery.PathException;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.web.context.InterMineContext;
-import org.intermine.web.logic.WebUtil;
+import org.intermine.web.logic.WebCoreUtil;
 import org.intermine.webservice.server.ColumnHeaderStyle;
 import org.intermine.webservice.server.Format;
 import org.intermine.webservice.server.WebServiceRequestParser;
@@ -151,7 +151,7 @@ public class QueryResultService extends AbstractQueryService
             attributes.put(JSONResultFormatter.KEY_VIEWS, pq.getView());
 
             attributes.put(JSONTableFormatter.KEY_COLUMN_HEADERS,
-                    WebUtil.formatPathQueryView(pq, InterMineContext.getWebConfig()));
+                    WebCoreUtil.formatPathQueryView(pq, InterMineContext.getWebConfig()));
             attributes.put("start", String.valueOf(start));
             try {
                 attributes.put(JSONResultFormatter.KEY_ROOT_CLASS, pq.getRootClass());
@@ -178,7 +178,7 @@ public class QueryResultService extends AbstractQueryService
             if (wantsColumnHeaders()) {
                 if (ColumnHeaderStyle.FRIENDLY == getColumnHeaderStyle()) {
                     attributes.put(FlatFileFormatter.COLUMN_HEADERS,
-                            WebUtil.formatPathQueryView(pq, InterMineContext.getWebConfig()));
+                            WebCoreUtil.formatPathQueryView(pq, InterMineContext.getWebConfig()));
                 } else {
                     attributes.put(FlatFileFormatter.COLUMN_HEADERS, pq.getView());
                 }
@@ -206,7 +206,7 @@ public class QueryResultService extends AbstractQueryService
                 break;
             case HTML:
                 attributes.put(HTMLTableFormatter.KEY_COLUMN_HEADERS,
-                        WebUtil.formatPathQueryView(pq, InterMineContext.getWebConfig()));
+                        WebCoreUtil.formatPathQueryView(pq, InterMineContext.getWebConfig()));
                 break;
             default:
                 break;

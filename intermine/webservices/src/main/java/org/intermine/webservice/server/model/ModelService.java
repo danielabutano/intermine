@@ -37,7 +37,7 @@ import org.intermine.objectstore.ObjectStoreSummary;
 import org.intermine.pathquery.Path;
 import org.intermine.pathquery.PathException;
 import org.intermine.web.context.InterMineContext;
-import org.intermine.web.logic.WebUtil;
+import org.intermine.web.logic.WebCoreUtil;
 import org.intermine.web.logic.config.FieldConfig;
 import org.intermine.web.logic.config.FieldConfigHelper;
 import org.intermine.web.logic.config.WebConfig;
@@ -144,7 +144,7 @@ public class ModelService extends WebService
                 Map<String, String> kvPairs = new HashMap<String, String>();
                 kvPairs.put("name", getNodeName(node));
                 kvPairs.put("id", node.toStringNoConstraints());
-                kvPairs.put("display", WebUtil.formatPath(node, config));
+                kvPairs.put("display", WebCoreUtil.formatPath(node, config));
                 kvPairs.put("type", "class");
                 attributes.put(JSONFormatter.KEY_KV_PAIRS, kvPairs);
                 attributes.put(JSONFormatter.KEY_INTRO, "\"fields\":[");
@@ -173,7 +173,7 @@ public class ModelService extends WebService
                 // but these have sharper edge cases
                 ClassDescriptor cd = model.getClassDescriptorByName(className);
                 // Add the display name for this class.
-                classData.put("displayName", WebUtil.formatClass(cd, config));
+                classData.put("displayName", WebCoreUtil.formatClass(cd, config));
                 classData.put("term", cd.getFairTerm());
                 String fullyQualifiedClassName = cd.getName();
                 try {
@@ -256,9 +256,9 @@ public class ModelService extends WebService
     private static String getNodeName(Path newNode) {
         WebConfig webConfig = InterMineContext.getWebConfig();
         if (newNode.isRootPath()) {
-            return WebUtil.formatPath(newNode, webConfig);
+            return WebCoreUtil.formatPath(newNode, webConfig);
         } else {
-            return WebUtil.formatField(newNode, webConfig);
+            return WebCoreUtil.formatField(newNode, webConfig);
         }
     }
 
