@@ -25,10 +25,8 @@ import org.intermine.template.SwitchOffAbility;
 import org.intermine.template.TemplateQuery;
 import org.intermine.metadata.StringUtil;
 import org.intermine.web.logic.CodeTranslator;
-import org.intermine.webservice.server.LinkGeneratorBase;
-import org.intermine.webservice.server.WebServiceConstants;
-import org.intermine.webservice.server.WebServiceRequestParser;
-import org.intermine.webservice.server.query.result.QueryResultRequestParser;
+import org.intermine.web.link.LinkGeneratorBase;
+import org.intermine.web.logic.WebServiceConstants;
 
 
 /**
@@ -80,10 +78,10 @@ public class TemplateResultLinkGenerator extends LinkGeneratorBase
     }
 
     private String getHtmlLinkInternal(String baseUrl, TemplateQuery template, boolean hl) {
-        String ret = getLink(baseUrl, template, WebServiceRequestParser.FORMAT_PARAMETER_HTML, hl);
+        String ret = getLink(baseUrl, template, WebServiceConstants.FORMAT_PARAMETER_HTML, hl);
         ret += "&size=";
         ret += format("" + DEFAULT_RESULT_SIZE, hl);
-        ret += "&" + QueryResultRequestParser.LAYOUT_PARAMETER + "=minelink|paging";
+        ret += "&" + WebServiceConstants.LAYOUT_PARAMETER + "=minelink|paging";
         return ret;
     }
 
@@ -107,7 +105,7 @@ public class TemplateResultLinkGenerator extends LinkGeneratorBase
      * @return A string such that baseUrl + returnValue = a webservice query for this template
      */
     public String getLinkPath(TemplateQuery template) {
-        return getLinkPath(template, WebServiceRequestParser.FORMAT_PARAMETER_TAB);
+        return getLinkPath(template, WebServiceConstants.FORMAT_PARAMETER_TAB);
     }
 
     /**
@@ -194,7 +192,7 @@ public class TemplateResultLinkGenerator extends LinkGeneratorBase
     }
 
     private String getLink(String baseUrl, TemplateQuery template, boolean hl) {
-        return getLink(baseUrl, template, WebServiceRequestParser.FORMAT_PARAMETER_TAB, hl);
+        return getLink(baseUrl, template, WebServiceConstants.FORMAT_PARAMETER_TAB, hl);
     }
 
     private String getLink(String baseUrl, TemplateQuery template, String format,

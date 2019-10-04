@@ -10,9 +10,8 @@ package org.intermine.webservice.server.query.result;
  *
  */
 
-import org.intermine.webservice.server.LinkGeneratorBase;
-import org.intermine.webservice.server.WebServiceConstants;
-import org.intermine.webservice.server.WebServiceRequestParser;
+import org.intermine.web.link.LinkGeneratorBase;
+import org.intermine.web.logic.WebServiceConstants;
 
 /**
  * Class that implements generating links for QueryResultService web service.
@@ -45,8 +44,8 @@ public class QueryResultLinkGenerator extends LinkGeneratorBase
      */
     public String getLinkPath(String queryXml, String resultFormat) {
         return WebServiceConstants.MODULE_NAME + "/query/results"
-            + "?" + QueryResultRequestParser.QUERY_PARAMETER + "=" + encode(queryXml) + "&"
-            + WebServiceRequestParser.OUTPUT_PARAMETER + "=" + resultFormat;
+            + "?" + WebServiceConstants.QUERY_PARAMETER + "=" + encode(queryXml) + "&"
+            + WebServiceConstants.OUTPUT_PARAMETER + "=" + resultFormat;
     }
 
     /**
@@ -67,7 +66,7 @@ public class QueryResultLinkGenerator extends LinkGeneratorBase
     public String getMineResultsPath(String queryXml) {
         String ret = "/loadQuery.do?";
         ret += "skipBuilder=true";
-        ret += "&" + QueryResultRequestParser.QUERY_PARAMETER + "=" + encode(queryXml);
+        ret += "&" + WebServiceConstants.QUERY_PARAMETER + "=" + encode(queryXml);
         ret += "&method=xml";
         return ret;
     }
