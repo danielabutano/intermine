@@ -1,4 +1,4 @@
-package org.intermine.webservice.server.query.result;
+package org.intermine.web.validator;
 
 /*
  * Copyright (C) 2002-2019 FlyMine
@@ -25,7 +25,6 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.apache.log4j.Logger;
-import org.intermine.webservice.server.exceptions.ServiceException;
 import org.xml.sax.SAXParseException;
 
 /**
@@ -77,7 +76,7 @@ public class XMLValidator
         } catch (SAXParseException e) {
             LOG.debug(e);
         } catch (Exception e) {
-            throw new ServiceException("XML validation failed. " + xmlSchemaUrl, e);
+            throw new RuntimeException("XML validation failed. " + xmlSchemaUrl, e);
         }
     }
 

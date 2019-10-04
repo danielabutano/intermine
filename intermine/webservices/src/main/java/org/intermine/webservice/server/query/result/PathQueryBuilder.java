@@ -25,6 +25,7 @@ import org.everit.json.schema.loader.SchemaLoader;
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.profile.BagState;
 import org.intermine.api.profile.InterMineBag;
+import org.intermine.web.validator.XMLValidator;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.pathquery.PathQueryBinding;
 import org.intermine.webservice.server.core.Producer;
