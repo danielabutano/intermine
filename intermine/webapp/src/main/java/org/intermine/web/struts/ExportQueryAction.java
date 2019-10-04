@@ -30,7 +30,7 @@ import org.intermine.pathquery.PathQueryBinding;
 import org.intermine.util.XmlUtil;
 import org.intermine.web.logic.session.SessionMethods;
 import org.intermine.web.util.URLGenerator;
-import org.intermine.webservice.server.query.result.QueryResultLinkGenerator;
+import org.intermine.web.link.QueryResultLinkGenerator;
 
 /**
  * Export the current query in XML format.

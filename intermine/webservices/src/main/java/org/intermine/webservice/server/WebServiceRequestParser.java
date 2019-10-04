@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.intermine.util.PropertiesUtil;
 import org.intermine.metadata.StringUtil;
+import org.intermine.web.logic.WebServiceConstants;
 import org.intermine.web.context.InterMineContext;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 
@@ -51,17 +52,11 @@ public class WebServiceRequestParser
     /** Value of parameter when user wants xml output to be returned. **/
     public static final String FORMAT_PARAMETER_XML = "xml";
 
-    /** Value of parameter when user wants tab separated output to be returned. **/
-    public static final String FORMAT_PARAMETER_TAB = "tab";
-
     /** Value of parameter when user wants tab separated output to be returned. (alternate) **/
     public static final String FORMAT_PARAMETER_TSV = "tsv";
 
     /** Value of parameter when user wants plain text to be returned. **/
     public static final String FORMAT_PARAMETER_TEXT = "text";
-
-    /** Value of parameter when user wants html output to be returned. **/
-    public static final String FORMAT_PARAMETER_HTML = "html";
 
     /** Value of parameter when user wants comma separated output to be returned. **/
     public static final String FORMAT_PARAMETER_CSV = "csv";
@@ -138,9 +133,6 @@ public class WebServiceRequestParser
      **/
     public static final String FORMAT_PARAMETER_JSONP_COUNT = "jsonpcount";
 
-    /**Name of format parameter that specifies format of returned results. */
-    public static final String OUTPUT_PARAMETER = "format";
-
     /** The callback to be supplied for jsonp calls **/
     public static final String CALLBACK_PARAMETER = "callback";
 
@@ -198,8 +190,8 @@ public class WebServiceRequestParser
         {
             put(FORMAT_PARAMETER_ANY, Format.DEFAULT);
             put(FORMAT_PARAMETER_XML, Format.XML);
-            put(FORMAT_PARAMETER_HTML, Format.HTML);
-            put(FORMAT_PARAMETER_TAB, Format.TSV);
+            put(WebServiceConstants.FORMAT_PARAMETER_HTML, Format.HTML);
+            put(WebServiceConstants.FORMAT_PARAMETER_TAB, Format.TSV);
             put(FORMAT_PARAMETER_TSV, Format.TSV);
             put(FORMAT_PARAMETER_CSV, Format.CSV);
             put(FORMAT_PARAMETER_TEXT, Format.TEXT);
@@ -374,7 +366,7 @@ public class WebServiceRequestParser
         if (fromPathInfo != null) {
             areAcceptable.add(fromPathInfo);
         }
-        String fromParameter = request.getParameter(OUTPUT_PARAMETER);
+        String fromParameter = request.getParameter(WebServiceConstants.OUTPUT_PARAMETER);
         if (StringUtils.isNotBlank(fromParameter)) {
             areAcceptable.add(interpretFormat(fromParameter.trim()));
         }
@@ -390,7 +382,7 @@ public class WebServiceRequestParser
         String doCount = request.getParameter("count");
         boolean count = Boolean.parseBoolean(doCount);
         if (!count) {
-            String param = request.getParameter(WebServiceRequestParser.OUTPUT_PARAMETER);
+            String param = request.getParameter(WebServiceConstants.OUTPUT_PARAMETER);
             if (param != null && param.contains("count")) {
                 count = true;
             }

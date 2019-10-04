@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.intermine.api.query.QueryStore;
+import org.intermine.web.logic.WebServiceConstants;
 import org.intermine.webservice.server.exceptions.BadRequestException;
 import org.intermine.webservice.server.query.QueryRequestParser;
 
@@ -25,14 +26,10 @@ import org.intermine.webservice.server.query.QueryRequestParser;
  **/
 public class QueryResultRequestParser extends QueryRequestParser
 {
-    /** Name of parameter with query **/
-    public static final String QUERY_PARAMETER = "query";
 
     /** Compute total count parameter name. **/
     public static final String COMPUTE_TOTAL_COUNT_PARAMETER = "tcount";
 
-    /** Layout parameter name. **/
-    public static final String LAYOUT_PARAMETER = "layout";
 
     /**
      * RequestProcessor constructor.
@@ -59,7 +56,7 @@ public class QueryResultRequestParser extends QueryRequestParser
         super.parseRequest(req, input);
         String xmlQuery = getQueryXml();
         if (StringUtils.isEmpty(xmlQuery)) {
-            throw new BadRequestException("invalid " + QUERY_PARAMETER
+            throw new BadRequestException("invalid " + WebServiceConstants.QUERY_PARAMETER
                     + " parameter (empty or missing)");
         }
         input.setXml(xmlQuery);

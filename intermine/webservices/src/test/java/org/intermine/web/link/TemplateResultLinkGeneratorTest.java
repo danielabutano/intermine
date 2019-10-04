@@ -1,4 +1,4 @@
-package org.intermine.webservice.server.template.result;
+package org.intermine.web.link;
 
 /*
  * Copyright (C) 2002-2019 FlyMine
@@ -19,6 +19,7 @@ import org.intermine.pathquery.PathConstraintAttribute;
 import org.intermine.pathquery.PathConstraintLookup;
 import org.intermine.pathquery.PathQuery;
 import org.intermine.template.TemplateQuery;
+import org.intermine.web.link.TemplateResultLinkGenerator;
 import org.intermine.webservice.server.WebServiceConstants;
 
 

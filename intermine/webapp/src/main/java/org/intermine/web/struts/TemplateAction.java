@@ -58,7 +58,7 @@ import org.intermine.web.logic.query.DisplayConstraint;
 import org.intermine.web.logic.query.DisplayConstraintFactory;
 import org.intermine.web.logic.session.SessionMethods;
 import org.intermine.web.util.URLGenerator;
-import org.intermine.webservice.server.template.result.TemplateResultLinkGenerator;
+import org.intermine.web.link.TemplateResultLinkGenerator;
 
 /**
  * Action to handle submit from the template page. <code>setSavingQueries</code>
