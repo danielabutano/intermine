@@ -46,6 +46,7 @@ import org.intermine.web.logic.export.http.HttpExporterBase;
 import org.intermine.web.logic.export.http.TableHttpExporter;
 import org.intermine.web.logic.results.PagedTable;
 import org.intermine.web.struts.TableExportForm;
+import org.intermine.bio.web.logic.export.GFF3Exporter;
 
 /**
  * An implementation of TableHttpExporter that exports LocatedSequenceFeature
