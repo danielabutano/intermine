@@ -1,4 +1,4 @@
-package org.intermine.bio.web.export;
+package org.intermine.bio.web.logic.export;
 
 /*
  * Copyright (C) 2002-2019 FlyMine
@@ -10,7 +10,6 @@ package org.intermine.bio.web.export;
  *
  */
 
-import org.intermine.bio.web.logic.BioExportHelper;
 import org.intermine.model.bio.CDS;
 import org.intermine.model.bio.SequenceFeature;
 import org.intermine.model.bio.Protein;

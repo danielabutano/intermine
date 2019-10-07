@@ -31,7 +31,7 @@ import org.intermine.api.results.ResultElement;
 import org.intermine.bio.io.gff3.GFF3Record;
 import org.intermine.bio.ontology.SequenceOntology;
 import org.intermine.bio.ontology.SequenceOntologyFactory;
-import org.intermine.bio.web.logic.BioExportHelper;
+import org.intermine.bio.web.logic.export.BioExportHelper;
 import org.intermine.metadata.ClassDescriptor;
 import org.intermine.model.bio.SequenceFeature;
 import org.intermine.pathquery.Path;

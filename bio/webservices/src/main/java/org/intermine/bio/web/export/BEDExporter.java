@@ -20,7 +20,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.intermine.api.results.ResultElement;
 import org.intermine.bio.io.bed.BEDRecord;
-import org.intermine.bio.web.logic.BioExportHelper;
+import org.intermine.bio.web.logic.export.BioExportHelper;
 import org.intermine.bio.web.logic.OrganismGenomeBuildLookup;
 import org.intermine.metadata.StringUtil;
 import org.intermine.model.bio.SequenceFeature;

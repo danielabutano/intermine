@@ -11,7 +11,7 @@ package org.intermine.bio.webservice;
  */
 
 import org.intermine.api.InterMineAPI;
-import org.intermine.bio.web.export.SequenceExporter;
+import org.intermine.bio.web.logic.export.SequenceExporter;
 import org.intermine.bio.web.logic.SequenceFeatureExportUtil;
 import org.intermine.bio.web.logic.SequenceFeatureExportUtil.InvalidQueryException;
 import org.intermine.pathquery.PathQuery;

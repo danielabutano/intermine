@@ -28,6 +28,7 @@ import org.intermine.bio.web.logic.SequenceFeatureExportUtil;
 import org.intermine.bio.web.struts.SequenceExportForm;
 import org.intermine.model.bio.Chromosome;
 import org.intermine.model.bio.SequenceFeature;
+import org.intermine.bio.web.logic.export.SequenceExporter;
 import org.intermine.objectstore.ObjectStore;
 import org.intermine.pathquery.Path;
 import org.intermine.pathquery.PathException;

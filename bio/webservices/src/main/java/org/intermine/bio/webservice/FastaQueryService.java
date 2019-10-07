@@ -12,7 +12,7 @@ package org.intermine.bio.webservice;
 
 import org.apache.commons.lang.StringUtils;
 import org.intermine.api.InterMineAPI;
-import org.intermine.bio.web.export.SequenceExporter;
+import org.intermine.bio.web.logic.export.SequenceExporter;
 import org.intermine.metadata.ClassDescriptor;
 import org.intermine.objectstore.ObjectStore;
 import org.intermine.pathquery.Path;
