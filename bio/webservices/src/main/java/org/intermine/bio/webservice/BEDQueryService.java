@@ -16,7 +16,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.intermine.api.InterMineAPI;
-import org.intermine.bio.web.export.BEDExporter;
+import org.intermine.bio.web.logic.export.BEDExporter;
 import org.intermine.bio.web.logic.SequenceFeatureExportUtil;
 import org.intermine.bio.web.logic.SequenceFeatureExportUtil.InvalidQueryException;
 import org.intermine.pathquery.PathQuery;

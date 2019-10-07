@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.intermine.api.InterMineAPI;
-import org.intermine.bio.web.export.GFF3Exporter;
+import org.intermine.bio.web.logic.export.GFF3Exporter;
 import org.intermine.bio.web.logic.SequenceFeatureExportUtil;
 import org.intermine.bio.web.logic.SequenceFeatureExportUtil.InvalidQueryException;
 import org.intermine.pathquery.PathQuery;
