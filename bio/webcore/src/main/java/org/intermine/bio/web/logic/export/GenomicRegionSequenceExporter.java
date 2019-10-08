@@ -1,4 +1,4 @@
-package org.intermine.bio.web.logic;
+package org.intermine.bio.web.logic.export;
 
 /*
  * Copyright (C) 2002-2019 FlyMine
