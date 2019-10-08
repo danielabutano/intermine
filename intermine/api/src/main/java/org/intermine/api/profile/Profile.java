@@ -899,6 +899,7 @@ public class Profile
 
     /**
      * Set a token. called by the webservices during login
+     * @param dayToken the 24hours/day token.
      */
     public void setDayToken(String dayToken) {
         if (dayToken != null && manager.tokenHasMoreUses(dayToken)) {

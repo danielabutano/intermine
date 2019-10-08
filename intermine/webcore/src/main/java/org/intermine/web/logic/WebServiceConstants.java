@@ -13,7 +13,12 @@ package org.intermine.web.logic;
 /**
  * @author Daniela Butano
  **/
-public final class WebServiceConstants {
+public final class WebServiceConstants
+{
+    private WebServiceConstants() {
+        // Hidden constructor.
+    }
+
     /**
      * Name of module of web services.
      * All web services relative urls start with following prefix.

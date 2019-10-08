@@ -25,7 +25,6 @@ import org.intermine.template.SwitchOffAbility;
 import org.intermine.template.TemplateQuery;
 import org.intermine.metadata.StringUtil;
 import org.intermine.web.logic.CodeTranslator;
-import org.intermine.web.link.LinkGeneratorBase;
 import org.intermine.web.logic.WebServiceConstants;
 
 

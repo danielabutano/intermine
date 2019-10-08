@@ -18,7 +18,6 @@ import org.intermine.web.logic.template.Templates;
 import org.intermine.web.logic.template.Templates.TemplateValueParseException;
 import org.intermine.webservice.server.WebServiceRequestParser;
 import org.intermine.webservice.server.exceptions.BadRequestException;
-import org.intermine.webservice.server.query.result.QueryResultRequestParser;
 
 /**
  * Processes service request. Evaluates parameters and validates them and check if

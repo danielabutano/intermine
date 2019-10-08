@@ -495,7 +495,7 @@ public class ProfileManager
             // will cause this to fail. Allow three retries.
             ConcurrentModificationException lastError = null;
             boolean succeeded = false;
-            if(flushProfile) {
+            if (flushProfile) {
                 if (uosw instanceof ObjectStoreWriterInterMineImpl) {
                     ((ObjectStoreWriterInterMineImpl) uosw).flushCache();
                 }
@@ -1159,6 +1159,7 @@ public class ProfileManager
     /**
      * Update the profile stored in the cache
      * @param username the profile's username to update
+     * @param classKeys the classkeys
      */
     public void updateCache(String username, Map<String, List<FieldDescriptor>> classKeys) {
         //this calls wrapUserProfile which updates the profileCache

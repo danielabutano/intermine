@@ -218,6 +218,9 @@ public class ObjectStoreWriterInterMineImpl extends ObjectStoreInterMineImpl
         }
     }
 
+    /**
+     * Empty the cache
+     */
     public void flushCache() {
         synchronized (resultsCache) {
             synchronized (batchesCache) {

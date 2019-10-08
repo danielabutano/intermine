@@ -16,7 +16,6 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.intermine.api.InterMineAPI;
 import org.intermine.api.config.ClassKeyHelper;
-import org.intermine.api.profile.BagState;
 import org.intermine.api.profile.InterMineBag;
 import org.intermine.api.profile.Profile;
 import org.intermine.web.logic.session.SessionMethods;
@@ -59,7 +58,8 @@ public class UpdateProfileWithBagAction extends InterMineAction
         String osId = request.getParameter("osId");
 
         if (bagName == null || id == null || type == null) {
-            LOG.error("Something wrong for the bag with name " + bagName  + ", id " + id + " and type " + type);
+            LOG.error("Something wrong for the bag with name " + bagName  + ", id " + id
+                    + " and type " + type);
             return null;
         }
         if (profile.getSavedBags().get(bagName) == null) {

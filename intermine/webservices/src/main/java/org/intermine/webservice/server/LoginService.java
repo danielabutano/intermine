@@ -13,16 +13,17 @@ package org.intermine.webservice.server;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.intermine.api.InterMineAPI;
-import org.intermine.api.profile.*;
+import org.intermine.api.profile.Profile;
+import org.intermine.api.profile.ProfileManager;
+import org.intermine.api.profile.InterMineBag;
+import org.intermine.api.profile.SavedQuery;
+import org.intermine.api.profile.BadTemplateException;
 import org.intermine.api.template.ApiTemplate;
 import org.intermine.api.util.NameUtil;
 import org.intermine.objectstore.ObjectStoreException;
-import org.intermine.web.logic.Constants;
 import org.intermine.web.logic.profile.ProfileMergeIssues;
 import org.intermine.webservice.server.core.JSONService;
-import org.intermine.webservice.server.lists.ListFormatter;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 

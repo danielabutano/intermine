@@ -10,7 +10,6 @@ package org.intermine.web.link;
  *
  */
 
-import org.intermine.web.link.LinkGeneratorBase;
 import org.intermine.web.logic.WebServiceConstants;
 
 /**
