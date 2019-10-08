@@ -32,7 +32,7 @@ import org.intermine.api.InterMineAPI;
 import org.intermine.bio.web.biojava.BioSequence;
 import org.intermine.bio.web.biojava.BioSequenceFactory;
 import org.intermine.bio.web.biojava.BioSequenceFactory.SequenceType;
-import org.intermine.bio.web.logic.ResidueFieldExporter;
+import org.intermine.bio.web.logic.export.ResidueFieldExporter;
 import org.intermine.model.InterMineObject;
 import org.intermine.model.bio.BioEntity;
 import org.intermine.model.bio.Protein;
