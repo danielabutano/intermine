@@ -167,7 +167,7 @@ public abstract class LoginHandler extends InterMineAction
         Client client = ClientBuilder.newClient();
         try {
             String baseUrl = (new URLGenerator(request)).getPermanentBaseURL();
-            String loginServiceUrl =baseUrl +  "/" +  WebServiceConstants.MODULE_NAME + "/login";
+            String loginServiceUrl = baseUrl +  "/" +  WebServiceConstants.MODULE_NAME + "/login";
             WebTarget target = client.target(loginServiceUrl);
             Form form = new Form();
             form.param("username", username);
