@@ -35,8 +35,10 @@ import org.intermine.api.template.ApiTemplate;
 import org.intermine.api.util.NameUtil;
 import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.web.logic.Constants;
+import org.intermine.web.logic.WebServiceConstants;
 import org.intermine.web.logic.session.SessionMethods;
 import org.intermine.web.struts.InterMineAction;
+import org.intermine.web.util.URLGenerator;
 import org.json.JSONObject;
 
 /**
@@ -164,8 +166,9 @@ public abstract class LoginHandler extends InterMineAction
         //call login webservice so same profile will be created in pm.limitatedaccesstoken
         Client client = ClientBuilder.newClient();
         try {
-            WebTarget target = client.target(
-                    "http://localhost:8080/biotestmine/service/login");
+            String baseUrl = (new URLGenerator(request)).getPermanentBaseURL();
+            String loginServiceUrl =baseUrl +  "/" +  WebServiceConstants.MODULE_NAME + "/login";
+            WebTarget target = client.target(loginServiceUrl);
             Form form = new Form();
             form.param("username", username);
             form.param("password", password);

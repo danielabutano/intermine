@@ -10,14 +10,8 @@ package org.intermine.api.profile;
  *
  */
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.lang.StringUtils;
@@ -43,6 +37,7 @@ import org.intermine.objectstore.ObjectStore;
 import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.objectstore.ObjectStoreWriter;
 import org.intermine.pathquery.PathQuery;
+import org.intermine.util.PropertiesUtil;
 import org.json.JSONObject;
 
 import javax.ws.rs.client.Client;
@@ -880,9 +875,11 @@ public class Profile
     public String getDayToken() {
         if (dayToken == null || !manager.tokenHasMoreUses(dayToken)) {
             Client client = ClientBuilder.newClient();
+            Properties webProp = PropertiesUtil.getProperties();
+            String sessionService = webProp.getProperty("webapp.baseurl") + "/"
+                    + webProp.getProperty("webapp.path") + "/service/session";
             try {
-                Response response = client.target(
-                        "http://localhost:8080/biotestmine/service/session")
+                Response response = client.target(sessionService)
                         .request(MediaType.APPLICATION_JSON).get();
                 if (response.getStatus() == Response.Status.OK.getStatusCode()) {
                     JSONObject result = new JSONObject(response.readEntity(String.class));
