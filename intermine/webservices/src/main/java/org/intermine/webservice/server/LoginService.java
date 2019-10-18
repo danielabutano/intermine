@@ -23,6 +23,7 @@ import org.intermine.api.util.NameUtil;
 import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.web.logic.profile.ProfileMergeIssues;
 import org.intermine.webservice.server.core.JSONService;
+import org.intermine.webservice.server.exceptions.UnauthorizedException;
 
 import java.util.Collections;
 import java.util.Map;
@@ -54,8 +55,12 @@ public class LoginService extends JSONService
         Profile currentProfile = getPermission().getProfile();
         String username = getRequiredParameter("username");
         String password = getRequiredParameter("password");
-
-        Profile profile = getUser(username, password);
+        Profile profile = null;
+        try {
+            profile = getUser(username, password);
+        } catch (ProfileManager.AuthenticationException ex) {
+            throw new UnauthorizedException("username or password wrong");
+        }
         ProfileMergeIssues issues = new ProfileMergeIssues();
         if (currentProfile != null && StringUtils.isEmpty(currentProfile.getUsername())) {
             // The current profile was for an anonymous guest.
