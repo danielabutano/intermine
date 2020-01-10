@@ -11,6 +11,8 @@ package org.intermine.pathquery;
  */
 
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,10 +36,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.intermine.metadata.ClassDescriptor;
-import org.intermine.metadata.Model;
-import org.intermine.metadata.TypeUtil;
-import org.intermine.metadata.Util;
+import org.apache.commons.lang.StringUtils;
+import org.intermine.metadata.*;
 
 /**
  * Class to represent a path-based query.
@@ -304,6 +304,29 @@ public class PathQuery implements Cloneable
      */
     public synchronized List<String> getView() {
         return Collections.unmodifiableList(new ArrayList<String>(view));
+    }
+
+    /**
+     * Returns the ontology terms related to the current view list (attributes).
+     *
+     * @return a List of String ontology terms
+     */
+    public synchronized List<String> getViewTerms() {
+        List<String> views = getView();
+        List<String> ontologiesTerms = new ArrayList<String>(views.size());
+        for (String view : views) {
+            try {
+                FieldDescriptor fd = (new Path(model, view)).getEndFieldDescriptor();
+                if (fd.isAttribute()) {
+                    AttributeDescriptor ad = (AttributeDescriptor)fd;
+                    String term = (ad.getOntologyTerm() != null) ? ad.getOntologyTerm() : "";
+                    ontologiesTerms.add(term);
+                }
+            } catch (PathException pe) {
+                ontologiesTerms.add(StringUtils.EMPTY);
+            }
+        }
+        return ontologiesTerms;
     }
 
     // ---------------- Order By List Control -----------------

@@ -32,6 +32,8 @@ import org.intermine.api.query.PathQueryExecutor;
 import org.intermine.api.results.ExportResultsIterator;
 import org.intermine.api.results.ResultElement;
 import org.intermine.metadata.AttributeDescriptor;
+import org.intermine.metadata.ClassDescriptor;
+import org.intermine.metadata.Model;
 import org.intermine.objectstore.ObjectStoreException;
 import org.intermine.objectstore.ObjectStoreQueryDurationException;
 import org.intermine.objectstore.query.Results;
@@ -149,12 +151,18 @@ public class QueryResultService extends AbstractQueryService
             // These attributes are always needed
             attributes.put(JSONResultFormatter.KEY_MODEL_NAME, pq.getModel().getName());
             attributes.put(JSONResultFormatter.KEY_VIEWS, pq.getView());
+            attributes.put(JSONResultFormatter.KEY_VIEWS_TERMS, pq.getViewTerms());
 
             attributes.put(JSONTableFormatter.KEY_COLUMN_HEADERS,
                     WebUtil.formatPathQueryView(pq, InterMineContext.getWebConfig()));
             attributes.put("start", String.valueOf(start));
             try {
-                attributes.put(JSONResultFormatter.KEY_ROOT_CLASS, pq.getRootClass());
+                String rootClass = pq.getRootClass();
+                attributes.put(JSONResultFormatter.KEY_ROOT_CLASS, rootClass);
+                Model model = Model.getInstanceByName("genomic");
+                ClassDescriptor cd = model.getClassDescriptorByName(rootClass);
+                String ontologyTerm = (cd.getOntologyTerm() != null) ? cd.getOntologyTerm() : "";
+                attributes.put(JSONResultFormatter.KEY_ROOT_TERM,  ontologyTerm);
             } catch (PathException e) {
                 throw new ServiceException(e);
             }

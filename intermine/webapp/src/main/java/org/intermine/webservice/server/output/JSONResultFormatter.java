@@ -30,9 +30,17 @@ public abstract class JSONResultFormatter extends JSONFormatter
      */
     public static final String KEY_VIEWS = "views";
     /**
+     * The key for the views
+     */
+    public static final String KEY_VIEWS_TERMS = "viewsTerms";
+    /**
      * The key for the root class
      */
     public static final String KEY_ROOT_CLASS = "rootClass";
+    /**
+     * The key for the root ontology term
+     */
+    public static final String KEY_ROOT_TERM = "rootTerm";
     /**
      * The key for the model name
      */
