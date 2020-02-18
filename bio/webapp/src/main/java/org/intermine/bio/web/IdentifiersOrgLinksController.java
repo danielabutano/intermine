@@ -16,34 +16,16 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.tiles.ComponentContext;
 import org.apache.struts.tiles.actions.TilesAction;
-import org.intermine.api.InterMineAPI;
-import org.intermine.api.profile.InterMineBag;
+
 import org.intermine.api.uri.InterMineLUI;
 import org.intermine.api.uri.InterMineLUIConverter;
-import org.intermine.api.util.PathUtil;
-import org.intermine.bio.util.BioUtil;
-import org.intermine.metadata.ClassDescriptor;
-import org.intermine.metadata.Model;
-import org.intermine.metadata.TypeUtil;
-import org.intermine.model.InterMineObject;
-import org.intermine.model.bio.Organism;
-import org.intermine.objectstore.ObjectStore;
-import org.intermine.pathquery.Path;
-import org.intermine.pathquery.PathException;
-import org.intermine.util.DynamicUtil;
-import org.intermine.web.logic.Constants;
-import org.intermine.web.logic.bag.BagHelper;
-import org.intermine.web.logic.results.ReportObject;
-import org.intermine.web.logic.session.SessionMethods;
-import org.intermine.web.util.AttributeLinkURL;
 
-import javax.servlet.ServletContext;
+import org.intermine.web.logic.results.ReportObject;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.net.MalformedURLException;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.HashMap;
+
 
 /**
  * Set up maps for attributeLinks.jsp
