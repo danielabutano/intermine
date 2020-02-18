@@ -52,6 +52,11 @@ if(new java.io.File(application.getRealPath("/js")+"/"+pageName+".js").exists())
   <c:if test="${pageName != 'report' && pageName != 'mymine' && pageName != 'bagDetails' && pageName != 'results' && pageName != 'bagUploadConfirm'}">
    <script type="text/javascript" src="<html:rewrite page='/js/prototype.js'/>"></script>
   </c:if>
+
+  <c:if test="${pageName == 'report'}">
+       <script src="https://cdn.jsdelivr.net/npm/@intermine/intermine-identifiers-widget@1.0.0/dist/bundle.js" integrity="sha256-bpCYMZdiHy5lBYavjD3yvhLtUGdgWfaq989jI0ASGao=" crossorigin="anonymous"></script>
+       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@intermine/intermine-identifiers-widget@1.0.0/dist/style.css" integrity="sha256-TTnVOcsdSOgCTrz5+KjLUUH7KFpkN2DH9JbdIlb87+g=" crossorigin="anonymous">
+  </c:if>
 </c:if>
 
   <!--[if lt IE 7.]>

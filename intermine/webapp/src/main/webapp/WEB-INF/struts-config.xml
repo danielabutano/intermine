@@ -487,6 +487,7 @@
     <action path="/initObjectView" type="org.intermine.web.struts.ObjectViewController"/>
     <action path="/initKeywordSearchResults" type="org.intermine.web.struts.KeywordSearchResultsController"/>
     <action path="/initAttributeLinks" type="org.intermine.bio.web.AttributeLinksController"/>
+    <action path="/identifiersOrgLinks" type="org.intermine.bio.web.IdentifiersOrgLinksController"/>
     <action path="/initReportDisplayer" type="org.intermine.web.struts.ReportDisplayerController"/>
     <action path="/initOtherMinesLink" type="org.intermine.bio.web.OtherMinesLinkController"/>
     <action path="/initSharingBagUsers" type="org.intermine.web.struts.SharingBagUsersController"/>
