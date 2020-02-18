@@ -55,7 +55,8 @@ public class IdentifiersOrgLinksController extends TilesAction
 
         //identifiers-widget config
         InterMineLUIConverter converter = new InterMineLUIConverter();
-        InterMineLUI interMineLUI = converter.getInterMineLUI(reportObject.getType(), reportObject.getId());
+        InterMineLUI interMineLUI = converter.getInterMineLUI(reportObject.getType(),
+                reportObject.getId());
         String ns = "TBC";
         if (reportObject.getType().equals("Protein")) {
             ns = "uniprot";
