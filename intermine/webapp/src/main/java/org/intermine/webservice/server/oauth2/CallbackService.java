@@ -76,33 +76,33 @@ public class CallbackService extends JSONService
 
     @Override
     protected void execute() throws Exception {
-        LOG.info("CallbackService started....");
+        LOG.warn("CallbackService started....");
         String providerName = getRequiredParameter("provider");
-        LOG.info("CallbackService providerName:" + providerName);
+        LOG.warn("CallbackService providerName:" + providerName);
         String redirectUri = getRedirectUri(webProperties, providerName);
-        LOG.info("CallbackService redirectUri:" + redirectUri);
+        LOG.warn("CallbackService redirectUri:" + redirectUri);
         try {
             OAuthProvider provider = getOAuthProvider(webProperties, providerName);
-            LOG.info("CallbackService after getOAuthProvider");
+            LOG.warn("CallbackService after getOAuthProvider");
             OAuthAuthzResponse oar = getAuthResponse(request);
-            LOG.info("CallbackService after getAuthResponse");
+            LOG.warn("CallbackService after getAuthResponse");
             checkOauthState(request, oar);
 
             // Step one - get token
             String accessToken = getAccessToken(redirectUri, oar, provider);
-            LOG.info("CallbackService after getAccessToken");
+            LOG.warn("CallbackService after getAccessToken");
             // Step two - exchange token for identity
             DelegatedIdentity identity = getDelegatedIdentity(providerName, accessToken);
-            LOG.info("CallbackService after getDelegatedIdentity");
-            LOG.info("Got the identity");
-            LOG.info("Got the email" + identity.getEmail());
+            LOG.warn("CallbackService after getDelegatedIdentity");
+            LOG.warn("Got the identity");
+            LOG.warn("Got the email" + identity.getEmail());
             // Step three - login
             //loginUser(request, identity);
             //temporary no merge
             Profile profile = im.getProfileManager()
                     .grantPermission(identity.getProvider(), identity.getId(), im.getClassKeys())
                     .getProfile();
-            LOG.info("After grant permission");
+            LOG.warn("After grant permission");
             Map<String, Object> output = new HashMap<String, Object>();
             JSONUserFormatter formatter = new JSONUserFormatter(profile);
             output.put("user", new JSONObject(formatter.format()));
