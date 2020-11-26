@@ -76,18 +76,24 @@ public class CallbackService extends JSONService
 
     @Override
     protected void execute() throws Exception {
+        LOG.info("CallbackService started....");
         String providerName = getRequiredParameter("provider");
+        LOG.info("CallbackService providerName:" + providerName);
         String redirectUri = getRedirectUri(webProperties, providerName);
-
+        LOG.info("CallbackService redirectUri:" + redirectUri);
         try {
             OAuthProvider provider = getOAuthProvider(webProperties, providerName);
+            LOG.info("CallbackService after getOAuthProvider");
             OAuthAuthzResponse oar = getAuthResponse(request);
+            LOG.info("CallbackService after getAuthResponse");
             checkOauthState(request, oar);
 
             // Step one - get token
             String accessToken = getAccessToken(redirectUri, oar, provider);
+            LOG.info("CallbackService after getAccessToken");
             // Step two - exchange token for identity
             DelegatedIdentity identity = getDelegatedIdentity(providerName, accessToken);
+            LOG.info("CallbackService after getDelegatedIdentity");
             LOG.info("Got the identity");
             LOG.info("Got the email" + identity.getEmail());
             // Step three - login
@@ -102,7 +108,7 @@ public class CallbackService extends JSONService
             output.put("user", new JSONObject(formatter.format()));
             output.put("token", im.getProfileManager().generate24hrKey(profile));
         } catch (ForseenProblem e) {
-
+            LOG.error("Error ForseenProblem", e);
         } catch (Exception e) {
             LOG.error("Error granting access", e);
         }
