@@ -162,6 +162,7 @@ public class CallbackService extends JSONService
         if (state == null || !state.equals(oar.getState())) {
             throw new ForseenProblem("oauth2.error.illegal-request");
         }*/
+        LOG.warn("oauth code is:" + oar.getCode());
     }
 
     private String getAccessToken(String redirect, OAuthAuthzResponse oar,
@@ -174,7 +175,7 @@ public class CallbackService extends JSONService
                 .setGrantType(GrantType.AUTHORIZATION_CODE)
                 .setClientId(provider.getClientId())
                 .setClientSecret(provider.getClientSecret())
-                .setRedirectURI(redirect)
+                .setRedirectURI("http://alpha.flymine.org/alpha/service/oauth2callback?provider=GOOGLE")
                 .setCode(oar.getCode());
 
         switch (provider.getMessageFormat()) {
