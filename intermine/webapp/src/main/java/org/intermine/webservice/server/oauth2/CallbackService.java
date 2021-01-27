@@ -166,7 +166,7 @@ public class CallbackService extends JSONService
 
     private String getAccessToken(String redirect, OAuthAuthzResponse oar,
                                                       OAuthProvider provider)
-            throws OAuthSystemException, OAuthProblemException {
+            throws OAuthSystemException/*, OAuthProblemException*/ {
         OAuthClient oauthClient = new OAuthClient(new URLConnectionClient());
         OAuthClientRequest clientReq;
         OAuthClientRequest.TokenRequestBuilder requestBuilder = OAuthClientRequest
@@ -191,15 +191,20 @@ public class CallbackService extends JSONService
                 + " BODY = " + clientReq.getBody());
 
         OAuthAccessTokenResponse tokenResponse = null;
-        switch (provider.getResponseType()) {
-            case FORM:
-                tokenResponse = oauthClient.accessToken(clientReq, GitHubTokenResponse.class);
-                break;
-            case JSON:
-                tokenResponse = oauthClient.accessToken(clientReq);
-                break;
-            default:
-                throw new RuntimeException("Unknown response type");
+        try {
+            switch (provider.getResponseType()) {
+                case FORM:
+                    tokenResponse = oauthClient.accessToken(clientReq, GitHubTokenResponse.class);
+                    break;
+                case JSON:
+                    tokenResponse = oauthClient.accessToken(clientReq);
+                    break;
+                default:
+                    throw new RuntimeException("Unknown response type");
+            }
+        } catch (OAuthProblemException oae) {
+            LOG.error(oae);
+            oae.printStackTrace();
         }
         return tokenResponse.getAccessToken();
     }
